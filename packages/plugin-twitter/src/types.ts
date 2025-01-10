@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+/**
+ * Interface representing the content of a tweet.
+ * @typedef {Object} TweetContent
+ * @property {string} text - The text content of the tweet.
+ */
 export interface TweetContent {
     text: string;
 }
