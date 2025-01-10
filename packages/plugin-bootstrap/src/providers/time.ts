@@ -8,6 +8,14 @@ import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
  * @param {State} [_state] - The optional state object that can be passed to the function.
  * @returns {string} A formatted string indicating the current date and time in UTC for reference.
  */
+/**
+ * Retrieves the current UTC date and time in a human-readable format.
+ * 
+ * @param _runtime - The agent runtime environment.
+ * @param _message - The message received by the agent.
+ * @param _state - Optional state object to store information across conversations.
+ * @returns A message containing the current date and time in a human-readable format.
+ */
 const timeProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         const currentDate = new Date();
