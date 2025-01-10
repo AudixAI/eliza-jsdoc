@@ -25,6 +25,15 @@ import { validateStarknetConfig } from "../environment.ts";
 //     sellAmount: string;
 // }
 
+/**
+ * Interface for representing the content of a deploy token.
+ * @typedef {object} DeployTokenContent
+ * @property {string} name - The name of the deploy token.
+ * @property {string} symbol - The symbol of the deploy token.
+ * @property {string} owner - The owner of the deploy token.
+ * @property {string} initialSupply - The initial supply of the deploy token.
+ */ 
+
 interface DeployTokenContent {
     name: string;
     symbol: string;
@@ -32,6 +41,11 @@ interface DeployTokenContent {
     initialSupply: string;
 }
 
+/**
+ * Checks if the given object is a valid DeployTokenContent by validating its properties.
+ * @param {DeployTokenContent} content - The content to be validated
+ * @returns {boolean} - True if the content is a valid DeployTokenContent, false otherwise
+ */
 export function isDeployTokenContent(content: DeployTokenContent) {
     // Validate types
     const validTypes =
@@ -54,6 +68,30 @@ export function isDeployTokenContent(content: DeployTokenContent) {
     return validAddresses;
 }
 
+/**
+ * Deploy Template function description.
+ * 
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "name": "Brother",
+ *     "symbol": "BROTHER",
+ *     "owner": "0x0000000000000000000000000000000000000000000000000000000000000000",
+ *     "initialSupply": "1000000000000000000"
+ * }
+ * ```
+ * {{recentMessages}}
+ * 
+ * Extract the following information about the requested token deployment:
+ * - Token Name
+ * - Token Symbol
+ * - Token Owner
+ * - Token initial supply
+ * 
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ */
 const deployTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
@@ -76,6 +114,17 @@ Extract the following information about the requested token deployment:
 
 Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.`;
 
+/**
+ * Action to deploy an Unruggable Memecoin on Starknet.
+ * This action is used when a user requests to deploy a new token on Starknet.
+ * @typedef {object} Action
+ * @property {string} name - The name of the action.
+ * @property {Array<string>} similes - An array of similar actions.
+ * @property {Function} validate - Asynchronous function to validate the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Asynchronous function to handle the deployment process.
+ * @property {Array<Array<ActionExample>>} examples - Examples of common interactions with the action.
+ */
 export const deployToken: Action = {
     name: "DEPLOY_STARKNET_UNRUGGABLE_MEME_TOKEN",
     similes: [
