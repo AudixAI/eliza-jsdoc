@@ -14,6 +14,14 @@ import { formatFacts } from "../evaluators/fact.ts";
  * @param {State} [state] - Optional state object containing recentMessagesData and actorsData.
  * @returns {string} - Formatted key facts known by the agent.
  */
+/**
+ * Retrieves key facts known by the agent based on recent messages and stored memories.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {Memory} message - The message memory.
+ * @param {State} [state] - Optional state information.
+ * @returns {string} - Formatted key facts known by the agent.
+ */
 const factsProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
         const recentMessagesData = state?.recentMessagesData?.slice(-10);
