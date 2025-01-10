@@ -40,12 +40,46 @@ const TransferActionSchema = z.object({
     amount: z.string(),
 });
 
+/**
+ * Interface representing the content required for a transfer.
+ * @interface
+ * @extends Content
+ * @property {string} tokenAddress - The address of the token.
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string|number} amount - The amount of the transfer.
+ */
 export interface TransferContent extends Content {
     tokenAddress: string;
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Here are several frequently used addresses. Use these for the corresponding tokens:
+ * - ZK/zk: 0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E
+ * - ETH/eth: 0x000000000000000000000000000000000000800A
+ * - USDC/usdc: 0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "tokenAddress": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E",
+ *     "recipient": "0xCCa8009f5e09F8C5dB63cb0031052F9CB635Af62",
+ *     "amount": "1000"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Token contract address
+ * - Recipient wallet address
+ * - Amount to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Here are several frequently used addresses. Use these for the corresponding tokens:
@@ -71,6 +105,9 @@ Given the recent messages, extract the following information about the requested
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
+/**
+ * Represents a TransferAction object with the name "SEND_TOKEN" and an array of similes.
+ */
 export const TransferAction: Action = {
     name: "SEND_TOKEN",
     similes: [
