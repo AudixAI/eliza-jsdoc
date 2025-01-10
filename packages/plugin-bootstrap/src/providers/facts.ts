@@ -7,6 +7,13 @@ import {
 import type { Memory, Provider, State } from "@elizaos/core";
 import { formatFacts } from "../evaluators/fact.ts";
 
+/**
+ * Retrieve key facts known by an agent based on recent messages and memories.
+ * @param {IAgentRuntime} runtime - The agent runtime instance.
+ * @param {Memory} message - The message memory object.
+ * @param {State} [state] - Optional state object containing recentMessagesData and actorsData.
+ * @returns {string} - Formatted key facts known by the agent.
+ */
 const factsProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
         const recentMessagesData = state?.recentMessagesData?.slice(-10);

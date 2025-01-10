@@ -5,6 +5,18 @@ import {
     type Action,
 } from "@elizaos/core";
 
+/**
+ * Represents an action that should be taken when ignoring the user.
+ * Use this action if the user should be ignored, such as when the conversation has ended naturally or if the user is being aggressive or inappropriate.
+ *
+ * @type {Action}
+ * @property {string} name - The name of the action (IGNORE).
+ * @property {string[]} similes - An array of similar actions to consider.
+ * @property {Function} validate - A function that validates if the action should be taken.
+ * @property {string} description - A brief description of when to use the IGNORE action.
+ * @property {Function} handler - A function that handles the action when executed.
+ * @property {ActionExample[][]} examples - Examples demonstrating the usage of the IGNORE action.
+ */
 export const ignoreAction: Action = {
     name: "IGNORE",
     similes: ["STOP_TALKING", "STOP_CHATTING", "STOP_CONVERSATION"],

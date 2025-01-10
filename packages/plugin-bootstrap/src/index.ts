@@ -16,6 +16,16 @@ export * as actions from "./actions";
 export * as evaluators from "./evaluators";
 export * as providers from "./providers";
 
+/**
+ * Plugin for agent bootstrap with basic actions and evaluators.
+ * 
+ * @type {Plugin}
+ * @property {string} name - The name of the plugin.
+ * @property {string} description - The description of the plugin.
+ * @property {Action[]} actions - List of actions available for the plugin.
+ * @property {Evaluator[]} evaluators - List of evaluators available for the plugin.
+ * @property {Provider[]} providers - List of providers available for the plugin.
+ */
 export const bootstrapPlugin: Plugin = {
     name: "bootstrap",
     description: "Agent bootstrap with basic actions and evaluators",

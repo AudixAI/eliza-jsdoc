@@ -1,5 +1,10 @@
 import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
 
+/**
+ * This array represents different levels of boredom based on the minimum score.
+ * Each object in the array contains the minimum score required for that level of boredom
+ * and an array of status messages associated with that level.
+ */
 const boredomLevels = [
     {
         minScore: -10000,
@@ -150,6 +155,10 @@ const interestWords = [
     "research",
 ];
 
+/**
+ * Array of cringe words commonly used in technology and innovation contexts.
+ * These words often contribute to a buzzword-filled and cringeworthy conversation.
+ */
 const cringeWords = [
     "digital",
     "consciousness",
@@ -238,6 +247,9 @@ const cringeWords = [
     "trove",
 ];
 
+/**
+ * Array of negative words/phrases that can be used to filter out unwanted input.
+ */
 const negativeWords = [
     "fuck you",
     "stfu",
@@ -272,6 +284,14 @@ const negativeWords = [
     "fuck up",
 ];
 
+/**
+ * Get the boredom level of the agent based on recent messages in the conversation.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Memory} message - The message memory object.
+ * @param {State} [state] - The optional state object.
+ * @returns {string} The selected message based on the boredom level.
+ */
 const boredomProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
         const agentId = runtime.agentId;

@@ -5,6 +5,18 @@ import {
     type Action,
 } from "@elizaos/core";
 
+/**
+ * Represents an action where no additional action is performed.
+ * This is the default action if the agent is speaking and not doing anything additional.
+ *
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - List of similes related to the action.
+ * @property {Function} validate - Asynchronous function to validate the action with given runtime and memory.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Asynchronous function that handles the action with given runtime and memory.
+ * @property {ActionExample[][]} examples - List of example interactions demonstrating the action.
+ */
 export const noneAction: Action = {
     name: "NONE",
     similes: [

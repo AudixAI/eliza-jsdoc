@@ -10,6 +10,21 @@ import {
     State,
 } from "@elizaos/core";
 
+/**
+ * Template string used to generate a message asking whether to unmute a previously muted room.
+ * 
+ * Based on the conversation so far:
+ * 
+ * {{recentMessages}}
+ * 
+ * Should {{agentName}} unmute this previously muted room and start considering it for responses again?
+ * Respond with YES if:
+ * - The user has explicitly asked {{agentName}} to start responding again
+ * - The user seems to want to re-engage with {{agentName}} in a respectful manner
+ * - The tone of the conversation has improved and {{agentName}}'s input would be welcome
+ * 
+ * Otherwise, respond with NO.
+ */
 export const shouldUnmuteTemplate =
     `Based on the conversation so far:
 
@@ -24,6 +39,45 @@ Respond with YES if:
 Otherwise, respond with NO.
 ` + booleanFooter;
 
+/**
+ * Action for unmuting a room, allowing the agent to consider responding to messages again.
+ * 
+ * @name UNMUTE_ROOM
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent
+ * @param {Memory} message - The message containing information about the room
+ * @returns {boolean} - Returns true if the room should be unmuted, false otherwise
+ * @example
+ * [
+ *    [
+ *        {
+ *            user: "{{user1}}",
+ *            content: {
+ *                text: "{{user3}}, you can unmute this channel now",
+ *            },
+ *        },
+ *        {
+ *            user: "{{user3}}",
+ *            content: {
+ *                text: "Done",
+ *                action: "UNMUTE_ROOM",
+ *            },
+ *        },
+ *        {
+ *            user: "{{user2}}",
+ *            content: {
+ *                text: "I could use some help troubleshooting this bug.",
+ *            },
+ *        },
+ *        {
+ *            user: "{{user3}}",
+ *            content: {
+ *                text: "Can you post the specific error message",
+ *            },
+ *        },
+ *    ],
+ *    // More examples
+ * ]
+ */
 export const unmuteRoomAction: Action = {
     name: "UNMUTE_ROOM",
     similes: [
