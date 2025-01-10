@@ -2,6 +2,10 @@ import { IAgentRuntime } from "@elizaos/core";
 import { isAddress } from "viem";
 import { z } from "zod";
 
+/**
+ * Schema for zksync environment variables.
+ * Contains validation rules for ZKSYNC_ADDRESS and ZKSYNC_PRIVATE_KEY.
+ */
 export const zksyncEnvSchema = z.object({
     ZKSYNC_ADDRESS: z
         .string()
@@ -18,8 +22,17 @@ export const zksyncEnvSchema = z.object({
         }),
 });
 
+/**
+ * Type definition for ZKsyncConfig based on zksyncEnvSchema.
+ */
 export type ZKsyncConfig = z.infer<typeof zksyncEnvSchema>;
 
+/**
+ * Asynchronously validates the ZKsync configuration provided by the runtime environment.
+ *
+ * @param {IAgentRuntime} runtime - The runtime environment object containing the settings.
+ * @returns {Promise<ZKsyncConfig>} - The validated ZKsync configuration object.
+ */
 export async function validateZKsyncConfig(
     runtime: IAgentRuntime
 ): Promise<ZKsyncConfig> {
