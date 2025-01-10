@@ -1,9 +1,20 @@
 import { ERROR_CODES } from "../../constants/errors";
 
+/**
+ * Type representing an error code, which is one of the keys of the ERROR_CODES object.
+ */
 type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
 /**
  * Base error class for Binance-related errors
+ */
+/**
+ * Custom error class for Binance errors.
+ * @class BinanceError
+ * @extends Error
+ * @param {string} message - The error message.
+ * @param {ErrorCode | number} [code=ERROR_CODES.INVALID_PARAMETERS] - The error code.
+ * @param {unknown} [originalError] - The original error.
  */
 export class BinanceError extends Error {
     public readonly code: ErrorCode | number;
