@@ -23,6 +23,13 @@ import {
 import { walletProvider } from "../providers/wallet";
 import { KeyPairString } from "near-api-js/lib/utils";
 
+/**
+ * Check the storage balance of a given account on a specific contract.
+ * 
+ * @param {any} account The account object to check the storage balance for.
+ * @param {string} contractId The contract ID to check the storage balance on.
+ * @returns {Promise<boolean>} Returns true if the storage balance is not zero, false otherwise.
+ */
 async function checkStorageBalance(
     account: any,
     contractId: string
@@ -40,6 +47,16 @@ async function checkStorageBalance(
     }
 }
 
+/**
+ * Function to swap tokens on NEAR Protocol using FT Liquidity Pool
+ * * @param { IAgentRuntime } runtime - The Agent Runtime instance
+ * @param { string } inputTokenId - The input token to swap
+ * @param { string } outputTokenId - The output token to receive
+ * @param { string } amount - The amount of input token to swap
+ * @param { number } slippageTolerance - The slippage tolerance for the swap (default: 0.01)
+ * * @returns {Promise<any>} - Returns an array of transactions for the swap
+ * * @throws { Error } - Throws an error if no valid swap route is found or if NEAR_ADDRESS is not configured
+ */
 async function swapToken(
     runtime: IAgentRuntime,
     inputTokenId: string,
@@ -148,6 +165,17 @@ async function swapToken(
     }
 }
 
+/**
+ * Function to extract information about a requested token swap from recent messages and wallet information
+ * 
+ * @returns {Object} JSON markdown block containing only the extracted values with the schema:
+ * {
+ *    "inputTokenId": string | null,
+ *    "outputTokenId": string | null,
+ *    "amount": string | null
+ * }
+ */ 
+
 const swapTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
@@ -179,6 +207,16 @@ Respond with a JSON markdown block containing only the extracted values. Use nul
 }
 \`\`\``;
 
+/**
+ * Action for executing a token swap using Ref Finance.
+ * 
+ * @param {IAgentRuntime} runtime - The current agent runtime.
+ * @param {Memory} message - The message memory object.
+ * @param {State} state - The current state of the agent.
+ * @param {{ [key: string]: unknown }} _options - Additional options for the handler.
+ * @param {HandlerCallback} callback - The callback function for handling the response message.
+ * @returns {Promise<boolean>} A promise that resolves to true if the swap is successful, false otherwise.
+ */
 export const executeSwap: Action = {
     name: "EXECUTE_SWAP_NEAR",
     similes: [
