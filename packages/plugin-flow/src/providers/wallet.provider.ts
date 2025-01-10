@@ -18,6 +18,12 @@ import * as queries from "../queries";
 /**
  * Flow wallet Provider
  */
+/**
+ * FlowWalletProvider class that implements IFlowSigner and IFlowScriptExecutor interfaces.
+ * * @class FlowWalletProvider
+ * @implements { IFlowSigner }
+ * @implements { IFlowScriptExecutor }
+ */
 export class FlowWalletProvider implements IFlowSigner, IFlowScriptExecutor {
     runtime: IAgentRuntime;
     private readonly privateKeyHex?: string;
