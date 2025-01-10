@@ -22,6 +22,16 @@ import {
 
 import { walletProvider } from "../providers/wallet.ts";
 
+/**
+ * Represents the interface for creating and buying content.
+ * Extends the base Content interface.
+ * @property {Object} tokenMetadata - Contains information about the token being used.
+ * @property {string} tokenMetadata.name - The name of the token.
+ * @property {string} tokenMetadata.symbol - The symbol of the token.
+ * @property {string} tokenMetadata.description - The description of the token.
+ * @property {string} tokenMetadata.image_description - The description of the image associated with the token.
+ * @property {string|number} buyAmountSol - The amount of SOL (Solana cryptocurrency) needed to buy the content.
+ */
 export interface CreateAndBuyContent extends Content {
     tokenMetadata: {
         name: string;
@@ -32,6 +42,12 @@ export interface CreateAndBuyContent extends Content {
     buyAmountSol: string | number;
 }
 
+/**
+ * Checks if the given content is for creating and buying content.
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {any} content - The content to be checked.
+ * @returns {content is CreateAndBuyContent} Returns true if the content is for creating and buying content, false otherwise.
+ */
 export function isCreateAndBuyContent(
     runtime: IAgentRuntime,
     content: any
@@ -49,6 +65,26 @@ export function isCreateAndBuyContent(
     );
 }
 
+/**
+ * Creates and buys a token using the provided parameters.
+ * @async
+ * @param {Object} params - The parameters for creating and buying the token.
+ * @param {Keypair} params.deployer - The deployer's keypair.
+ * @param {Keypair} params.mint - The mint's keypair.
+ * @param {CreateTokenMetadata} params.tokenMetadata - The metadata for the token being created.
+ * @param {bigint} params.buyAmountSol - The amount of SOL to be used for buying the token.
+ * @param {PriorityFee} params.priorityFee - The priority fee for the transaction.
+ * @param {boolean} params.allowOffCurve - Flag indicating if off-curve values are allowed.
+ * @param {"processed"|"confirmed"|"finalized"|"recent"|"single"|"singleGossip"|"root"|"max"} [params.commitment="finalized"] - The transaction commitment level.
+ * @param {PumpFunSDK} params.sdk - The PumpFun SDK instance.
+ * @param {Connection} params.connection - The connection to the Solana blockchain.
+ * @param {string} params.slippage - The slippage value for buying the token.
+ * @returns {Object} The result of creating and buying the token.
+ * @returns {boolean} success - Indicates if the operation was successful.
+ * @returns {string} ca - The public key of the created token.
+ * @returns {string} creator - The public key of the deployer.
+ * @returns {string} error - The error message if the operation failed.
+ */
 export const createAndBuyToken = async ({
     deployer,
     mint,
@@ -131,6 +167,20 @@ export const createAndBuyToken = async ({
     }
 };
 
+/**
+ * Function to buy tokens from the sdk
+ *
+ * @param {Object} params - The parameters object
+ * @param {PumpFunSDK} params.sdk - The PumpFunSDK instance
+ * @param {Keypair} params.buyer - The buyer's Keypair
+ * @param {PublicKey} params.mint - The mint PublicKey
+ * @param {bigint} params.amount - The amount of tokens to buy
+ * @param {PriorityFee} params.priorityFee - The priority fee for the transaction
+ * @param {boolean} params.allowOffCurve - Flag to allow off-curve transactions
+ * @param {string} params.slippage - The slippage value as a string
+ * @param {Connection} params.connection - The connection object
+ * @returns {Promise<void>} - A promise that resolves with the buy results
+ */
 export const buyToken = async ({
     sdk,
     buyer,
@@ -182,6 +232,19 @@ export const buyToken = async ({
     }
 };
 
+/**
+ * Function to sell a token.
+ * @param {Object} param0 - The parameters object.
+ * @param {PumpFunSDK} param0.sdk - The PumpFun SDK instance.
+ * @param {Keypair} param0.seller - The seller's Keypair.
+ * @param {PublicKey} param0.mint - The mint PublicKey.
+ * @param {bigint} param0.amount - The amount of tokens to sell.
+ * @param {PriorityFee} param0.priorityFee - The priority fee for the transaction.
+ * @param {boolean} param0.allowOffCurve - Whether off-curve transactions are allowed.
+ * @param {string} param0.slippage - The slippage value.
+ * @param {Connection} param0.connection - The connection to the network.
+ * @returns {Promise<void>} - A Promise that resolves when the token is successfully sold.
+ */
 export const sellToken = async ({
     sdk,
     seller,
@@ -249,6 +312,33 @@ import * as fs from "fs";
 import * as path from "path";
 import { getWalletKey } from "../keypairUtils.ts";
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *    "tokenMetadata": {
+ *        "name": "Test Token",
+ *        "symbol": "TEST",
+ *        "description": "A test token",
+ *        "image_description": "create an image of a rabbit"
+ *    },
+ *    "buyAmountSol": "0.00069"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract or generate (come up with if not included) the following information about the requested token creation:
+ * - Token name
+ * - Token symbol
+ * - Token description
+ * - Token image description
+ * - Amount of SOL to buy
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const pumpfunTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
