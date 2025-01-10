@@ -8,6 +8,11 @@ import { initWalletChainsData } from "./utils";
 import { ICosmosPluginOptions } from "../../shared/interfaces";
 import { getAvailableAssets } from "../../shared/helpers/cosmos-assets";
 
+/**
+ * Function to create a Cosmos wallet provider.
+ * @param {ICosmosPluginOptions} pluginOptions - Options for the Cosmos plugin.
+ * @returns {Object} - Object with a method to get Cosmos wallet information.
+ */
 export const createCosmosWalletProvider = (
     pluginOptions: ICosmosPluginOptions
 ) => ({
