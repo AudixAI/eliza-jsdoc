@@ -23,6 +23,11 @@ export const formatFacts = (facts: Memory[]) => {
  * @type {string}
  * @constant
  */
+/**
+ * Template for extracting claims from a conversation as an array of claims in JSON format.
+ * 
+ * @type {string}
+ */
 const factsTemplate =
     // {{actors}}
     `TASK: Extract Claims from the conversation as an array of claims in JSON format.
