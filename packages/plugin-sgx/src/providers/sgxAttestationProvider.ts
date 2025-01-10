@@ -4,11 +4,21 @@ import { promises as fs } from 'fs';
 import { createHash } from 'crypto';
 
 // Function to calculate SHA-256 and return a Buffer (32 bytes)
+/**
+ * Calculate the SHA256 hash of the given input string.
+ * 
+ * @param {string} input - The input string to calculate the SHA256 hash for.
+ * @returns {Buffer} - The SHA256 hash result as a Buffer object.
+ */
 function calculateSHA256(input: string): Buffer {
     const hash = createHash('sha256');
     hash.update(input);
     return hash.digest();
 }
+
+/**
+ * Class representing an SGX Attestation Provider.
+ */
 
 class SgxAttestationProvider {
     private readonly SGX_QUOTE_MAX_SIZE: number = 8192 * 4;
@@ -19,8 +29,18 @@ class SgxAttestationProvider {
     private readonly USER_REPORT_DATA_PATH: string = "/dev/attestation/user_report_data";
     private readonly QUOTE_PATH: string = "/dev/attestation/quote";
 
+/**
+ * Constructor for creating a new instance.
+ */
     constructor() {}
 
+/**
+ * Asynchronous function to generate SGX remote attestation based on the provided report data.
+ * 
+ * @param {string} reportData - The data to be hashed to generate the raw user report.
+ * @returns {Promise<SgxAttestation>} - The generated SGX attestation object containing the quote and timestamp.
+ * @throws {Error} - If there is an error while generating the SGX Quote.
+ */
     async generateAttestation(
         reportData: string
     ): Promise<SgxAttestation> {
@@ -50,6 +70,14 @@ class SgxAttestationProvider {
         }
     }
 
+/**
+ * Generates a quote by gramine.
+ *
+ * @param {Buffer} rawUserReport - The raw user report to generate the quote from.
+ * @returns {Promise<string>} The generated quote as a hexadecimal string prefixed with '0x'.
+ * @throws {Error} If the length of rawUserReport exceeds 64 bytes, if invalid my_target_info length,
+ * if invalid quote length, or if quote without EOF.
+ */
     async generateQuoteByGramine(
         rawUserReport: Buffer
     ): Promise<string> {
@@ -80,6 +108,13 @@ class SgxAttestationProvider {
     }
 }
 
+/**
+ * Function to retrieve the remote attestation for the SGX hardware security provider.
+ * @param {IAgentRuntime} runtime - The runtime of the current agent.
+ * @param {Memory} _message - The message to be used for attestation (not used in this implementation).
+ * @param {State} [_state] - The optional state parameter (not used in this implementation).
+ * @returns {Promise<string>} A Promise that resolves to a string containing the attestation information.
+ */
 const sgxAttestationProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         const provider = new SgxAttestationProvider();
