@@ -16,6 +16,14 @@ import { Address } from "viem";
 import { validateAvalancheConfig } from "../environment";
 import { TOKEN_ADDRESSES, YAK_SWAP_CONFIG } from "../utils/constants";
 
+/**
+ * Interface representing content for a swap transaction.
+ * Inherits properties from Content interface.
+ * @property {string} fromTokenAddress - The address of the token being swapped from.
+ * @property {string} toTokenAddress - The address of the token being swapped to.
+ * @property {string} [recipient] - The recipient address for the swapped tokens (optional).
+ * @property {string | number} amount - The amount of tokens being swapped.
+ */
 export interface SwapContent extends Content {
     fromTokenAddress: string;
     toTokenAddress: string;
@@ -23,6 +31,13 @@ export interface SwapContent extends Content {
     amount: string | number;
 }
 
+/**
+ * Check if the provided content is of type SwapContent.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object.
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} Returns true if the content is of type SwapContent, otherwise false.
+ */
 function isSwapContent(
     runtime: IAgentRuntime,
     content: any
@@ -37,6 +52,53 @@ function isSwapContent(
     );
 }
 
+/**
+ * TransferTemplate
+ * @summary Respond with a JSON markdown block containing only the extracted values
+ * - Use null for any values that cannot be determined.
+ * - Use address zero for native AVAX transfers.
+ * - If our balance is not enough, use null for the amount.
+ * 
+ * Example response for a 10 AVAX to USDC swap:
+ *  {
+ *      "fromTokenAddress": "0x0000000000000000000000000000000000000000",
+ *      "toTokenAddress": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+ *      "recipient": null,
+ *      "amount": "10"
+ *  }
+ * 
+ * Example response for a 10 WAVAX to USDC swap:
+ *  {
+ *      "fromTokenAddress": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+ *      "toTokenAddress": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+ *      "recipient": "0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44",
+ *      "amount": "10"
+ *  }
+ * 
+ * Example response to buy WAVAX with 5 USDC:
+ *  {
+ *      "fromTokenAddress": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+ *      "toTokenAddress": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+ *      "recipient": "0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44",
+ *      "amount": "5"
+ *  }
+ * 
+ * Example response to sell 5 USDC for gmYAK:
+ *  {
+ *      "fromTokenAddress": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+ *      "toTokenAddress": "0x3A30784c1af928CdFce678eE49370220aA716DC3",
+ *      "recipient": "0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44",
+ *      "amount": "5"
+ *  }
+ * 
+ * @description Given the recent messages, extract the following information about the requested token transfer:
+ * - From token address (the token to sell)
+ * - To token address (the token to buy)
+ * - Recipient wallet address (optional)
+ * - Amount to sell
+ * 
+ * @returns {String} Response with a JSON markdown block containing only the extracted values
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values
 - Use null for any values that cannot be determined.
 - Use address zero for native AVAX transfers.
