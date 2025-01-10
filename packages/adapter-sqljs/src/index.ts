@@ -19,23 +19,43 @@ import { v4 } from "uuid";
 import { sqliteTables } from "./sqliteTables.ts";
 import { Database } from "./types.ts";
 
+/**
+ * SqlJsDatabaseAdapter class to adapt SQL.js database with caching capabilities.
+ * @extends DatabaseAdapter<Database>
+ * @implements IDatabaseCacheAdapter
+ */
 export class SqlJsDatabaseAdapter
     extends DatabaseAdapter<Database>
     implements IDatabaseCacheAdapter
 {
+/**
+* Constructor for initializing the class with a database instance.
+* @param {Database} db - The database instance to be used.
+*/
     constructor(db: Database) {
         super();
         this.db = db;
     }
 
+/**
+ * Initialize the database by executing the SQLite tables.
+ */
     async init() {
         this.db.exec(sqliteTables);
     }
 
+/**
+ * Asynchronously closes the database connection.
+ */
     async close() {
         this.db.close();
     }
 
+/**
+ * Get a room by its ID from the database.
+ * @param {UUID} roomId - The ID of the room to retrieve.
+ * @returns {Promise<UUID | null>} The ID of the room if found, otherwise null.
+ */
     async getRoom(roomId: UUID): Promise<UUID | null> {
         const sql = "SELECT id FROM rooms WHERE id = ?";
         const stmt = this.db.prepare(sql);
@@ -45,6 +65,12 @@ export class SqlJsDatabaseAdapter
         return room ? (room.id as UUID) : null;
     }
 
+/**
+ * Fetches all participants for a given user account.
+ * 
+ * @param {UUID} userId - The ID of the user account to get participants for.
+ * @returns {Promise<Participant[]>} - An array of Participant objects representing the participants for the user account.
+ */
     async getParticipantsForAccount(userId: UUID): Promise<Participant[]> {
         const sql = `
       SELECT p.id, p.userId, p.roomId, p.last_message_read
@@ -62,6 +88,12 @@ export class SqlJsDatabaseAdapter
         return participants;
     }
 
+/**
+ * Retrieves the state of a participant in a specific room.
+ * @param {UUID} roomId - The ID of the room.
+ * @param {UUID} userId - The ID of the user/participant.
+ * @returns {Promise<"FOLLOWED" | "MUTED" | null>} The user state, which can be "FOLLOWED", "MUTED", or null.
+ */
     async getParticipantUserState(
         roomId: UUID,
         userId: UUID
@@ -77,6 +109,14 @@ export class SqlJsDatabaseAdapter
         return result.userState ?? null;
     }
 
+/**
+ * Retrieves memories based on room IDs.
+ * @param {Object} params - The parameters for the query.
+ * @param {UUID} params.agentId - The ID of the agent.
+ * @param {UUID[]} params.roomIds - An array of room IDs.
+ * @param {string} params.tableName - The name of the table to query.
+ * @returns {Promise<Memory[]>} - A promise that resolves to an array of memories.
+ */
     async getMemoriesByRoomIds(params: {
         agentId: UUID;
         roomIds: UUID[];
@@ -106,6 +146,14 @@ export class SqlJsDatabaseAdapter
         return memories;
     }
 
+/**
+ * Updates the user state for a specific participant in a given room.
+ * 
+ * @param {UUID} roomId - The unique identifier of the room.
+ * @param {UUID} userId - The unique identifier of the user.
+ * @param {"FOLLOWED" | "MUTED" | null} state - The new state to set for the user ('FOLLOWED', 'MUTED', or null).
+ * @returns {Promise<void>} - A Promise that resolves when the user state has been updated.
+ */
     async setParticipantUserState(
         roomId: UUID,
         userId: UUID,
@@ -119,6 +167,12 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Async function to fetch participant IDs for a given room ID.
+ * 
+ * @param {UUID} roomId - The ID of the room to fetch participants for.
+ * @returns {Promise<UUID[]>} - A promise that resolves with an array of participant IDs.
+ */
     async getParticipantsForRoom(roomId: UUID): Promise<UUID[]> {
         const sql = "SELECT userId FROM participants WHERE roomId = ?";
         const stmt = this.db.prepare(sql);
@@ -132,6 +186,12 @@ export class SqlJsDatabaseAdapter
         return userIds;
     }
 
+/**
+ * Retrieves an account from the database based on the provided user ID.
+ *
+ * @param {UUID} userId - The unique identifier of the user account to retrieve.
+ * @returns {Promise<Account | null>} A Promise that resolves to the retrieved Account object, or null if no account is found.
+ */
     async getAccountById(userId: UUID): Promise<Account | null> {
         const sql = "SELECT * FROM accounts WHERE id = ?";
         const stmt = this.db.prepare(sql);
@@ -146,6 +206,12 @@ export class SqlJsDatabaseAdapter
         return account || null;
     }
 
+/**
+ * Creates a new account in the database.
+ * 
+ * @param {Account} account The account object to be created.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the account is successfully created, false otherwise.
+ */
     async createAccount(account: Account): Promise<boolean> {
         try {
             const sql = `
@@ -169,6 +235,13 @@ export class SqlJsDatabaseAdapter
         }
     }
 
+/**
+ * Asynchronously retrieves actors by roomId.
+ * 
+ * @param {Object} params - The parameters object.
+ * @param {UUID} params.roomId - The roomId to query by.
+ * @returns {Promise<Actor[]>} - An array of actors matching the roomId.
+ */
     async getActorById(params: { roomId: UUID }): Promise<Actor[]> {
         const sql = `
       SELECT a.id, a.name, a.username, a.details
@@ -193,6 +266,12 @@ export class SqlJsDatabaseAdapter
         return rows;
     }
 
+/**
+ * Retrieve details of actors in a specified room
+ * @param {Object} params - The parameters for the query
+ * @param {string} params.roomId - The UUID of the room to retrieve actor details from
+ * @returns {Promise<Actor[]>} - An array of Actor objects with their details parsed if in string format
+ */
     async getActorDetails(params: { roomId: UUID }): Promise<Actor[]> {
         const sql = `
       SELECT a.id, a.name, a.username, a.details
@@ -217,6 +296,11 @@ export class SqlJsDatabaseAdapter
         return rows;
     }
 
+/**
+ * Retrieves a memory from the database based on its unique identifier.
+ * @param {UUID} id - The unique identifier of the memory to retrieve.
+ * @returns {Promise<Memory | null>} A Promise that resolves to the retrieved memory if found, otherwise null.
+ */
     async getMemoryById(id: UUID): Promise<Memory | null> {
         const sql = "SELECT * FROM memories WHERE id = ?";
         const stmt = this.db.prepare(sql);
@@ -226,6 +310,16 @@ export class SqlJsDatabaseAdapter
         return memory || null;
     }
 
+/**
+ * Asynchronously creates a new memory entry in the database table.
+ * If the memory has an embedding property, it checks if a similar memory already exists
+ * by searching for memories with similar embeddings. If no similar memory is found,
+ * the memory is inserted into the database with a unique flag.
+ * 
+ * @param memory The memory object to be created
+ * @param tableName The name of the database table where the memory will be stored
+ * @returns A promise that resolves once the memory has been successfully created
+ */
     async createMemory(memory: Memory, tableName: string): Promise<void> {
         let isUnique = true;
         if (memory.embedding) {
@@ -264,6 +358,19 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Searches for memories based on the provided parameters.
+ * 
+ * @param {object} params - Object containing search parameters.
+ * @param {string} params.tableName - The name of the table to search in.
+ * @param {UUID} params.agentId - The ID of the agent associated with the memories.
+ * @param {UUID} params.roomId - The ID of the room associated with the memories.
+ * @param {number[]} params.embedding - An array representing the memory embedding.
+ * @param {number} params.match_threshold - The threshold for matching memories.
+ * @param {number} params.match_count - The number of memories to match.
+ * @param {boolean} params.unique - Flag to indicate if only unique memories should be selected.
+ * @returns {Promise<Memory[]>} - A Promise that resolves to an array of memories matching the search criteria.
+ */
     async searchMemories(params: {
         tableName: string;
         agentId: UUID;
@@ -309,6 +416,18 @@ export class SqlJsDatabaseAdapter
         return memories;
     }
 
+/**
+ * Function to search memories by embedding
+ * * @param {number[]} _embedding - The embedding to search memories with
+ * @param { object } params - The parameters for the search
+ * @param { UUID } params.agentId - The agent ID to search memories for
+ * @param { number } [params.match_threshold] - The match threshold for similarity
+ * @param { number } [params.count] - The count of memories to retrieve
+ * @param { UUID } [params.roomId] - The room ID to filter memories by
+ * @param { boolean } [params.unique] - Flag to retrieve only unique memories
+ * @param { string } params.tableName - The table name to search memories in
+ * @returns {Promise<Memory[]>} - The memories found based on the search criteria
+ */
     async searchMemoriesByEmbedding(
         _embedding: number[],
         params: {
@@ -372,6 +491,17 @@ export class SqlJsDatabaseAdapter
         return memories;
     }
 
+/**
+ * Retrieves cached embeddings based on specified query parameters.
+ * @param {Object} opts - Options for the query.
+ * @param {string} opts.query_table_name - Name of the table for the query.
+ * @param {number} opts.query_threshold - Threshold value for the query.
+ * @param {string} opts.query_input - Input for the query.
+ * @param {string} opts.query_field_name - Field name for the query.
+ * @param {string} opts.query_field_sub_name - Sub field name for the query.
+ * @param {number} opts.query_match_count - Number of matches for the query.
+ * @returns {Promise<Object[]>} Array of objects with embedding and levenshtein score.
+ */
     async getCachedEmbeddings(opts: {
         query_table_name: string;
         query_threshold: number;
@@ -416,6 +546,13 @@ export class SqlJsDatabaseAdapter
         }));
     }
 
+/**
+ * Update the status of a goal in the database.
+ * @param {Object} params - The parameters for updating the goal status.
+ * @param {UUID} params.goalId - The ID of the goal to update.
+ * @param {GoalStatus} params.status - The new status for the goal.
+ * @returns {Promise<void>} - A promise that resolves when the status is updated.
+ */
     async updateGoalStatus(params: {
         goalId: UUID;
         status: GoalStatus;
@@ -426,6 +563,16 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Logs the provided data into the database.
+ * 
+ * @param {Object} params - The parameters for logging.
+ * @param {Object} params.body - The data to be logged.
+ * @param {UUID} params.userId - The ID of the user associated with the log.
+ * @param {UUID} params.roomId - The ID of the room associated with the log.
+ * @param {string} params.type - The type of the log.
+ * @returns {Promise<void>} - A promise that resolves once the data is logged.
+ */
     async log(params: {
         body: { [key: string]: unknown };
         userId: UUID;
@@ -444,6 +591,19 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Retrieves memories based on the provided parameters.
+ * 
+ * @param {Object} params - The parameters for retrieving memories.
+ * @param {UUID} params.roomId - The ID of the room for which memories are being retrieved.
+ * @param {number} [params.count] - The maximum number of memories to retrieve.
+ * @param {boolean} [params.unique] - Flag indicating whether to retrieve unique memories.
+ * @param {string} params.tableName - The name of the table from which memories will be retrieved.
+ * @param {UUID} [params.agentId] - The ID of the agent for filtering memories.
+ * @param {number} [params.start] - The start timestamp for filtering memories.
+ * @param {number} [params.end] - The end timestamp for filtering memories.
+ * @returns {Promise<Memory[]>} - A Promise that resolves to an array of Memory objects based on the provided parameters.
+ */
     async getMemories(params: {
         roomId: UUID;
         count?: number;
@@ -504,6 +664,12 @@ export class SqlJsDatabaseAdapter
         return memories;
     }
 
+/**
+ * Removes a memory from the database based on its ID and table name.
+ * @param {UUID} memoryId - The ID of the memory to be removed.
+ * @param {string} tableName - The name of the table where the memory is stored.
+ * @returns {Promise<void>} - A Promise that resolves when the memory is successfully removed.
+ */
     async removeMemory(memoryId: UUID, tableName: string): Promise<void> {
         const sql = `DELETE FROM memories WHERE type = ? AND id = ?`;
         const stmt = this.db.prepare(sql);
@@ -511,6 +677,13 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Removes all memories associated with a specific room.
+ * 
+ * @param {UUID} roomId - The ID of the room from which memories should be removed.
+ * @param {string} tableName - The table name specifying the type of memories to be removed.
+ * @returns {Promise<void>} A Promise that resolves when memories are successfully removed.
+ */
     async removeAllMemories(roomId: UUID, tableName: string): Promise<void> {
         const sql = `DELETE FROM memories WHERE type = ? AND roomId = ?`;
         const stmt = this.db.prepare(sql);
@@ -518,6 +691,16 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Counts the number of memories with a given type and roomId in the database.
+ * If unique is set to true, it will only count unique memories.
+ * 
+ * @param {UUID} roomId - The UUID of the room where memories are stored.
+ * @param {boolean} [unique=true] - Flag to indicate whether to count unique memories only.
+ * @param {string} [tableName=""] - The name of the table where memories are stored.
+ * @returns {Promise<number>} The number of memories that match the criteria.
+ * @throws {Error} If tableName is not provided.
+ */
     async countMemories(
         roomId: UUID,
         unique = true,
@@ -545,6 +728,16 @@ export class SqlJsDatabaseAdapter
         return count;
     }
 
+/**
+ * Retrieves goals based on specified parameters.
+ * 
+ * @param {Object} params - The parameters for filtering goals.
+ * @param {UUID} params.roomId - The room ID to filter goals by.
+ * @param {UUID | null} [params.userId] - The optional user ID to filter goals by.
+ * @param {boolean} [params.onlyInProgress] - Indicates whether only goals in progress should be returned.
+ * @param {number} [params.count] - The maximum number of goals to return.
+ * @returns {Promise<Goal[]>} An array of goals that match the specified parameters.
+ */
     async getGoals(params: {
         roomId: UUID;
         userId?: UUID | null;
@@ -585,6 +778,11 @@ export class SqlJsDatabaseAdapter
         return goals;
     }
 
+/**
+* Asynchronously updates a goal in the database.
+* @param {Goal} goal - The goal object to be updated.
+* @returns {Promise<void>} - A promise that resolves when the update is complete.
+*/
     async updateGoal(goal: Goal): Promise<void> {
         const sql =
             "UPDATE goals SET name = ?, status = ?, objectives = ? WHERE id = ?";
@@ -598,6 +796,12 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Asynchronously creates a new goal in the database.
+ * 
+ * @param {Goal} goal - The goal object to be created.
+ * @returns {Promise<void>} A promise that resolves when the goal is successfully created.
+ */
     async createGoal(goal: Goal): Promise<void> {
         const sql =
             "INSERT INTO goals (id, roomId, userId, name, status, objectives) VALUES (?, ?, ?, ?, ?, ?)";
@@ -613,6 +817,11 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Remove a goal from the database based on its ID.
+ * @param {UUID} goalId - The ID of the goal to be removed.
+ * @returns {Promise<void>} A promise that resolves when the goal is successfully removed.
+ */
     async removeGoal(goalId: UUID): Promise<void> {
         const sql = "DELETE FROM goals WHERE id = ?";
         const stmt = this.db.prepare(sql);
@@ -620,6 +829,11 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Removes all goals associated with a specific room from the database.
+ * @param {UUID} roomId - The unique identifier of the room to remove goals from.
+ * @returns {Promise<void>} A Promise that resolves when the goals have been successfully removed.
+ */
     async removeAllGoals(roomId: UUID): Promise<void> {
         const sql = "DELETE FROM goals WHERE roomId = ?";
         const stmt = this.db.prepare(sql);
@@ -627,6 +841,12 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Asynchronously creates a new room in the database with the provided roomId, or generates a new UUID if none is provided. 
+ * 
+ * @param {UUID} [roomId] - The UUID of the room to be created. If not provided, a new UUID will be generated.
+ * @returns {Promise<UUID>} - The UUID of the newly created room.
+ */
     async createRoom(roomId?: UUID): Promise<UUID> {
         roomId = roomId || (v4() as UUID);
         try {
@@ -640,6 +860,12 @@ export class SqlJsDatabaseAdapter
         return roomId as UUID;
     }
 
+/**
+ * Asynchronously removes a room from the database.
+ * 
+ * @param {UUID} roomId - The unique identifier of the room to be removed.
+ * @returns {Promise<void>} A Promise that resolves when the room is successfully removed.
+ */
     async removeRoom(roomId: UUID): Promise<void> {
         const sql = "DELETE FROM rooms WHERE id = ?";
         const stmt = this.db.prepare(sql);
@@ -647,6 +873,12 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Asynchronously retrieves the list of room IDs that a particular user is a participant of.
+ * 
+ * @param {UUID} userId - The unique identifier of the user.
+ * @returns {Promise<UUID[]>} A promise that resolves to an array of room IDs that the user is a participant of.
+ */
     async getRoomsForParticipant(userId: UUID): Promise<UUID[]> {
         const sql = "SELECT roomId FROM participants WHERE userId = ?";
         const stmt = this.db.prepare(sql);
@@ -660,6 +892,11 @@ export class SqlJsDatabaseAdapter
         return rows.map((row) => row.roomId as UUID);
     }
 
+/**
+ * Retrieves a list of room IDs for the given participants' user IDs.
+ * @param {UUID[]} userIds - An array of UUID strings representing user IDs.
+ * @returns {Promise<UUID[]>} - A Promise resolving to an array of UUID strings representing room IDs.
+ */
     async getRoomsForParticipants(userIds: UUID[]): Promise<UUID[]> {
         // Assuming userIds is an array of UUID strings, prepare a list of placeholders
         const placeholders = userIds.map(() => "?").join(", ");
@@ -678,6 +915,13 @@ export class SqlJsDatabaseAdapter
         return rows.map((row) => row.roomId as UUID);
     }
 
+/**
+ * Asynchronously adds a participant to a room.
+ * 
+ * @param {UUID} userId The UUID of the user to be added as a participant.
+ * @param {UUID} roomId The UUID of the room to add the user as a participant.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the participant was successfully added, or false if an error occurred.
+ */
     async addParticipant(userId: UUID, roomId: UUID): Promise<boolean> {
         try {
             const sql =
@@ -692,6 +936,13 @@ export class SqlJsDatabaseAdapter
         }
     }
 
+/**
+ * Removes a participant from a room.
+ * 
+ * @param {UUID} userId - The ID of the user to remove.
+ * @param {UUID} roomId - The ID of the room from which to remove the participant.
+ * @returns {Promise<boolean>} - Returns a boolean indicating whether the participant was successfully removed.
+ */
     async removeParticipant(userId: UUID, roomId: UUID): Promise<boolean> {
         try {
             const sql =
@@ -706,6 +957,15 @@ export class SqlJsDatabaseAdapter
         }
     }
 
+/**
+ * Create a new relationship between two users in the database.
+ * 
+ * @param {Object} params - The parameters for creating the relationship.
+ * @param {UUID} params.userA - The ID of the first user.
+ * @param {UUID} params.userB - The ID of the second user.
+ * @returns {Promise<boolean>} - Indicates if the relationship creation was successful.
+ * @throws {Error} - If userA or userB are not provided.
+ */
     async createRelationship(params: {
         userA: UUID;
         userB: UUID;
@@ -721,6 +981,14 @@ export class SqlJsDatabaseAdapter
         return true;
     }
 
+/**
+ * Asynchronously retrieves the relationship between two users from the database.
+ * 
+ * @param {Object} params - The parameters object.
+ * @param {UUID} params.userA - The UUID of the first user.
+ * @param {UUID} params.userB - The UUID of the second user.
+ * @returns {Promise<Relationship | null>} The relationship between the two users, or null if not found.
+ */
     async getRelationship(params: {
         userA: UUID;
         userB: UUID;
@@ -742,6 +1010,12 @@ export class SqlJsDatabaseAdapter
         return relationship;
     }
 
+/**
+ * Retrieves relationships for a specific user based on the provided userId.
+ * @param {Object} params - The parameters for the query.
+ * @param {UUID} params.userId - The UUID of the user to retrieve relationships for.
+ * @returns {Promise<Relationship[]>} The relationships associated with the provided userId.
+ */
     async getRelationships(params: { userId: UUID }): Promise<Relationship[]> {
         const sql =
             "SELECT * FROM relationships WHERE (userA = ? OR userB = ?)";
@@ -756,6 +1030,14 @@ export class SqlJsDatabaseAdapter
         return relationships;
     }
 
+/**
+ * Asynchronously retrieves the value from the cache with the specified key and agentId.
+ * 
+ * @param {Object} params - The parameters for retrieving the cache value.
+ * @param {string} params.key - The key of the cache entry to retrieve.
+ * @param {UUID} params.agentId - The ID of the agent associated with the cache entry.
+ * @returns {Promise<string | undefined>} The value of the cache entry, or undefined if not found.
+ */
     async getCache(params: {
         key: string;
         agentId: UUID;
@@ -774,6 +1056,15 @@ export class SqlJsDatabaseAdapter
         return cached?.value ?? undefined;
     }
 
+/**
+ * Async function to set a value in the cache table.
+ * 
+ * @param {object} params - The parameters for setting the cache value.
+ * @param {string} params.key - The key for the cache entry.
+ * @param {UUID} params.agentId - The agent ID associated with the cache entry.
+ * @param {string} params.value - The value to cache.
+ * @returns {Promise<boolean>} - A Promise that resolves to true if the cache value was successfully set.
+ */
     async setCache(params: {
         key: string;
         agentId: UUID;
@@ -789,6 +1080,14 @@ export class SqlJsDatabaseAdapter
         return true;
     }
 
+/**
+ * Asynchronously deletes a cache entry from the database.
+ * 
+ * @param {Object} params - The parameters for deleting the cache entry.
+ * @param {string} params.key - The key of the cache entry to be deleted.
+ * @param {UUID} params.agentId - The ID of the agent associated with the cache entry.
+ * @returns {Promise<boolean>} A promise that resolves to true if the cache entry was successfully deleted, false otherwise.
+ */
     async deleteCache(params: {
         key: string;
         agentId: UUID;
@@ -805,6 +1104,15 @@ export class SqlJsDatabaseAdapter
         }
     }
 
+/**
+ * Retrieves knowledge items from the database based on the provided criteria.
+ * @param {Object} params - The parameters for fetching knowledge items.
+ * @param {UUID} [params.id] - The optional ID of the knowledge item to retrieve.
+ * @param {UUID} params.agentId - The ID of the agent to retrieve knowledge items for.
+ * @param {number} [params.limit] - The maximum number of knowledge items to retrieve.
+ * @param {string} [params.query] - The optional query string to filter knowledge items.
+ * @returns {Promise<RAGKnowledgeItem[]>} - A Promise that resolves to an array of knowledge items matching the criteria.
+ */
     async getKnowledge(params: {
         id?: UUID;
         agentId: UUID;
@@ -842,6 +1150,16 @@ export class SqlJsDatabaseAdapter
         return results;
     }
 
+/**
+ * Asynchronously search for knowledge items based on the provided parameters.
+ * @param {Object} params - The search parameters.
+ * @param {UUID} params.agentId - The ID of the agent performing the search.
+ * @param {Float32Array} params.embedding - The embedding for similarity comparison.
+ * @param {number} params.match_threshold - The threshold for matching similarity.
+ * @param {number} params.match_count - The maximum number of matching results to return.
+ * @param {string} [params.searchText] - The optional search text to filter results.
+ * @returns {Promise<RAGKnowledgeItem[]>} The array of knowledge items matching the search criteria.
+ */
     async searchKnowledge(params: {
         agentId: UUID;
         embedding: Float32Array;
@@ -931,6 +1249,12 @@ export class SqlJsDatabaseAdapter
         return results;
     }
 
+/**
+ * Creates a new knowledge item in the database.
+ * 
+ * @param {RAGKnowledgeItem} knowledge The knowledge item to be created.
+ * @returns {Promise<void>} A promise that resolves when the knowledge item is successfully created.
+ */
     async createKnowledge(knowledge: RAGKnowledgeItem): Promise<void> {
         try {
             const sql = `
@@ -975,6 +1299,12 @@ export class SqlJsDatabaseAdapter
         }
     }
 
+/**
+ * Removes knowledge by its ID from the database.
+ * 
+ * @param {UUID} id - The ID of the knowledge to be removed.
+ * @returns {Promise<void>} A Promise that resolves when the knowledge is successfully removed.
+ */
     async removeKnowledge(id: UUID): Promise<void> {
         const sql = `DELETE FROM knowledge WHERE id = ?`;
         const stmt = this.db.prepare(sql);
@@ -982,6 +1312,12 @@ export class SqlJsDatabaseAdapter
         stmt.free();
     }
 
+/**
+ * Clear knowledge from the database for a specific agent.
+ * @param {UUID} agentId - The unique identifier of the agent.
+ * @param {boolean} [shared] - Optional parameter to specify whether to clear shared knowledge as well.
+ * @returns {Promise<void>} A Promise that resolves once the knowledge is cleared.
+ */
     async clearKnowledge(agentId: UUID, shared?: boolean): Promise<void> {
         const sql = shared ?
             `DELETE FROM knowledge WHERE ("agentId" = ? OR "isShared" = 1)` :
