@@ -21,6 +21,12 @@ import { DeploymentContent } from "../types/index.ts";
 import { AVAILABLE_GPU_MODELS } from "../utils/constants.ts";
 import { DEPLOYMENT_TEMPLATES } from "../utils/template.ts";
 
+/**
+ * Checks if the given content is valid for a deployment operation.
+ * 
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} Returns true if the content is valid for a deployment operation, false otherwise.
+ */
 function isDeploymentContent(content: any): content is DeploymentContent {
     elizaLogger.debug("Content for deployment operation:", content);
     if (
@@ -54,6 +60,82 @@ const templateDescriptions = Object.entries(DEPLOYMENT_TEMPLATES)
     .map(([key, template]) => `- ${key}: ${template.description}`)
     .join("\n");
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values for the requested deployment operation.
+ * 
+ * Example responses for different operations:
+ * 
+ * 1. Creating a new deployment:
+ * ```json
+ * {
+ *     "operation": "create",
+ *     "template": "<template-name>",  // One of: jupyter-notebook, ollama-webui, vscode-pytorch
+ *     "customizations": {
+ *         "cpu": <true|false>,                // Extract CPU-only preference from context or put a default value of false. eg. no gpu needed or something like that
+ *         "resources": {               // Extract resource requirements from context
+ *             "cpu": "<requested-cpu>", // Extract cpu requirements from context or put a default value of 4
+ *             "memory": "<requested-memory>", // Extract memory requirements from context or put a default value of 8Gi
+ *             "storage": "<requested-storage>", // Extract storage requirements from context or put a default value of 100Gi
+ *             "gpu": "<requested-gpu-count>", // Extract gpu requirements from context or put a default value of 1
+ *             "gpu_model": "<requested-gpu-model>" // Extract gpu model requirements from context or put a default value of rtx4090
+ *         },
+ *         "duration": "<requested-duration>" // Extract duration requirements from context or put a default value of 1h
+ *         "token": "<requested-token>" // Extract token requirements from context or put a default value of CST
+ *         "template": {
+ *             "heuristMinerAddress": "<requested-heurist-miner-address>" // Extract heurist miner address requirements from context
+ *         }
+ *     }
+ * }
+ * ```
+ * 
+ * 2. Updating an existing deployment:
+ * ```json
+ * {
+ *     "operation": "update",
+ *     "leaseId": "existing-lease-id", // Extract lease ID from context
+ *     "template": "<template-name>", // One of: jupyter-notebook, ollama-webui, vscode-pytorch
+ *     "customizations": {
+ *         "cpu": <true|false>,   // Extract cpu-only preference from context or put a default value of false. eg. no gpu needed or something like that
+ *         "resources": {               // Extract updated resource requirements from context
+ *             "cpu": "<requested-cpu>", // Extract cpu requirements from context or put a default value of 4
+ *             "memory": "<requested-memory>", // Extract memory requirements from context or put a default value of 8Gi
+ *             "storage": "<requested-storage>", // Extract storage requirements from context or put a default value of 100Gi
+ *             "gpu": "<requested-gpu-count>", // Extract gpu requirements from context or put a default value of 1
+ *             "gpu_model": "<requested-gpu-model>" // Extract gpu model requirements from context or put a default value of rtx4090
+ *         },
+ *         "duration": "<requested-duration>" // Extract duration requirements from context or put a default value of 1h
+ *         "token": "<requested-token>" // Extract token requirements from context or put a default value of CST
+ *     }
+ * }
+ * ```
+ * 
+ * 3. Closing a deployment:
+ * ```json
+ * {
+ *     "operation": "close",
+ *     "leaseId": "lease-id-to-close"
+ * }
+ * ```
+ * 
+ * ## Available Templates
+ * ${templateDescriptions}
+ * 
+ * ## Available GPU Models
+ * ${AVAILABLE_GPU_MODELS.map((gpu) => `- ${gpu}`).join("\n")}
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested deployment:
+ * - Desired template name from the context
+ * - CPU-only requirement (if specified) from the context
+ * - Any customization requirements GPU model and it's count, cpu and memory resources properly from the context
+ * - Token (if specified) from the context
+ * - Duration (if specified) from the context
+ * - Lease ID (if updating or closing) from the context
+ * - Operation (create, update, close) from the context
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const deploymentTemplate = `Respond with a JSON markdown block containing only the extracted values for the requested deployment operation.
 
 Example responses for different operations:
