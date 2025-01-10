@@ -17,6 +17,17 @@ import {
  * @property {Function} handler - Asynchronous function that handles the action with given runtime and memory.
  * @property {ActionExample[][]} examples - List of example interactions demonstrating the action.
  */
+/**
+ * Represents an action where the agent responds but performs no additional action.
+ * This is the default if the agent is speaking and not doing anything additional.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action (NONE)
+ * @property {string[]} similes - An array of related words or phrases
+ * @property {Function} validate - Asynchronous function to validate the action
+ * @property {Function} handler - Asynchronous function to handle the action
+ * @property {string} description - Description of the action
+ * @property {ActionExample[][]} examples - Array of examples demonstrating the action
+ */
 export const noneAction: Action = {
     name: "NONE",
     similes: [
