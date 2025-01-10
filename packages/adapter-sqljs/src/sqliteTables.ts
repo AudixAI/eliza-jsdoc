@@ -1,3 +1,14 @@
+/**
+ * SQL script for creating tables in SQLite database.
+ * 
+ * This script includes table definitions for accounts, memories, goals, logs,
+ * participants, relationships, rooms, cache, and knowledge.
+ * 
+ * Each table has its own fields and constraints defined such as primary keys,
+ * foreign keys, default values, and JSON validity checks.
+ * 
+ * Indexes are also created for specific fields in some tables to optimize queries.
+ */
 export const sqliteTables = `
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
