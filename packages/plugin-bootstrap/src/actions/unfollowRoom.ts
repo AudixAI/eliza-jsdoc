@@ -10,6 +10,11 @@ import {
     State,
 } from "@elizaos/core";
 
+/**
+ * Template string for generating a message asking if an agent should stop closely following a room and only respond when mentioned.
+ *
+ * @type {string}
+ */
 const shouldUnfollowTemplate =
     `Based on the conversation so far:
 
@@ -24,6 +29,13 @@ Respond with YES if:
 Otherwise, respond with NO.
 ` + booleanFooter;
 
+/**
+ * Action object representing an action to unfollow a room.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action (UNFOLLOW_ROOM).
+ * @property {string[]} similes - An array of similar actions (UNFOLLOW_CHAT, UNFOLLOW_CONVERSATION, UNFOLLOW_ROOM, UNFOLLOW_THREAD).
+ * @property {string} description - The description of the action.
+ */
 export const unfollowRoomAction: Action = {
     name: "UNFOLLOW_ROOM",
     similes: [
