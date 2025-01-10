@@ -1,3 +1,8 @@
+/**
+ * Function to create a token template based on user's description for a new meme token on PickPump.
+ * @param {string} recentMessages - User's idea for the meme token.
+ * @returns {string} - JSON markdown block containing the generated values for the meme token.
+ */
 export const createTokenTemplate = `Based on the user's description, generate creative and memorable values for a new meme token on PickPump:
 
 User's idea: "{{recentMessages}}"
