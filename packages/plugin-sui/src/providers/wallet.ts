@@ -20,21 +20,48 @@ const PROVIDER_CONFIG = {
     RETRY_DELAY: 2000,
 };
 
+/**
+ * Represents a user's wallet portfolio with total values in USD and SUI.
+ * @typedef {Object} WalletPortfolio
+ * @property {string} totalUsd - The total value in USD
+ * @property {string} totalSui - The total value in SUI
+ */
 interface WalletPortfolio {
     totalUsd: string;
     totalSui: string;
 }
 
+/**
+ * Interface representing prices for a specific item.
+ * @interface
+ * @property {object} sui - Prices for the item "sui"
+ * @property {string} sui.usd - Price in USD for the item "sui"
+ */
 interface Prices {
     sui: { usd: string };
 }
 
+/**
+ * Represents different types of networks such as mainnet, testnet, devnet, or localnet.
+ */
 type SuiNetwork = "mainnet" | "testnet" | "devnet" | "localnet";
 
+/**
+ * A class representing a Wallet Provider that interacts with the
+ * SUI wallet and caches data for efficient retrieval.
+ * @class
+ */
 export class WalletProvider {
     private cache: NodeCache;
     private cacheKey: string = "sui/wallet";
 
+/**
+ * Constructor for initializing a new instance of the class.
+ * 
+ * @param {SuiClient} suiClient - The SuiClient object used for making requests.
+ * @param {string} address - The address to be used in the requests.
+ * @param {ICacheManager} cacheManager - The cache manager to be used for caching data.
+ */
     constructor(
         private suiClient: SuiClient,
         private address: string,
@@ -43,6 +70,12 @@ export class WalletProvider {
         this.cache = new NodeCache({ stdTTL: 300 }); // Cache TTL set to 5 minutes
     }
 
+/**
+ * Reads the value from cache for the specified key.
+ * @template T
+ * @param {string} key - The key to read from cache.
+ * @returns {Promise<T | null>} The cached value, or null if not found in cache.
+ */
     private async readFromCache<T>(key: string): Promise<T | null> {
         const cached = await this.cacheManager.get<T>(
             path.join(this.cacheKey, key)
@@ -50,12 +83,27 @@ export class WalletProvider {
         return cached;
     }
 
+/**
+ * Write data to cache with specified key and expiration time.
+ * 
+ * @template T
+ * @param {string} key - The key for the data in the cache.
+ * @param {T} data - The data to be stored in the cache.
+ * @returns {Promise<void>} A promise that resolves when the data is successfully saved to the cache.
+ */
     private async writeToCache<T>(key: string, data: T): Promise<void> {
         await this.cacheManager.set(path.join(this.cacheKey, key), data, {
             expires: Date.now() + 5 * 60 * 1000,
         });
     }
 
+/**
+ * Retrieve data from cache with specified key.
+ * Checks in-memory cache first, then file-based cache if data not found.
+ * If data is found in file-based cache, it populates in-memory cache before returning the data.
+ * @param {string} key - The key to identify the data in the cache.
+ * @returns {Promise<T | null>} A promise that resolves with the cached data if found, otherwise null.
+ */
     private async getCachedData<T>(key: string): Promise<T | null> {
         // Check in-memory cache first
         const cachedData = this.cache.get<T>(key);
@@ -74,6 +122,15 @@ export class WalletProvider {
         return null;
     }
 
+/**
+* Sets the provided data in the in-memory cache with the specified cache key.
+* Additionally, the data is written to the file-based cache.
+* 
+* @template T The type of data being cached
+* @param {string} cacheKey The key under which the data will be stored
+* @param {T} data The data to be stored in the cache
+* @returns {Promise<void>} A Promise that resolves once the data is successfully cached
+*/
     private async setCachedData<T>(cacheKey: string, data: T): Promise<void> {
         // Set in-memory cache
         this.cache.set(cacheKey, data);
@@ -82,6 +139,10 @@ export class WalletProvider {
         await this.writeToCache(cacheKey, data);
     }
 
+/**
+ * Fetches prices with retries in case of failure.
+ * @returns {Promise} A promise that resolves with the fetched data or rejects with the last error encountered.
+ */
     private async fetchPricesWithRetry() {
         let lastError: Error;
 
@@ -120,6 +181,14 @@ export class WalletProvider {
         throw lastError;
     }
 
+/**
+ * Asynchronously fetches the portfolio value for the wallet.
+ * If data is cached, returns the cached data.
+ * Otherwise, fetches prices and SUI amount, calculates total USD value,
+ * saves data to cache, and returns the portfolio data.
+ * 
+ * @returns {Promise<WalletPortfolio>} The portfolio data including total USD value and total SUI amount
+ */
     async fetchPortfolioValue(): Promise<WalletPortfolio> {
         try {
             const cacheKey = `portfolio-${this.address}`;
@@ -163,6 +232,11 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Fetches the current prices from a server. Checks cache first and returns cached value if available.
+ * Otherwise makes a new API call to fetch prices, stores them in cache, and returns the fetched prices.
+ * @returns {Promise<Prices>} The current prices fetched from the server.
+ */
     async fetchPrices(): Promise<Prices> {
         try {
             const cacheKey = "prices";
@@ -191,6 +265,13 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Formats the portfolio information for display.
+ * 
+ * @param {object} runtime - The current runtime environment.
+ * @param {WalletPortfolio} portfolio - The portfolio to format.
+ * @returns {string} The formatted portfolio information as a string.
+ */
     formatPortfolio(runtime, portfolio: WalletPortfolio): string {
         let output = `${runtime.character.name}\n`;
         output += `Wallet Address: ${this.address}\n`;
@@ -203,6 +284,11 @@ export class WalletProvider {
         return output;
     }
 
+/**
+     * Asynchronously retrieves the portfolio value and formats it based on the given runtime.
+     * @param {any} runtime - The runtime used to format the portfolio.
+     * @returns {Promise<string>} A promise that resolves to the formatted portfolio string.
+     */
     async getFormattedPortfolio(runtime): Promise<string> {
         try {
             const portfolio = await this.fetchPortfolioValue();
@@ -214,6 +300,14 @@ export class WalletProvider {
     }
 }
 
+/**
+ * A wallet provider that retrieves the formatted portfolio using SuiClient and WalletProvider.
+ *
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {Memory} _message - The message object (not used in this method).
+ * @param {State} [_state] - The optional state object (not used in this method).
+ * @returns {Promise<string | null>} The formatted portfolio string or null if an error occurs.
+ */
 const walletProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,
