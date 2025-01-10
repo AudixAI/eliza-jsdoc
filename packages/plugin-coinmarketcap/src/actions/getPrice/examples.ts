@@ -1,5 +1,8 @@
 import { ActionExample } from "@elizaos/core";
 
+/**
+ * Array of arrays containing examples of user interactions and agent responses regarding price information.
+ */
 export const priceExamples: ActionExample[][] = [
     [
         {
