@@ -3,6 +3,19 @@ import { executeSwap } from "./actions/swap";
 import transfer from "./actions/transfer";
 import { deployToken } from "./actions/unruggable";
 import transferSubdomain from "./actions/subdomain";
+/**
+ * Configuration object for providers and endpoints.
+ * 
+ * @type {Object}
+ * @property {string} AVNU_API - The base URL for the AVNU API.
+ * @property {number} MAX_RETRIES - The maximum number of retries for API calls.
+ * @property {number} RETRY_DELAY - The delay in milliseconds between retries.
+ * @property {Object} TOKEN_ADDRESSES - Object containing addresses for different tokens.
+ * @property {string} TOKEN_SECURITY_ENDPOINT - The endpoint for token security information.
+ * @property {string} TOKEN_TRADE_DATA_ENDPOINT - The endpoint for token trade data.
+ * @property {string} DEX_SCREENER_API - The base URL for the DEX Screener API.
+ * @property {string} MAIN_WALLET - The main wallet address (currently empty string).
+ */
 export const PROVIDER_CONFIG = {
     AVNU_API: "https://starknet.impulse.avnu.fi/v1",
     MAX_RETRIES: 3,
