@@ -17,6 +17,14 @@ import { PublicKey } from "@solana/web3.js";
 import WalletSolana from "../provider/wallet/walletSolana.ts";
 import { collectionImageTemplate } from "../templates.ts";
 
+/**
+ * Asynchronously creates metadata for a collection including uploading an image, generating a JSON file, and uploading it to AWS S3.
+ * @param {Object} options - The options object
+ * @param {IAgentRuntime} options.runtime - The agent runtime
+ * @param {string} options.collectionName - The name of the collection
+ * @param {number} [options.fee] - Optional fee for the collection
+ * @returns {Promise<Object>} - The collection information with name, symbol, admin public key, fee, and uri
+ */
 export async function createCollectionMetadata({
     runtime,
     collectionName,
@@ -101,6 +109,17 @@ export async function createCollectionMetadata({
     return null;
 }
 
+/**
+ * Create a Solana collection with the given collection name and optional fee.
+ * 
+ * @param {Object} params - The parameters for creating the Solana collection.
+ * @param {IAgentRuntime} params.runtime - The runtime interface for the agent.
+ * @param {string} params.collectionName - The name of the collection to be created.
+ * @param {number} [params.fee] - The optional fee for the collection.
+ * 
+ * @returns {Object} - An object containing information about the created Solana collection, including network, address, link, and collectionInfo.
+ *                   - Returns null if the collection info is not available.
+ */
 export async function createSolanaCollection({
     runtime,
     collectionName,
