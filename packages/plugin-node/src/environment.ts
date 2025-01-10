@@ -1,6 +1,24 @@
 import { IAgentRuntime } from "@elizaos/core";
 import { z } from "zod";
 
+/**
+ * Defines the schema for the Node environment variables used in the application.
+ * 
+ * @type {import('zod').ZodObject<{ 
+ *     OPENAI_API_KEY: import('zod').ZodString;
+ *     ELEVENLABS_XI_API_KEY: import('zod').ZodString;
+ *     ELEVENLABS_MODEL_ID: import('zod').ZodString;
+ *     ELEVENLABS_VOICE_ID: import('zod').ZodString;
+ *     ELEVENLABS_VOICE_STABILITY: import('zod').ZodString;
+ *     ELEVENLABS_VOICE_SIMILARITY_BOOST: import('zod').ZodString;
+ *     ELEVENLABS_VOICE_STYLE: import('zod').ZodString;
+ *     ELEVENLABS_VOICE_USE_SPEAKER_BOOST: import('zod').ZodString;
+ *     ELEVENLABS_OPTIMIZE_STREAMING_LATENCY: import('zod').ZodString;
+ *     ELEVENLABS_OUTPUT_FORMAT: import('zod').ZodString;
+ *     VITS_VOICE: import('zod').ZodString;
+ *     VITS_MODEL: import('zod').ZodString;
+ * }>
+ */
 export const nodeEnvSchema = z.object({
     OPENAI_API_KEY: z.string().min(1, "OpenAI API key is required"),
 
@@ -20,8 +38,16 @@ export const nodeEnvSchema = z.object({
     VITS_MODEL: z.string().optional(),
 });
 
+/**
+ * Type definition representing the configuration of a Node environment.
+ */
 export type NodeConfig = z.infer<typeof nodeEnvSchema>;
 
+/**
+ * Validates the node configuration based on the provided runtime and returns a promise with the validated NodeConfig.
+ * @param {IAgentRuntime} runtime - The runtime object containing the necessary settings for validation.
+ * @returns {Promise<NodeConfig>} A promise that resolves with the validated NodeConfig.
+ */
 export async function validateNodeConfig(
     runtime: IAgentRuntime
 ): Promise<NodeConfig> {
