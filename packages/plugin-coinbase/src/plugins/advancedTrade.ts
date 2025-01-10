@@ -32,6 +32,12 @@ const __dirname = path.dirname(__filename);
 const baseDir = path.resolve(__dirname, "../../plugin-coinbase/src/plugins");
 const tradeCsvFilePath = path.join(baseDir, "advanced_trades.csv");
 
+/**
+ * Get trade information from Coinbase API via RESTClient.
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Memory} _message - The message object.
+ * @returns {Promise<{accounts: Array, products: Array, trades: Array}>} The trade information including accounts, products, and trades.
+ */
 const tradeProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.debug("Starting tradeProvider function");
@@ -103,6 +109,12 @@ const tradeProvider: Provider = {
     },
 };
 
+/**
+ * Append trade data to a CSV file.
+ * 
+ * @param {any} tradeResult - The trade result data to append to the CSV.
+ * @returns {Promise<void>} - A promise that resolves when the trade data is successfully written to the CSV file.
+ */
 export async function appendTradeToCsv(tradeResult: any) {
     elizaLogger.debug("Starting appendTradeToCsv function");
     try {
@@ -135,6 +147,14 @@ export async function appendTradeToCsv(tradeResult: any) {
     }
 }
 
+/**
+ * Determines if the client has enough balance for a given order.
+ * @param {RESTClient} client - The REST client used to make API requests.
+ * @param {string} currency - The currency in which the balance needs to be checked.
+ * @param {number} amount - The amount of currency needed for the order.
+ * @param {string} side - The side of the order (BUY/SELL).
+ * @returns {Promise<boolean>} A boolean indicating if the client has enough balance.
+ */
 async function hasEnoughBalance(
     client: RESTClient,
     currency: string,
@@ -187,6 +207,15 @@ async function hasEnoughBalance(
     }
 }
 
+/**
+ * Action to execute a trade using Coinbase Advanced Trading API.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action ("EXECUTE_ADVANCED_TRADE").
+ * @property {string} description - Description of the action.
+ * @property {function} validate - Asynchronous function to validate the action.
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @returns {boolean} - Returns true if COINBASE_API_KEY is available in runtime settings or environment variables.
+ */
 export const executeAdvancedTradeAction: Action = {
     name: "EXECUTE_ADVANCED_TRADE",
     description: "Execute a trade using Coinbase Advanced Trading API",
