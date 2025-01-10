@@ -25,8 +25,23 @@ import { AnyPublicationFragment } from "@lens-protocol/client";
 import { Profile } from "./types";
 import StorjProvider from "./providers/StorjProvider";
 
+/**
+ * Class representing an interaction manager for the Lens app.
+ *
+ * @class
+ */
+
 export class LensInteractionManager {
     private timeout: NodeJS.Timeout | undefined;
+/**
+ * Constructs a new instance of the LensProvider.
+ * @param {LensClient} client - The client for interacting with the Lens service.
+ * @param {IAgentRuntime} runtime - The runtime interface used by the LensProvider.
+ * @param {string} profileId - The unique identifier for the profile associated with the LensProvider.
+ * @param {Map<string, any>} cache - The cache for storing key-value pairs.
+ * @param {StorjProvider} ipfs - The IPFS provider used by the LensProvider.
+ */
+         
     constructor(
         public client: LensClient,
         public runtime: IAgentRuntime,
@@ -35,6 +50,10 @@ export class LensInteractionManager {
         private ipfs: StorjProvider
     ) {}
 
+/**
+ * Starts the interaction handling loop, which repeatedly invokes the handleInteractions method.
+ * If an error occurs during handling interactions, it is logged and the loop continues.
+ */
     public async start() {
         const handleInteractionsLoop = async () => {
             try {
@@ -54,10 +73,20 @@ export class LensInteractionManager {
         handleInteractionsLoop();
     }
 
+/**
+ * Stops the operation by clearing the timeout if it is set.
+ */
     public async stop() {
         if (this.timeout) clearTimeout(this.timeout);
     }
 
+/**
+ * Handles interactions from the Lens platform.
+ * Retrieves mentions, builds conversations, and handles publications.
+ * 
+ * @private
+ * @async
+ */
     private async handleInteractions() {
         elizaLogger.info("Handle Lens interactions");
         // TODO: handle next() for pagination
@@ -116,6 +145,15 @@ export class LensInteractionManager {
         this.client.lastInteractionTimestamp = new Date();
     }
 
+/**
+ * Handle a publication by generating a response based on the input parameters.
+ * @param {Object} param0 - The parameters for handling the publication.
+ * @param {Profile} param0.agent - The agent profile.
+ * @param {AnyPublicationFragment} param0.publication - The publication fragment.
+ * @param {Memory} param0.memory - The memory object.
+ * @param {AnyPublicationFragment[]} param0.thread - The array of publication fragments.
+ * @returns {Promise<void>} - A Promise that resolves once the handling is complete.
+ */
     private async handlePublication({
         agent,
         publication,
