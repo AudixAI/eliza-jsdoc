@@ -1,5 +1,10 @@
 export const MOVE_DECIMALS = 8;
 
+/**
+ * Constant object that represents the configuration for Movement Network on different networks.
+ * 
+ * @type {Object}
+ */
 export const MOVEMENT_NETWORK_CONFIG = {
     mainnet: {
         fullnode: 'https://mainnet.movementnetwork.xyz/v1',
