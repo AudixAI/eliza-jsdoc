@@ -1,11 +1,23 @@
 import { WebClient } from "@slack/web-api";
 
+/**
+ * Interface for configuring retry behavior.
+ * @typedef {Object} RetryOptions
+ * @property {number} [maxRetries] - The maximum number of retries allowed.
+ * @property {number} [initialDelay] - The initial delay before the first retry.
+ * @property {number} [maxDelay] - The maximum delay between retries.
+ */
 export interface RetryOptions {
     maxRetries?: number;
     initialDelay?: number;
     maxDelay?: number;
 }
 
+/**
+ * Interface for defining message options with the ability to specify a thread timestamp.
+ * Extends RetryOptions interface.
+ * @interface
+ */
 export interface MessageOptions extends RetryOptions {
     threadTs?: string;
 }
@@ -16,10 +28,22 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
     maxDelay: 5000,
 };
 
+/**
+ * Utility class for interacting with Slack API, providing methods for sending messages with retry mechanism, validating channels, formatting messages, creating thread replies, and handling rate limiting.
+ */
 export class SlackUtils {
     /**
      * Sends a message to a Slack channel with retry mechanism
      */
+/**
+ * Sends a message with retry logic using the Slack WebClient.
+ * @param {WebClient} client - The Slack WebClient instance.
+ * @param {string} channel - The channel to send the message to.
+ * @param {string} text - The text content of the message.
+ * @param {MessageOptions} [options={}] - Additional options for the message.
+ * @returns {Promise<ChatPostMessageResult>} - A promise that resolves with the result of the message post.
+ * @throws {Error} - Throws an error if the message fails to send after the maximum number of retries.
+ */
     static async sendMessageWithRetry(
         client: WebClient,
         channel: string,
