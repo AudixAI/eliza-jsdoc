@@ -13,6 +13,17 @@ import { fileSchema, isValidFile } from "../types";
 import { getObsidian } from "../helper";
 import { fileTemplate } from "../templates/file";
 
+/**
+ * Action to create or update a file in the Obsidian vault.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Array of related actions to this action.
+ * @property {string} description - Description of the action usage format.
+ * @property {Function} validate - Asynchronous function to validate Obsidian connection.
+ * @property {Function} handler - Asynchronous function to handle the save file operation.
+ * @property {Array<Array<Object>>} examples - Array of examples demonstrating usage of the action.
+ */
 export const saveFileAction: Action = {
     name: "SAVE_FILE",
     similes: [
