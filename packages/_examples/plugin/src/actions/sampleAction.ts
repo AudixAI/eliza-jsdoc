@@ -14,6 +14,15 @@ import { CreateResourceSchema, isCreateResourceContent } from "../types";
 
 import { createResourceTemplate } from "../templates";
 
+/**
+ * Represents an action to create a new resource with specified details.
+ * @type {Action}
+ * @property {string} name - The name of the action ("CREATE_RESOURCE").
+ * @property {string} description - The description of the action.
+ * @property {Function} validate - Asynchronous function to validate if the API key is present in the runtime.
+ * @property {Function} handler - Asynchronous function to handle the creation of a new resource.
+ * @property {Array<Array<{user: string, content: {text: string}}>} examples - Array of example interactions for creating a resource.
+ */
 export const createResourceAction: Action = {
     name: "CREATE_RESOURCE",
     description: "Create a new resource with the specified details",
