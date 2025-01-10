@@ -1,3 +1,6 @@
+/**
+ * ABI for a smart contract that defines a collection of functions and events.
+ */
 export const ABI = [
     {
         inputs: [],
