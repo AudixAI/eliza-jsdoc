@@ -39,6 +39,25 @@ const __dirname = path.dirname(__filename);
 const baseDir = path.resolve(__dirname, "../../plugin-coinbase/src/plugins");
 const csvFilePath = path.join(baseDir, "transactions.csv");
 
+/**
+ * A provider for handling mass payouts.
+ * Retrieves mass payout data from a CSV file, processes it,
+ * and returns relevant information including current transactions, balances, and transaction history.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Memory} _message - The message object (not used in this function).
+ * @returns {Promise<{
+ *      currentTransactions: {
+ *          address: string | undefined,
+ *          amount: number | undefined,
+ *          status: string | undefined,
+ *          errorCode: string,
+ *          transactionUrl: string,
+ *      }[],
+ *      balances: number[],
+ *      transactionHistory: Transaction[],
+ * }>} An object containing current transactions, balances, and transaction history.
+ */
 export const massPayoutProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.debug("Starting massPayoutProvider.get function");
@@ -101,6 +120,16 @@ export const massPayoutProvider: Provider = {
     },
 };
 
+/**
+ * Execute a mass payout to multiple receiving addresses.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime context of the agent.
+ * @param {string} networkId - The network identifier.
+ * @param {string[]} receivingAddresses - An array of receiving addresses.
+ * @param {number} transferAmount - The amount to transfer to each address.
+ * @param {string} assetId - The identifier of the asset to transfer.
+ * @returns {Promise<Transaction[]>} The array of transactions resulting from the mass payout.
+ */
 async function executeMassPayout(
     runtime: IAgentRuntime,
     networkId: string,
@@ -222,6 +251,17 @@ async function executeMassPayout(
 }
 
 // Action for sending mass payouts
+/**
+ * Action to send mass payouts to a list of receiving addresses using a predefined sending wallet and logging all transactions to a CSV file.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Similar actions related to mass payouts
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Asynchronous function to validate the runtime and message
+ * @param {IAgentRuntime} runtime - The runtime environment for the action
+ * @param {Memory} _message - The message to validate (not used in this function)
+ * @returns {boolean} Returns true if validation is successful, otherwise false
+ */
 export const sendMassPayoutAction: Action = {
     name: "SEND_MASS_PAYOUT",
     similes: ["BULK_TRANSFER", "DISTRIBUTE_FUNDS", "SEND_PAYMENTS"],
