@@ -7,6 +7,18 @@ export const ERROR_CODES = {
     PRICE_QTY_EXCEED_HARD_LIMITS: -1021,
 } as const;
 
+/**
+ * Object containing error messages for various scenarios.
+ * @readonly
+ * @type {Object}
+ * @property {string} INVALID_CREDENTIALS - Message for invalid API credentials.
+ * @property {string} INVALID_SYMBOL - Message for invalid trading pair symbol.
+ * @property {Function} SYMBOL_NOT_FOUND - Function returning message for unavailable trading pair symbol.
+ * @property {Function} MIN_NOTIONAL_NOT_MET - Function returning message for order value too small.
+ * @property {string} LIMIT_ORDER_PRICE_REQUIRED - Message indicating price requirement for LIMIT orders.
+ * @property {Function} BALANCE_FETCH_ERROR - Function returning message for balance fetch error.
+ * @property {Function} PRICE_FETCH_ERROR - Function returning message for price fetch error.
+ */
 export const ERROR_MESSAGES = {
     INVALID_CREDENTIALS:
         "Invalid API credentials. Please check your API key and secret.",

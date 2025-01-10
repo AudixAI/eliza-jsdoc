@@ -14,6 +14,22 @@ import { validateBinanceConfig } from "../environment";
 import { BinanceService } from "../services";
 import { BalanceCheckRequest } from "../types";
 
+/**
+ * This function extracts the cryptocurrency symbol from the last response message in a conversation where the user confirmed which cryptocurrency balance to check. The symbol is extracted based on the content of the last message.
+ * 
+ * For example:
+ * - If the last message was "I'll fetch your Solana wallet balance..." -> the function will return "SOL"
+ * - If the last message was "I'll check your BTC balance..." -> the function will return "BTC"
+ * - If the last message was "I'll get your ETH balance..." -> the function will return "ETH"
+ * 
+ * JSON output format:
+ * {
+ *    "asset": "<symbol from the LAST response only>"
+ * }
+ * 
+ * @param {string} recentMessages - The recent messages in the conversation
+ * @returns {string} The symbol of the cryptocurrency extracted from the last response message
+ */
 const spotBalanceTemplate = `Look at ONLY your LAST RESPONSE message in this conversation, where you just confirmed which cryptocurrency balance to check.
 Based on ONLY that last message, extract the cryptocurrency symbol.
 
@@ -30,6 +46,78 @@ For example:
 
 Last part of conversation:
 {{recentMessages}}`;
+
+/**
+ * Action for getting the current spot wallet balance for one or all assets.
+ * 
+ * @type {Action}
+ * @name GET_SPOT_BALANCE
+ * @similes [
+ *    "CHECK_BALANCE",
+ *    "BALANCE_CHECK",
+ *    "GET_WALLET_BALANCE",
+ *    "WALLET_BALANCE",
+ *    "CHECK_WALLET",
+ *    "VIEW_BALANCE",
+ *    "SHOW_BALANCE"
+ * ]
+ * @description Get current spot wallet balance for one or all assets
+ * 
+ * @param {IAgentRuntime} runtime The runtime interface
+ * @returns {Promise<boolean>} Returns true if validation is successful, otherwise false
+ * 
+ * @param {IAgentRuntime} runtime The runtime interface
+ * @param {Memory} message The message memory
+ * @param {State} state The state object
+ * @param {{ [key: string]: unknown }} _options The additional options
+ * @param {HandlerCallback} [callback] The callback function
+ * @returns {Promise<boolean>} Returns true if the action is handled successfully, otherwise false
+ * 
+ * @example [
+ *    [
+ *        {
+ *            user: "{{user1}}",
+ *            content: {
+ *                text: "What's my current Bitcoin balance?",
+ *            },
+ *        },
+ *        {
+ *            user: "{{agent}}",
+ *            content: {
+ *                text: "I'll check your BTC balance for you.",
+ *                action: "GET_SPOT_BALANCE",
+ *            },
+ *        },
+ *        {
+ *            user: "{{agent}}",
+ *            content: {
+ *                text: "BTC Balance:\nAvailable: 0.5\nLocked: 0.1",
+ *            },
+ *        },
+ *    ],
+ *    [
+ *        {
+ *            user: "{{user1}}",
+ *            content: {
+ *                text: "Show me all my wallet balances",
+ *            },
+ *        },
+ *        {
+ *            user: "{{agent}}",
+ *            content: {
+ *                text: "I'll fetch all your spot wallet balances.",
+ *                action: "GET_SPOT_BALANCE",
+ *            },
+ *        },
+ *        {
+ *            user: "{{agent}}",
+ *            content: {
+ *                text: "Spot Wallet Balances:\nBTC: Available: 0.5, Locked: 0.1\nETH: Available: 2.0, Locked: 0.0\nUSDT: Available: 1000.0, Locked: 0.0",
+ *            },
+ *        },
+ *    ],
+ * ] as ActionExample[][],
+ */
 
 export const spotBalance: Action = {
     name: "GET_SPOT_BALANCE",

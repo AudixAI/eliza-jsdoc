@@ -7,8 +7,17 @@ export const coinmarketcapEnvSchema = z.object({
         .min(1, "CoinMarketCap API key is required"),
 });
 
+/**
+ * Represents the configuration object for CoinMarketCap API,
+ * inferred from the provided environment schema.
+ */
 export type CoinMarketCapConfig = z.infer<typeof coinmarketcapEnvSchema>;
 
+/**
+ * Asynchronously validates the CoinMarketCap configuration using the provided IAgentRuntime.
+ * @param {IAgentRuntime} runtime - The IAgentRuntime instance.
+ * @returns {Promise<CoinMarketCapConfig>} A Promise that resolves with the validated CoinMarketCap configuration.
+ */
 export async function validateCoinMarketCapConfig(
     runtime: IAgentRuntime
 ): Promise<CoinMarketCapConfig> {

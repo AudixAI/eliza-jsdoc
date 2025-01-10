@@ -1,5 +1,9 @@
 import { elizaLogger } from "@elizaos/core";
 
+/**
+ * A collection of functions for logging various aspects of API interactions.
+ * @namespace debugLog
+ */
 export const debugLog = {
     request: (method: string, url: string, data?: any) => {
         elizaLogger.log("🌐 API Request:", {

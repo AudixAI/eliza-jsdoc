@@ -1,3 +1,11 @@
+/**
+ * Calculates the cosine similarity between two or three texts.
+ *
+ * @param {string} text1 - The first text for comparison.
+ * @param {string} text2 - The second text for comparison.
+ * @param {string} [text3] - Optional third text for three-way comparison.
+ * @returns {number} The cosine similarity value between the texts.
+ */
 export function cosineSimilarity(
     text1: string,
     text2: string,
@@ -89,6 +97,12 @@ export function cosineSimilarity(
     return dotProduct / maxMagnitude;
 }
 
+/**
+ * Escapes special characters in a given text to ensure it is displayed correctly in a Markdown document.
+ * 
+ * @param {string} text - The text to escape.
+ * @returns {string} The escaped text.
+ */
 export function escapeMarkdown(text: string): string {
     // Don't escape if it's a code block
     if (text.startsWith("```") && text.endsWith("```")) {
@@ -118,6 +132,13 @@ export function escapeMarkdown(text: string): string {
 
 /**
  * Splits a message into chunks that fit within Telegram's message length limit
+ */
+/**
+ * Splits a given text into chunks that are each less than or equal to a specified maximum length.
+ * 
+ * @param {string} text - The text to split into chunks.
+ * @param {number} maxLength - The maximum length of each chunk. Default is 4096.
+ * @returns {string[]} An array of strings where each string is a chunk of the original text.
  */
 export function splitMessage(text: string, maxLength: number = 4096): string[] {
     const chunks: string[] = [];

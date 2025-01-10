@@ -14,11 +14,24 @@ import * as amqp from "amqplib";
 import { ProcessedTokenData } from "../types/token.ts";
 import { getWalletKey } from "../keypairUtils.ts";
 
+/**
+ * Interface representing the details of a sell transaction.
+ * @typedef {Object} SellDetails
+ * @property {number} sell_amount - The amount of the sell transaction.
+ * @property {string | null} sell_recommender_id - The ID of the recommender for the sell transaction, 
+ * or null if there is no recommender.
+ */ 
+           
 interface SellDetails {
     sell_amount: number;
     sell_recommender_id: string | null;
 }
 
+/**
+ * Service for simulating selling behavior.
+ * Manages trust score database, wallet provider, connection, base mint,
+ * decay rate, max decay days, backend URL, and backend token.
+ */
 export class SimulationSellingService {
     private trustScoreDb: TrustScoreDatabase;
     private walletProvider: WalletProvider;
@@ -36,6 +49,11 @@ export class SimulationSellingService {
 
     private runningProcesses: Set<string> = new Set();
 
+/**
+ * Constructor for initializing a new instance of TrustScoreManager
+ * @param {IAgentRuntime} runtime - The runtime interface for accessing agent settings
+ * @param {TrustScoreDatabase} trustScoreDb - The database for storing trust scores
+ */
     constructor(runtime: IAgentRuntime, trustScoreDb: TrustScoreDatabase) {
         this.trustScoreDb = trustScoreDb;
 
@@ -56,6 +74,12 @@ export class SimulationSellingService {
      * Initializes the RabbitMQ connection and starts consuming messages.
      * @param amqpUrl The RabbitMQ server URL.
      */
+/**
+* Initializes a connection to RabbitMQ using the provided AMQP URL.
+* 
+* @param {string} amqpUrl - The URL to connect to RabbitMQ.
+* @returns {Promise<void>} - A promise that resolves once the connection is established and messages are being consumed.
+*/
     private async initializeRabbitMQ(amqpUrl: string) {
         try {
             this.amqpConnection = await amqp.connect(amqpUrl);

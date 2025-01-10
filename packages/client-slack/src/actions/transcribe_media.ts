@@ -20,6 +20,11 @@ export const transcriptionTemplate = `# Transcription of media file
 
 # Instructions: Return only the full transcript of the media file without any additional context or commentary.`;
 
+/**
+ * Template string for generating media attachment ID instructions.
+ * 
+ * @type {string}
+ */
 export const mediaAttachmentIdTemplate = `# Messages we are transcribing
 {{recentMessages}}
 
@@ -34,6 +39,13 @@ Your response must be formatted as a JSON block with this structure:
 \`\`\`
 `;
 
+/**
+ * Function to get the media attachment ID asynchronously.
+ * @param {IAgentRuntime} runtime - The runtime object for the agent.
+ * @param {Memory} message - The message memory object.
+ * @param {State} state - The state object.
+ * @returns {Promise<string | null>} A Promise that resolves to the media attachment ID or null.
+ */
 const getMediaAttachmentId = async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -62,6 +74,15 @@ const getMediaAttachmentId = async (
     return null;
 };
 
+/**
+ * Action object representing the transcribe media action.
+ * - Name: "TRANSCRIBE_MEDIA"
+ * - Similes: ["TRANSCRIBE_AUDIO", "TRANSCRIBE_VIDEO", "MEDIA_TRANSCRIPT", "VIDEO_TRANSCRIPT", "AUDIO_TRANSCRIPT"]
+ * - Description: "Transcribe the full text of an audio or video file that the user has attached."
+ * - Validate function: Validates if the message source is "slack" and contains specific keywords related to transcribing media.
+ * - Handler function: Handles the transcribe media action by retrieving and processing the media attachment, generating a transcript, and sending it back to the user.
+ * - Examples: Array of example interactions demonstrating the usage of the transcribe media action.
+ */
 const transcribeMediaAction: Action = {
     name: "TRANSCRIBE_MEDIA",
     similes: [

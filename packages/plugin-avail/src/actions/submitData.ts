@@ -23,10 +23,22 @@ import {
 import { ISubmittableResult } from "@polkadot/types/types/extrinsic";
 import { H256 } from "@polkadot/types/interfaces/runtime";
 
+/**
+ * Interface representing content with additional data field.
+ *
+ * @interface DataContent
+ * @extends Content
+ * @property {string} data - The data field in the content.
+ */
 export interface DataContent extends Content {
     data: string;
 }
 
+/**
+ * Check if the input is a valid DataContent object.
+ * @param {DataContent} content - The input to be checked.
+ * @returns {boolean} Whether the input is a valid DataContent object or not.
+ */
 export function isDataContent(content: DataContent): content is DataContent {
     // Validate types
     const validTypes = typeof content.data === "string";
@@ -35,6 +47,19 @@ export function isDataContent(content: DataContent): content is DataContent {
     }
 }
 
+/**
+ * Template for submitting data containing extracted values.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *    "data": "Hello World, this is the data I submitted"
+ * }
+ * ```
+ * 
+ * @param {string} recentMessages - The recent messages containing information about the requested AVAIL token transfer.
+ * @returns {string} JSON markdown block containing the extracted values.
+ */
 const submitDataTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 

@@ -17,11 +17,24 @@ import { getApiConfig, validateCoingeckoConfig } from "../environment";
 import { getCategoriesData } from '../providers/categoriesProvider';
 import { getMarketsTemplate } from "../templates/markets";
 
+/**
+ * Interface representing a category item.
+ * @typedef {Object} CategoryItem
+ * @property {string} category_id - The unique identifier for the category.
+ * @property {string} name - The name of the category item.
+ */
 interface CategoryItem {
     category_id: string;
     name: string;
 }
 
+/**
+ * Formats the input category string by searching for exact matches, name matches, and partial matches in the given categories array.
+ * 
+ * @param {string | undefined} category - The input category string to be formatted
+ * @param {CategoryItem[]} categories - An array of CategoryItem objects to search for matches
+ * @returns {string | undefined} The formatted category id if a match is found, otherwise returns undefined
+ */
 export function formatCategory(category: string | undefined, categories: CategoryItem[]): string | undefined {
     if (!category) return undefined;
 
@@ -57,6 +70,35 @@ export function formatCategory(category: string | undefined, categories: Categor
 /**
  * Interface for CoinGecko /coins/markets endpoint response
  * @see https://docs.coingecko.com/reference/coins-markets
+ */
+/**
+ * Interface for representing Coin Market Data.
+ * @typedef {Object} CoinMarketData
+ * @property {string} id - The unique identifier of the coin.
+ * @property {string} symbol - The ticker symbol of the coin.
+ * @property {string} name - The name of the coin.
+ * @property {string} image - The URL of the coin's logo image.
+ * @property {number} current_price - The current price of the coin.
+ * @property {number} market_cap - The market capitalization of the coin.
+ * @property {number} market_cap_rank - The rank of the coin based on market cap.
+ * @property {number} fully_diluted_valuation - The fully diluted valuation of the coin.
+ * @property {number} total_volume - The total trading volume of the coin.
+ * @property {number} high_24h - The highest price of the coin in the last 24 hours.
+ * @property {number} low_24h - The lowest price of the coin in the last 24 hours.
+ * @property {number} price_change_24h - The price change of the coin in the last 24 hours.
+ * @property {number} price_change_percentage_24h - The percentage price change of the coin in the last 24 hours.
+ * @property {number} market_cap_change_24h - The market cap change of the coin in the last 24 hours.
+ * @property {number} market_cap_change_percentage_24h - The percentage market cap change of the coin in the last 24 hours.
+ * @property {number} circulating_supply - The circulating supply of the coin.
+ * @property {number} total_supply - The total supply of the coin.
+ * @property {number} max_supply - The maximum supply of the coin.
+ * @property {number} ath - The all-time high price of the coin.
+ * @property {number} ath_change_percentage - The percentage change from all-time high price.
+ * @property {string} ath_date - The date when the all-time high price was reached.
+ * @property {number} atl - The all-time low price of the coin.
+ * @property {number} atl_change_percentage - The percentage change from all-time low price.
+ * @property {string} atl_date - The date when the all-time low price was reached.
+ * @property {string} last_updated - The date and time when the data was last updated.
  */
 export interface CoinMarketData {
     id: string;

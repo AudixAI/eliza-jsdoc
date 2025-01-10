@@ -15,11 +15,27 @@ import { topicsProvider } from "../providers/topics";
 import { getInferenceTemplate } from "../templates";
 import { AlloraAPIClient, ChainSlug } from "@alloralabs/allora-sdk";
 
+/**
+ * Interface representing the fields used for inference.
+ * @typedef {object} InferenceFields
+ * @property {number | null} topicId - The ID of the topic, or null if not specified.
+ * @property {string | null} topicName - The name of the topic, or null if not specified.
+ */
 interface InferenceFields {
     topicId: number | null;
     topicName: string | null;
 }
 
+/**
+ * Action for getting inference from Allora Network.
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - List of similes associated with the action.
+ * @property {Function} validate - Validation function for the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Function to handle the action.
+ * @property {ActionExample[][]} examples - Examples demonstrating the action.
+ */
 export const getInferenceAction: Action = {
     name: "GET_INFERENCE",
     similes: [

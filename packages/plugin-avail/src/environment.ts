@@ -6,8 +6,17 @@ export const availEnvSchema = z.object({
     AVAIL_SEED: z.string().min(1, "Avail account seed phrase is required"),
 });
 
+/**
+ * The type definition for the available configuration based on the inferred schema from availEnvSchema.
+ */ 
+
 export type availConfig = z.infer<typeof availEnvSchema>;
 
+/**
+ * Validates and parses the Avail configuration based on the provided runtime.
+ * @param {IAgentRuntime} runtime - The runtime object containing environment settings.
+ * @return {Promise<availConfig>} A promise that resolves with the parsed Avail configuration.
+ */
 export async function validateAvailConfig(
     runtime: IAgentRuntime
 ): Promise<availConfig> {

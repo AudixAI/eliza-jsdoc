@@ -19,6 +19,10 @@ vi.mock("fs", async () => {
 });
 
 // Mock the video generation plugin
+/**
+ * Mock video generation plugin with actions for validation and handling video generation requests.
+ * @type {Object}
+ */
 const mockVideoGenerationPlugin = {
     actions: [
         {

@@ -1,6 +1,10 @@
 import { IAgentRuntime } from "@elizaos/core";
 import { z } from "zod";
 
+/**
+ * Schema definition for environment variables required for image generation.
+ * @type {import('zod').ZodObject<{ LETZAI_API_KEY?: ZodString; }, "strict">}
+ */
 export const imageGenEnvSchema = z
     .object({
         LETZAI_API_KEY: z.string().optional(),
@@ -14,8 +18,17 @@ export const imageGenEnvSchema = z
         },
     );
 
+/**
+ * The type definition for the configuration of image generation.
+ */
 export type ImageGenConfig = z.infer<typeof imageGenEnvSchema>;
 
+/**
+ * Validates the image generation configuration provided by the runtime
+ * @async
+ * @param {IAgentRuntime} runtime - The Agent Runtime
+ * @returns {Promise<ImageGenConfig>} The validated image generation configuration
+ */
 export async function validateImageGenConfig(
     runtime: IAgentRuntime,
 ): Promise<ImageGenConfig> {

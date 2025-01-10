@@ -15,9 +15,24 @@ import type { Transaction, TransferParams } from "../types";
 import { transferTemplate } from "../templates";
 
 // Exported for tests
+/**
+ * Class representing a transfer action.
+ */
+ 
 export class TransferAction {
+/**
+ * Constructor for creating an instance of a class with a dependency on WalletProvider.
+ * @param {WalletProvider} walletProvider - The wallet provider dependency for the class instance.
+ */
     constructor(private walletProvider: WalletProvider) {}
 
+/**
+ * Transfer tokens from one address to another on a specified chain.
+ *
+ * @async
+ * @param {TransferParams} params - The parameters for the transfer including the amount, sender, receiver, and chain.
+ * @returns {Promise<Transaction>} - A Promise that resolves to the transaction object.
+ */
     async transfer(params: TransferParams): Promise<Transaction> {
         console.log(
             `Transferring: ${params.amount} tokens to (${params.toAddress} on ${params.fromChain})`
@@ -66,6 +81,17 @@ export class TransferAction {
     }
 }
 
+/**
+ * This function is responsible for building transfer details for a given state, runtime, and wallet provider.
+ * It fetches the supported chains from the wallet provider and assigns them to the state. 
+ * It then composes a context using the state and a transfer template, and generates transfer details using a deprecated method.
+ * If the 'fromChain' of the transfer details does not exist in the wallet provider's chains, an error is thrown.
+ * 
+ * @param {State} state - The current state of the application
+ * @param {IAgentRuntime} runtime - The runtime instance 
+ * @param {WalletProvider} wp - The wallet provider instance
+ * @returns {Promise<TransferParams>} The transfer details for the given state, runtime, and wallet provider
+ */
 const buildTransferDetails = async (
     state: State,
     runtime: IAgentRuntime,
@@ -99,6 +125,16 @@ const buildTransferDetails = async (
     return transferDetails;
 };
 
+/**
+ * Represents a transfer action for transferring tokens between addresses on the same chain.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string} description - The description of the action.
+ * @property {Function} handler - The handler function for executing the transfer action.
+ * @property {Function} validate - The function for validating the runtime settings before executing the action.
+ * @property {Array<Array<Object>>} examples - An array of examples demonstrating the usage of the action.
+ * @property {Array<string>} similes - An array of similar action names.
+ */
 export const transferAction: Action = {
     name: "transfer",
     description: "Transfer tokens between addresses on the same chain",

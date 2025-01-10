@@ -15,6 +15,10 @@ import {
  *
  * @type {string}
  */
+/**
+ * Template for determining whether an agent should stop closely following a previously followed room.
+ * @type {string}
+ */
 const shouldUnfollowTemplate =
     `Based on the conversation so far:
 

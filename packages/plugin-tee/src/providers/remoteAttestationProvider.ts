@@ -8,9 +8,19 @@ import {
 import { TdxQuoteResponse, TappdClient, TdxQuoteHashAlgorithms } from "@phala/dstack-sdk";
 import { RemoteAttestationQuote, TEEMode } from "../types/tee";
 
+/**
+ * Class representing a Remote Attestation Provider.
+ */
+
 class RemoteAttestationProvider {
     private client: TappdClient;
 
+/**
+ * Constructor for initializing TEE client based on provided TEE mode.
+ * 
+ * @param {string} [teeMode] - The TEE mode to determine the endpoint for connecting to the simulator.
+ * @throws {Error} Invalid TEE_MODE: <teeMode>. Must be one of: LOCAL, DOCKER, PRODUCTION
+ */
     constructor(teeMode?: string) {
         let endpoint: string | undefined;
 
@@ -43,6 +53,14 @@ class RemoteAttestationProvider {
         this.client = endpoint ? new TappdClient(endpoint) : new TappdClient();
     }
 
+/**
+ * Generates a remote attestation quote based on the provided report data and optional hash algorithm.
+ * 
+ * @param {string} reportData - The data to be used for generating the attestation.
+ * @param {TdxQuoteHashAlgorithms} [hashAlgorithm] - The hash algorithm to be used for generating the attestation. Defaults to `TdxQuoteHashAlgorithms.SHA_256`.
+ * @returns {Promise<RemoteAttestationQuote>} The generated remote attestation quote.
+ * @throws {Error} Throws an error if there is an issue generating the attestation.
+ */
     async generateAttestation(
         reportData: string,
         hashAlgorithm?: TdxQuoteHashAlgorithms
@@ -73,6 +91,13 @@ class RemoteAttestationProvider {
 }
 
 // Keep the original provider for backwards compatibility
+/**
+ * Function to get remote attestation for the agent.
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {Memory} _message - The message for the remote attestation.
+ * @param {State} [_state] - Optional state for the remote attestation.
+ * @returns {string} - The remote attestation response.
+ */
 const remoteAttestationProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         const teeMode = runtime.getSetting("TEE_MODE");

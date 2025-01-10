@@ -22,19 +22,44 @@ import { TokenProvider } from "./token.ts";
 import { WalletProvider } from "./walletProvider.ts";
 
 const _Wallet = settings.MAIN_WALLET_ADDRESS;
+/**
+ * Defines the structure of trade data.
+ * @typedef {Object} TradeData
+ * @property {number} buy_amount - The amount to buy in the trade.
+ * @property {boolean} is_simulation - Indicates if the trade is a simulation.
+ */
 interface TradeData {
     buy_amount: number;
     is_simulation: boolean;
 }
+/**
+ * Interface representing the details of a sale.
+ * @property {number} sell_amount - The amount of the sale.
+ * @property {string | null} sell_recommender_id - The ID of the recommender for the sale, can be null.
+ */
 interface sellDetails {
     sell_amount: number;
     sell_recommender_id: string | null;
 }
+/**
+ * Interface representing a recommendation group.
+ * @property {any} recommendation - The recommendation object.
+ * @property {number} trustScore - The trust score associated with the recommendation.
+ */
 interface _RecommendationGroup {
     recommendation: any;
     trustScore: number;
 }
 
+/**
+ * Interface representing data for a recommender.
+ * @typedef {Object} RecommenderData
+ * @property {string} recommenderId - The unique identifier of the recommender.
+ * @property {number} trustScore - The trust score of the recommender.
+ * @property {number} riskScore - The risk score of the recommender.
+ * @property {number} consistencyScore - The consistency score of the recommender.
+ * @property {RecommenderMetrics} recommenderMetrics - The metrics associated with the recommender.
+ */
 interface RecommenderData {
     recommenderId: string;
     trustScore: number;
@@ -43,6 +68,15 @@ interface RecommenderData {
     recommenderMetrics: RecommenderMetrics;
 }
 
+/**
+ * Represents a summary of recommendations for a specific token.
+ * @typedef {Object} TokenRecommendationSummary
+ * @property {string} tokenAddress - The address of the token.
+ * @property {number} averageTrustScore - The average trust score for the token.
+ * @property {number} averageRiskScore - The average risk score for the token.
+ * @property {number} averageConsistencyScore - The average consistency score for the token.
+ * @property {RecommenderData[]} recommenders - List of recommenders who provided recommendations for the token.
+ */
 interface TokenRecommendationSummary {
     tokenAddress: string;
     averageTrustScore: number;
@@ -50,6 +84,11 @@ interface TokenRecommendationSummary {
     averageConsistencyScore: number;
     recommenders: RecommenderData[];
 }
+/**
+ * A class representing a Trust Score Manager.
+ * Manages trust scores using token provider and trust score database.
+ * Contains constants for decay rate and max decay days.
+ */
 export class TrustScoreManager {
     private tokenProvider: TokenProvider;
     private trustScoreDb: TrustScoreDatabase;
@@ -58,6 +97,13 @@ export class TrustScoreManager {
     private backend;
     private backendToken;
     private runtime: IAgentRuntime;
+/**
+ * Constructor for creating a new instance of the class.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime used for accessing settings.
+ * @param {TokenProvider} tokenProvider - The token provider used for authentication.
+ * @param {TrustScoreDatabase} trustScoreDb - The trust score database used for storing and retrieving trust scores.
+ */
     constructor(
         runtime: IAgentRuntime,
         tokenProvider: TokenProvider,
@@ -76,6 +122,12 @@ export class TrustScoreManager {
     }
 
     // Get Recommender Balance
+/**
+ * Asynchronously retrieves the balance of a recommender's wallet.
+ * 
+ * @param {string} recommenderWallet - The wallet address of the recommender.
+ * @returns {Promise<number>} The balance of the recommender's wallet as a number.
+ */
     async getRecommenderBalance(recommenderWallet: string): Promise<number> {
         try {
             const tokenBalance = await getTokenBalance(
@@ -96,6 +148,17 @@ export class TrustScoreManager {
      * @param recommenderId The UUID of the recommender.
      * @returns An object containing TokenPerformance and RecommenderMetrics.
      */
+/**
+ * Asynchronously generates the trust score for a given token address and recommender.
+ * 
+ * @param {string} tokenAddress - The address of the token for which the trust score is being generated.
+ * @param {string} recommenderId - The ID of the recommender for whom the trust score is being generated.
+ * @param {string} recommenderWallet - The wallet address of the recommender.
+ * @returns {Promise<{
+ *     tokenPerformance: TokenPerformance;
+ *     recommenderMetrics: RecommenderMetrics;
+ * }>} An object containing the token performance and recommender metrics.
+ */ 
     async generateTrustScore(
         tokenAddress: string,
         recommenderId: string,

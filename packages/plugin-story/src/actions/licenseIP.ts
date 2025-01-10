@@ -16,9 +16,25 @@ import { hasIpAttachedLicenseTerms } from "../queries";
 
 export { licenseIPTemplate };
 
+/**
+ * Class representing a LicenseIPAction.
+ *
+ * @class
+ */
+
 export class LicenseIPAction {
+/**
+ * Constructs an instance of the class with the provided wallet provider.
+ * @param {WalletProvider} walletProvider - The wallet provider to be used.
+ */
     constructor(private walletProvider: WalletProvider) {}
 
+/**
+ * Mint license tokens for a given IP asset.
+ * 
+ * @param {LicenseIPParams} params - Parameters for minting the license tokens.
+ * @returns {Promise<MintLicenseTokensResponse>} An object representing the response after minting the license tokens.
+ */
     async licenseIP(
         params: LicenseIPParams
     ): Promise<MintLicenseTokensResponse> {
@@ -45,6 +61,17 @@ export class LicenseIPAction {
     }
 }
 
+/**
+ * Action to license an IP Asset on Story.
+ *
+ * @async
+ * @param {IAgentRuntime} runtime The runtime interface for the agent.
+ * @param {Memory} message The incoming message from the user.
+ * @param {State} state The current state of the conversation.
+ * @param {any} options Additional options for the handler.
+ * @param {HandlerCallback} callback Optional callback function.
+ * @returns {Promise<boolean>} Returns a promise indicating the success of the action.
+ */
 export const licenseIPAction = {
     name: "LICENSE_IP",
     description: "License an IP Asset on Story",

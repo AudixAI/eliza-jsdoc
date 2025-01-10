@@ -27,6 +27,9 @@ import * as fs from "fs";
 import * as path from "path";
 import OpenAI from "openai";
 
+/**
+ * Configure storage settings for multer to save uploaded files to a specific directory with a unique filename.
+ */
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = path.join(process.cwd(), "data", "uploads");
@@ -45,6 +48,11 @@ const storage = multer.diskStorage({
 // some people have more memory than disk.io
 const upload = multer({ storage /*: multer.memoryStorage() */ });
 
+/**
+ * Template for a message handler to be used in generating dialog and actions for a character.
+ * 
+ * @type {string}
+ */
 export const messageHandlerTemplate =
     // {{goals}}
     // "# Action Examples" is already included
@@ -75,6 +83,11 @@ Note that {{agentName}} is capable of reading/seeing/hearing various forms of me
 # Instructions: Write the next message for {{agentName}}.
 ` + messageCompletionFooter;
 
+/**
+ * Template for generating dialog and actions for a character.
+ * 
+ * @type {string}
+ */
 export const hyperfiHandlerTemplate = `{{actionExamples}}
 (Action examples are for reference only. Do not use the information from them in your response.)
 
@@ -107,12 +120,20 @@ Response format should be formatted in a JSON block like this:
 \`\`\`
 `;
 
+/**
+ * Class representing a Direct Client.
+ */
+
 export class DirectClient {
     public app: express.Application;
     private agents: Map<string, AgentRuntime>; // container management
     private server: any; // Store server instance
     public startAgent: Function; // Store startAgent functor
 
+/**
+ * Constructor for DirectClient class.
+ * Initializes the Express application, sets up CORS, creates a new Map for agents, and sets up body-parser for JSON and URL encoded data.
+ */
     constructor() {
         elizaLogger.log("DirectClient constructor");
         this.app = express();
@@ -970,16 +991,30 @@ export class DirectClient {
     }
 
     // agent/src/index.ts:startAgent calls this
+/**
+ * Registers an agent in the system.
+ * 
+ * @param {AgentRuntime} runtime - The runtime of the agent to register.
+ */
     public registerAgent(runtime: AgentRuntime) {
         // register any plugin endpoints?
         // but once and only once
         this.agents.set(runtime.agentId, runtime);
     }
 
+/**
+ * Remove a specific agent from the collection.
+ * @param {AgentRuntime} runtime - The agent runtime object to be removed.
+ */
     public unregisterAgent(runtime: AgentRuntime) {
         this.agents.delete(runtime.agentId);
     }
 
+/**
+ * Starts the server on the specified port and handles graceful shutdown on receiving SIGTERM or SIGINT signal.
+ *
+ * @param {number} port - The port number on which the server will listen.
+ */
     public start(port: number) {
         this.server = this.app.listen(port, () => {
             elizaLogger.success(
@@ -1009,6 +1044,9 @@ export class DirectClient {
         process.on("SIGINT", gracefulShutdown);
     }
 
+/**
+ * Stops the server if it is running.
+ */
     public stop() {
         if (this.server) {
             this.server.close(() => {
@@ -1017,6 +1055,11 @@ export class DirectClient {
         }
     }
 }
+
+/**
+ * Interface for a direct client that communicates with a server directly.
+ * @type {Client}
+ */
 
 export const DirectClientInterface: Client = {
     start: async (_runtime: IAgentRuntime) => {

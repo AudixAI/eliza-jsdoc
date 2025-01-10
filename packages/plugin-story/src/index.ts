@@ -14,6 +14,17 @@ import { getAvailableLicensesAction } from "./actions/getAvailableLicenses";
 import { getIPDetailsAction } from "./actions/getIPDetails";
 import { attachTermsAction } from "./actions/attachTerms";
 
+/**
+ * Plugin for story integration. 
+ * 
+ * @type {Plugin}
+ * @property {string} name - The name of the plugin.
+ * @property {string} description - Description of the plugin.
+ * @property {Array} providers - Providers associated with the plugin.
+ * @property {Array} evaluators - Evaluators associated with the plugin.
+ * @property {Array} services - Services associated with the plugin.
+ * @property {Array} actions - Actions associated with the plugin.
+ */
 export const storyPlugin: Plugin = {
     name: "story",
     description: "Story integration plugin",

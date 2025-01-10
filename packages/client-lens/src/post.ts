@@ -13,9 +13,23 @@ import { createPublicationMemory } from "./memory";
 import { sendPublication } from "./actions";
 import StorjProvider from "./providers/StorjProvider";
 
+/**
+ * Class representing a LensPostManager.
+ * @class
+ */
+ 
 export class LensPostManager {
     private timeout: NodeJS.Timeout | undefined;
 
+/**
+ * Constructor for creating an instance of a class.
+ * 
+ * @param client The LensClient object for communication.
+ * @param runtime The IAgentRuntime object for runtime information.
+ * @param profileId The profile ID associated with the instance.
+ * @param cache A Map object for caching data.
+ * @param ipfs The StorjProvider object for IPFS communication.
+ */
     constructor(
         public client: LensClient,
         public runtime: IAgentRuntime,
@@ -24,6 +38,11 @@ export class LensPostManager {
         private ipfs: StorjProvider
     ) {}
 
+/**
+ * Asynchronous method to start generating new publications at random intervals.
+ * Calls the `generateNewPublication` method and handles any errors.
+ * Sets a timeout that runs `generateNewPubLoop` after a random interval between 1 and 4 hours.
+ */
     public async start() {
         const generateNewPubLoop = async () => {
             try {
@@ -42,10 +61,20 @@ export class LensPostManager {
         generateNewPubLoop();
     }
 
+/**
+ * Stop the operation and clear the timeout if one exists.
+ */
     public async stop() {
         if (this.timeout) clearTimeout(this.timeout);
     }
 
+/**
+ * Asynchronously generates a new publication by fetching profile information, ensuring user existence,
+ * fetching timeline data, formatting the home timeline, composing state, generating context,
+ * generating content, and finally sending the publication.
+ * 
+ * @returns {Promise<void>} A Promise that resolves once the publication has been successfully generated and sent
+ */
     private async generateNewPublication() {
         elizaLogger.info("Generating new publication");
         try {

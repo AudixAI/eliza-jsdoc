@@ -16,10 +16,23 @@ import { promises as fs } from "fs";
 
 import { uploadTemplate } from "../templates/upload";
 
+/**
+ * Interface for defining uploaded content with a specified file path.
+ * @interface
+ * @extends {Content}
+ */
+ 
 export interface UploadContent extends Content {
     filePath: string;
 }
 
+/**
+ * Checks if the provided content is of type UploadContent.
+ * 
+ * @param {IAgentRuntime} _runtime - The runtime context of the agent.
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} Returns true if the content is of type UploadContent, false otherwise.
+ */
 function isUploadContent(
     _runtime: IAgentRuntime,
     content: any
@@ -28,6 +41,24 @@ function isUploadContent(
     return typeof content.filePath === "string";
 }
 
+/**
+ * Action for uploading data using the ZG_UPLOAD protocol.
+ * Similes include UPLOAD_FILE_TO_ZG, STORE_FILE_ON_ZG, SAVE_FILE_TO_ZG, UPLOAD_TO_ZERO_GRAVITY, STORE_ON_ZERO_GRAVITY, SHARE_FILE_ON_ZG, PUBLISH_FILE_TO_ZG.
+ * Description: Store data using 0G protocol
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime
+ * @param {Memory} message - The message memory
+ * @returns {boolean} - Whether all required settings are present for validation
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime
+ * @param {Memory} message - The message memory
+ * @param {State} state - The current state of the system
+ * @param {any} _options - Additional options
+ * @param {HandlerCallback} callback - The callback function
+ * @returns {Promise<void>} - Promise indicating success or failure of the upload process
+ *
+ * @example User interaction examples for using the ZG_UPLOAD action
+ */
 export const zgUpload: Action = {
     name: "ZG_UPLOAD",
     similes: [

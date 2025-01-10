@@ -4,6 +4,12 @@ import BigNumber from "bignumber.js";
 export const BN = BigNumber;
 
 // Helper function to create new BigNumber instances
+/**
+ * Convert a string, number, or BigNumber to a BigNumber object.
+ * 
+ * @param {string|number|BigNumber} value - The value to convert to a BigNumber object.
+ * @returns {BigNumber} The BigNumber object representing the input value.
+ */
 export function toBN(value: string | number | BigNumber): BigNumber {
     return new BigNumber(value);
 }

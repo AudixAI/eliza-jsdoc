@@ -29,6 +29,13 @@ import { ActionResponse } from "@elizaos/core";
 
 const MAX_TIMELINES_TO_FETCH = 15;
 
+/**
+ * Twitter Post Template
+ * 
+ * Template for generating a post in the voice and style of a specific Twitter agent.
+ * 
+ * @type {string}
+ */
 const twitterPostTemplate = `
 # Areas of Expertise
 {{knowledge}}
@@ -49,6 +56,30 @@ Write a post that is {{adjective}} about {{topic}} (without mentioning {{topic}}
 Your response should be 1, 2, or 3 sentences (choose the length at random).
 Your response should not contain any questions. Brief, concise statements only. The total character count MUST be less than {{maxTweetLength}}. No emojis. Use \\n\\n (double spaces) between statements if there are multiple statements in your response.`;
 
+/**
+ * Template for determining actions for a Twitter user based on their bio and post directions.
+ * 
+ * Guidelines:
+ * - ONLY engage with content that DIRECTLY relates to character's core interests
+ * - Direct mentions are priority IF they are on-topic
+ * - Skip ALL content that is:
+ *   - Off-topic or tangentially related
+ *   - From high-profile accounts unless explicitly relevant
+ *   - Generic/viral content without specific relevance
+ *   - Political/controversial unless central to character
+ *   - Promotional/marketing unless directly relevant
+ * 
+ * Actions (respond only with tags):
+ * [LIKE] - Perfect topic match AND aligns with character (9.8/10)
+ * [RETWEET] - Exceptional content that embodies character's expertise (9.5/10)
+ * [QUOTE] - Can add substantial domain expertise (9.5/10)
+ * [REPLY] - Can contribute meaningful, expert-level insight (9.5/10)
+ * 
+ * Tweet:
+ * {{currentTweet}}
+ * 
+ * Respond with qualifying action tags only. Default to NO action unless extremely confident of relevance.
+ */
 export const twitterActionTemplate =
     `
 # INSTRUCTIONS: Determine actions for {{agentName}} (@{{twitterUserName}}) based on:
@@ -79,6 +110,14 @@ Tweet:
 
 /**
  * Truncate text to fit within the Twitter character limit, ensuring it ends at a complete sentence.
+ */
+/**
+ * Truncate a given text to fit within the specified max length while ensuring the
+ * result is a complete sentence.
+ *
+ * @param {string} text - The text to truncate.
+ * @param {number} maxTweetLength - The maximum length for the text.
+ * @returns {string} The truncated text that forms a complete sentence.
  */
 function truncateToCompleteSentence(
     text: string,

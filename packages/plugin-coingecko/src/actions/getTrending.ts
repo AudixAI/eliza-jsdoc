@@ -16,6 +16,17 @@ import { z } from "zod";
 import { getApiConfig, validateCoingeckoConfig } from "../environment";
 import { getTrendingTemplate } from "../templates/trending";
 
+/**
+ * Interface representing a trending coin item
+ * @typedef {Object} TrendingCoinItem
+ * @property {string} id - The unique identifier for the coin
+ * @property {string} name - The name of the coin
+ * @property {string} api_symbol - The symbol of the coin used in API
+ * @property {string} symbol - The symbol of the coin
+ * @property {number} market_cap_rank - The ranking of the coin based on market capitalization
+ * @property {string} thumb - URL to the thumbnail image of the coin
+ * @property {string} large - URL to the large image of the coin
+ */
 interface TrendingCoinItem {
     id: string;
     name: string;
@@ -26,6 +37,15 @@ interface TrendingCoinItem {
     large: string;
 }
 
+/**
+ * Interface representing a trending exchange.
+ * 
+ * @property {string} id - The unique identifier of the exchange.
+ * @property {string} name - The name of the exchange.
+ * @property {string} market_type - The type of market the exchange is in.
+ * @property {string} thumb - The URL to the thumbnail image of the exchange.
+ * @property {string} large - The URL to the large image of the exchange.
+ */
 interface TrendingExchange {
     id: string;
     name: string;
@@ -34,11 +54,26 @@ interface TrendingExchange {
     large: string;
 }
 
+/**
+ * Interface representing a trending category.
+ *
+ * @typedef {Object} TrendingCategory
+ * @property {string} id - The unique identifier of the category.
+ * @property {string} name - The name of the category.
+ */
 interface TrendingCategory {
     id: string;
     name: string;
 }
 
+/**
+ * Interface representing a trending NFT.
+ * @typedef {Object} TrendingNFT
+ * @property {string} id - The unique identifier of the NFT.
+ * @property {string} name - The name of the NFT.
+ * @property {string} symbol - The symbol of the NFT.
+ * @property {string} thumb - The thumbnail image URL of the NFT.
+ */
 interface TrendingNFT {
     id: string;
     name: string;
@@ -46,6 +81,15 @@ interface TrendingNFT {
     thumb: string;
 }
 
+/**
+ * Interface representing the response object for trending items.
+ * @typedef {object} TrendingResponse
+ * @property {Array<{ item: TrendingCoinItem }>} coins - Array of objects containing trending coin items.
+ * @property {TrendingExchange[]} exchanges - Array of trending exchange items.
+ * @property {TrendingCategory[]} categories - Array of trending category items.
+ * @property {TrendingNFT[]} nfts - Array of trending NFT items.
+ * @property {string[]} icos - Array of trending ICOs.
+ */
 interface TrendingResponse {
     coins: Array<{ item: TrendingCoinItem }>;
     exchanges: TrendingExchange[];
@@ -59,6 +103,10 @@ export const GetTrendingSchema = z.object({
     include_categories: z.boolean().default(true)
 });
 
+/**
+ * Type definition for GetTrendingContent, which is an intersection of the inferred type from GetTrendingSchema
+ * and the Content type.
+ */
 export type GetTrendingContent = z.infer<typeof GetTrendingSchema> & Content;
 
 export const isGetTrendingContent = (obj: any): obj is GetTrendingContent => {

@@ -5,6 +5,20 @@ import { ITranscriptionService, elizaLogger } from "@elizaos/core";
 import { Space, JanusClient, AudioDataWithUser } from "agent-twitter-client";
 import { Plugin } from "@elizaos/core";
 
+/**
+ * Interface for configuration options for the Plugin.
+ * @typedef { Object } PluginConfig
+ * @property { string } [openAiApiKey] - API key for OpenAI services (Speech-to-Text & ChatGPT)
+ * @property { string } [elevenLabsApiKey] - API key for ElevenLabs services (Text-to-Speech)
+ * @property { string } [sttLanguage] - Language code for Speech-to-Text (e.g. "en" for Whisper)
+ * @property { string } [gptModel] - Model version for ChatGPT (e.g. "gpt-3.5-turbo")
+ * @property { number } [silenceThreshold] - Amplitude threshold for ignoring silence
+ * @property { string } [voiceId] - Specify which ElevenLabs voice to use
+ * @property { string } [elevenLabsModel] - Model version for ElevenLabs services (e.g. "eleven_monolingual_v1")
+ * @property { string } [systemPrompt] - System prompt for generating responses
+ * @property {Array<{role: "system" | "user" | "assistant", content: string}>} [chatContext] - Contextual information for ChatGPT
+ * @property { ITranscriptionService } transcriptionService - Transcription service for handling audio input
+ */
 interface PluginConfig {
     openAiApiKey?: string; // for STT & ChatGPT
     elevenLabsApiKey?: string; // for TTS
@@ -26,6 +40,16 @@ interface PluginConfig {
  * Approach:
  *   - Collect each speaker's unmuted PCM in a memory buffer (only if above silence threshold)
  *   - On speaker mute -> flush STT -> GPT -> TTS -> push to Janus
+ */
+/**
+ * Class representing a Speech-to-text and Text-to-speech plugin.
+ * @implements Plugin
+ * @property {string} name - The name of the plugin.
+ * @property {string} description - The description of the plugin.
+ * @property {Space | undefined} space - The space object.
+ * @property {JanusClient | undefined} janus - The Janus client object.
+ * @property {string | undefined} openAiApiKey - The API key for OpenAI.
+ * @property {string | undefined} elevenLabsApiKey - The API key for ElevenLabs.
  */
 export class SttTtsPlugin implements Plugin {
     name = "SttTtsPlugin";

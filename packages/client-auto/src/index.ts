@@ -1,9 +1,22 @@
 import { Client, IAgentRuntime, elizaLogger } from "@elizaos/core";
 
+/**
+ * Class representing an AutoClient that runs periodically.
+ * @property {NodeJS.Timeout} interval - The interval for the auto client loop.
+ * @property {IAgentRuntime} runtime - The runtime for the auto client.
+ * @constructor
+ * @param {IAgentRuntime} runtime - The runtime for the auto client.
+ */
 export class AutoClient {
     interval: NodeJS.Timeout;
     runtime: IAgentRuntime;
 
+/**
+ * Constructor for AutoClient class.
+ * Initializes the AutoClient with the provided IAgentRuntime.
+ * Starts a loop that runs every x seconds, logging a message each time it runs.
+ * @param {IAgentRuntime} runtime - The IAgentRuntime object to use for the AutoClient.
+ */
     constructor(runtime: IAgentRuntime) {
         this.runtime = runtime;
 

@@ -20,13 +20,27 @@ import { SUI_DECIMALS } from "@mysten/sui/utils";
 import { walletProvider } from "../providers/wallet";
 import { parseAccount } from "../utils";
 
+/**
+ * Represents a type that can have one of the following values: "mainnet", "testnet", "devnet", or "localnet".
+ */
 type SuiNetwork = "mainnet" | "testnet" | "devnet" | "localnet";
 
+/**
+ * Interface representing the content of a transfer.
+ * @interface
+ * @extends Content
+ */
+ 
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Checks if the input content is a TransferContent object.
+ * @param {Content} content - The content to be checked.
+ * @returns {boolean} - Returns true if the content is a TransferContent, false otherwise.
+ */
 function isTransferContent(content: Content): content is TransferContent {
     console.log("Content for transfer", content);
     return (
@@ -36,6 +50,25 @@ function isTransferContent(content: Content): content is TransferContent {
     );
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *    "recipient": "0xaa000b3651bd1e57554ebd7308ca70df7c8c0e8e09d67123cc15c8a8a79342b3",
+ *    "amount": "1"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Recipient wallet address
+ * - Amount to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:

@@ -10,6 +10,11 @@ import { TransactionHash } from "genlayer-js/types";
 import { ClientProvider } from "../providers/client";
 import { getParamsWithLLM } from "../utils/llm";
 
+/**
+ * Function to get the transaction template with instructions on extracting the transaction hash from the user's message.
+ * 
+ * @returns {string} The transaction template with instructions formatted as a JSON block.
+ */
 const getTransactionTemplate = `
 # Task: Extract the transaction hash from the user's message.
 
@@ -31,6 +36,17 @@ const getTransactionTemplate = `
 \`\`\`
 `;
 
+/**
+ * Represents the getTransactionAction object.
+ *
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Array of similes associated with the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate if private key starts with "0x".
+ * @property {Function} handler - Asynchronous function that handles the get transaction action.
+ * @property {Array<Array<{ user: string, content: { text: string, action?: string } }>} examples - Array of examples demonstrating usage of the action.
+ */
 export const getTransactionAction: Action = {
     name: "GET_TRANSACTION",
     similes: ["GET_TRANSACTION"],

@@ -8,6 +8,11 @@ import { getCurrentNonceAction } from "./actions/getCurrentNonce";
 import { waitForTransactionReceiptAction } from "./actions/waitForTransactionReceipt";
 import { getContractSchemaAction } from "./actions/getContractSchema";
 
+/**
+ * Represents a plugin for interacting with the GenLayer protocol.
+ * 
+ * @type {Plugin}
+ */
 export const genLayerPlugin: Plugin = {
     name: "genlayer",
     description: "Plugin for interacting with GenLayer protocol",

@@ -28,6 +28,13 @@ Summarization objective: {{objective}}
 
 # Instructions: Summarize the attachments. Return the summary. Do not acknowledge this request, just summarize and continue the existing summary if there is one. Capture any important details based on the objective. Only respond with the new summary text.`;
 
+/**
+ * Represents the template for generating a summary response to specific attachments.
+ * 
+ * This template includes placeholders for recent messages, sender name, objective, and attachment IDs.
+ * 
+ * @type {string}
+ */
 export const attachmentIdsTemplate = `# Messages we are summarizing
 {{recentMessages}}
 
@@ -44,6 +51,14 @@ Your response must be formatted as a JSON block with this structure:
 \`\`\`
 `;
 
+/**
+ * Retrieves attachment IDs from a message within a given context and state.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime environment.
+ * @param {Memory} message - The message containing attachment data.
+ * @param {State} state - The current state of the application.
+ * @returns {Promise<{ objective: string; attachmentIds: string[] } | null>} The objective of the attachment and the list of attachment IDs, or null if not found.
+ */
 const getAttachmentIds = async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -73,6 +88,17 @@ const getAttachmentIds = async (
     return null;
 };
 
+/**
+ * Represents an action object for summarizing user requests informed by specific attachments based on their IDs.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action, in this case "CHAT_WITH_ATTACHMENTS".
+ * @property {string[]} similes - Array of related similes for the action.
+ * @property {string} description - A brief description of the action and its purpose.
+ * @property {Function} validate - Async function to validate if the message content includes specific keywords related to attachments.
+ * @property {Function} handler - Async function to handle the action of summarizing requested attachments and generating a summary.
+ * @property {ActionExample[][]} examples - Array of example interactions for this action.
+ */
 const summarizeAction: Action = {
     name: "CHAT_WITH_ATTACHMENTS",
     similes: [

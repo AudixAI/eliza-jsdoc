@@ -2,13 +2,34 @@ import { elizaLogger } from "@elizaos/core";
 import { TokenProvider } from "../providers/token";
 import { TrustScoreProvider } from "../providers/trustScoreProvider";
 
+/**
+ * Class representing a Simulation Service for trading simulation.
+ */
+ 
 export class SimulationService {
     private trustScoreProvider: TrustScoreProvider;
 
+/**
+ * Constructor for the class.
+ * Initializes a new TrustScoreProvider instance and assigns it to the trustScoreProvider property.
+ */
     constructor() {
         this.trustScoreProvider = new TrustScoreProvider();
     }
 
+/**
+ * Simulate a trade for a given token with a specific amount, considering trust score, liquidity, and safety parameters.
+ *
+ * @param {string} tokenAddress The address of the token to be traded.
+ * @param {number} amount The amount of the token to be traded.
+ * @returns {Promise<{
+ *   expectedPrice: number;
+ *   priceImpact: number;
+ *   recommendedAction: "EXECUTE" | "ABORT";
+ *   reason: string;
+ * }>} An object containing the expected price, price impact, recommended action, and reason for the trade simulation.
+ * @throws {Error} If the trade simulation fails.
+ */
     async simulateTrade(
         tokenAddress: string,
         amount: number

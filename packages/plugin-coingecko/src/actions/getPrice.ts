@@ -17,6 +17,20 @@ import { getApiConfig, validateCoingeckoConfig } from "../environment";
 import { getCoinsData } from "../providers/coinsProvider";
 import { getPriceTemplate } from "../templates/price";
 
+/**
+ * Interface representing the data for a currency.
+ * @interface CurrencyData
+ * @property {object} [key] - The currency key.
+ * @property {number} [usd] - The value in USD.
+ * @property {number} [eur] - The value in EUR.
+ * @property {number} [usd_market_cap] - The market capitalization in USD.
+ * @property {number} [eur_market_cap] - The market capitalization in EUR.
+ * @property {number} [usd_24h_vol] - The 24-hour volume in USD.
+ * @property {number} [eur_24h_vol] - The 24-hour volume in EUR.
+ * @property {number} [usd_24h_change] - The 24-hour change in USD.
+ * @property {number} [eur_24h_change] - The 24-hour change in EUR.
+ * @property {number} [last_updated_at] - The timestamp of the last update.
+ */
 interface CurrencyData {
     [key: string]: number;
     usd?: number;
@@ -30,6 +44,10 @@ interface CurrencyData {
     last_updated_at?: number;
 }
 
+/**
+ * Interface representing a response object containing price data for various coins.
+ * @typedef {Object<string, CurrencyData>} PriceResponse
+ */
 interface PriceResponse {
     [coinId: string]: CurrencyData;
 }
@@ -43,12 +61,22 @@ export const GetPriceSchema = z.object({
     include_last_updated_at: z.boolean().default(false)
 });
 
+/**
+ * Represents the combined type of GetPriceSchema and Content.
+ */
 export type GetPriceContent = z.infer<typeof GetPriceSchema> & Content;
 
 export const isGetPriceContent = (obj: any): obj is GetPriceContent => {
     return GetPriceSchema.safeParse(obj).success;
 };
 
+/**
+ * Formats the given input into a string by joining an array of strings with a comma.
+ * If the input is already a string, it returns the input as is.
+ * 
+ * @param {string | string[]} input - The input to be formatted, either a string or an array of strings
+ * @returns {string} The formatted string
+ */
 function formatCoinIds(input: string | string[]): string {
     if (Array.isArray(input)) {
         return input.join(',');

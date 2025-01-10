@@ -9,6 +9,16 @@ import {
 import { AnyoneClientService } from "../services/AnyoneClientService";
 import { AnyoneProxyService } from "../services/AnyoneProxyService";
 
+/**
+ * Action to start the Anyone client and proxy service
+ * @type {Action}
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - List of similes associated with the action
+ * @property {Function} validate - Validation function for the action
+ * @property {string} description - Description of the action
+ * @property {Function} handler - Handler function for the action
+ * @property {Object[][]} examples - List of examples demonstrating the action
+ */
 export const startAnyone: Action = {
     name: "START_ANYONE",
     similes: ["ANYONE"],

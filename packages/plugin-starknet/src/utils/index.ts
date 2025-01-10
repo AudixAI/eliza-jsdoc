@@ -2,6 +2,13 @@ import { elizaLogger, IAgentRuntime } from "@elizaos/core";
 import { Fraction, Percent } from "@uniswap/sdk-core";
 import { Account, Contract, RpcProvider } from "starknet";
 
+/**
+ * Get the balance of a token for a given StarkNet runtime and token address.
+ * 
+ * @param {IAgentRuntime} runtime - The StarkNet runtime to interact with.
+ * @param {string} tokenAddress - The address of the token contract.
+ * @returns {Promise<number>} The balance of the token at the specified address.
+ */
 export const getTokenBalance = async (
     runtime: IAgentRuntime,
     tokenAddress: string
@@ -48,6 +55,11 @@ export const parseFormatedPercentage = (percent: string) =>
         100 * 10 ** PERCENTAGE_INPUT_PRECISION
     );
 
+/**
+ * Interface for defining options for parsing currency amounts.
+ * @property {number} fixed - The number of decimal places to round the currency amount to.
+ * @property {number} [significant] - The number of significant digits to include in the currency amount.
+ */
 interface ParseCurrencyAmountOptions {
     fixed: number;
     significant?: number;
@@ -73,6 +85,14 @@ export const formatPercentage = (percentage: Percent) => {
     return `${exact ? "" : "~"}${formatedPercentage}%`;
 };
 
+/**
+ * Represents a configuration object for retry logic.
+ * @typedef {object} RetryConfig
+ * @property {number} [maxRetries] - The maximum number of retry attempts.
+ * @property {number} [delay] - The initial delay before the first retry attempt.
+ * @property {number} [maxDelay] - The maximum delay between retry attempts.
+ * @property {function} [backoff] - The custom backoff function to calculate the delay between retry attempts.
+ */
 export type RetryConfig = {
     maxRetries?: number;
     delay?: number;
@@ -80,6 +100,15 @@ export type RetryConfig = {
     backoff?: (retryCount: number, delay: number, maxDelay: number) => number;
 };
 
+/**
+ * Fetch data from a specified URL with retry mechanism
+ * 
+ * @template T - The type of data to be returned
+ * @param {string} url - The URL to fetch data from
+ * @param {RequestInit} [options] - The options to be used in the fetch request
+ * @param {RetryConfig} [config] - The configuration object for retry behavior
+ * @returns {Promise<T>} - A promise that resolves with the fetched data
+ */
 export async function fetchWithRetry<T>(
     url: string,
     options?: RequestInit,

@@ -1,5 +1,13 @@
 import { elizaLogger } from "@elizaos/core";
 
+/**
+ * Collection of functions to log debugging information related to API requests and responses.
+ * * @type { Object }
+ * @property { Function } request - Logs API request details including method, URL, and optional data.
+ * @property { Function } response - Logs API response details including status and data.
+ * @property { Function } error - Logs error details including message, response status, response data, configuration URL, method, and data.
+ * @property { Function } validation - Logs configuration validation details.
+ */
 export const debugLog = {
     request: (method: string, url: string, data?: any) => {
         elizaLogger.log("🌐 API Request:", {

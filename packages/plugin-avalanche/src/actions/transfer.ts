@@ -16,12 +16,27 @@ import { Address } from "viem";
 import { validateAvalancheConfig } from "../environment";
 import { TOKEN_ADDRESSES } from "../utils/constants";
 
+/**
+ * Interface representing transferred content including token address, recipient, and amount.
+ * @interface
+ * @extends Content
+ * @property {string} tokenAddress - The address of the token being transferred.
+ * @property {string} recipient - The address of the recipient of the transfer.
+ * @property {string | number} amount - The amount of tokens being transferred, can be a string or a number.
+ */
 export interface TransferContent extends Content {
     tokenAddress: string;
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Check if the provided content is a TransferContent object.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {any} content - The content to check.
+ * @returns {boolean} - Returns true if the content is a TransferContent object, false otherwise.
+ */
 function isTransferContent(
     runtime: IAgentRuntime,
     content: any
@@ -35,6 +50,46 @@ function isTransferContent(
     );
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values
+ * - Use null for any values that cannot be determined.
+ * - Use address zero for native AVAX transfers.
+ *
+ * Example response for a 10 WAVAX transfer:
+ * ```json
+ * {
+ *     "tokenAddress": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+ *     "recipient": "0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44",
+ *     "amount": "10"
+ * }
+ * ```
+ *
+ * Example response for a 0.1 AVAX transfer:
+ * ```json
+ * {
+ *     "tokenAddress": "0x0000000000000000000000000000000000000000",
+ *     "recipient": "0xDcEDF06Fd33E1D7b6eb4b309f779a0e9D3172e44",
+ *     "amount": "0.1"
+ * }
+ * ```
+ *
+ * ## Token Addresses
+ *
+ * ${Object.entries(TOKEN_ADDRESSES)
+ *     .map(([key, value]) => `- ${key}: ${value}`)
+ *     .join("\n")}
+ *
+ * ## Recent Messages
+ *
+ * {{recentMessages}}
+ *
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Token contract address
+ * - Recipient wallet address
+ * - Amount to transfer
+ *
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values
 - Use null for any values that cannot be determined.
 - Use address zero for native AVAX transfers.

@@ -6,6 +6,10 @@ import { GetAPIKeyPermissionsResponse } from './types/dataAPI-types';
 
 // [GET] Get API Key Permissions
 // Official Documentation: https://docs.cdp.coinbase.com/advanced-trade/reference/retailbrokerageapi_getapikeypermissions
+/**
+ * Retrieves the API key permissions by making a request to the specified endpoint with the corresponding method.
+ * @returns Promise<GetAPIKeyPermissionsResponse> A promise that resolves with the API key permissions response.
+ */
 export function getAPIKeyPermissions(
     this: RESTBase
 ): Promise<GetAPIKeyPermissionsResponse> {

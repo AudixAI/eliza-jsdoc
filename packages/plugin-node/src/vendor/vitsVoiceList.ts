@@ -1,3 +1,11 @@
+/**
+ * Interface representing a synthesis voice.
+ * @interface
+ * @property {string} name - The name of the voice.
+ * @property {string[]} languages - An array of languages the voice supports.
+ * @property {string} gender - The gender of the voice.
+ * @property {number} [speakerCount] - Optional. The number of speakers for the voice.
+ */
 export interface SynthesisVoice {
     name: string;
     languages: string[];
@@ -5,6 +13,10 @@ export interface SynthesisVoice {
     speakerCount?: number;
 }
 
+/**
+* Array of SynthesisVoice objects representing a list of voices available for synthesis.
+* @type {SynthesisVoice[]}
+*/
 export const vitsVoiceList: SynthesisVoice[] = [
     {
         name: "ar_JO-kareem-low",

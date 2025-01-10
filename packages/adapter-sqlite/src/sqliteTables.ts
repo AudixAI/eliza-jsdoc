@@ -1,3 +1,20 @@
+/**
+ * Tables schema for SQLite database.
+ * 
+ * Contains definitions for the following tables:
+ * - accounts
+ * - memories
+ * - goals
+ * - logs
+ * - participants
+ * - relationships
+ * - rooms
+ * - cache
+ * - knowledge
+ * 
+ * Each table includes specific columns with data types, constraints, and foreign keys where applicable.
+ * Indexes are also defined for certain tables to improve query performance.
+ */
 export const sqliteTables = `
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;

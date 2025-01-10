@@ -17,11 +17,22 @@ import { getStarknetAccount } from "../utils";
 import { validateStarknetConfig } from "../environment";
 import { getTransferSubdomainCall, isStarkDomain } from "../utils/starknetId";
 
+/**
+ * Interface representing the content required for creating a subdomain.
+ * * @interface
+ * @extends { Content }
+ */
 export interface SubdomainCreationContent extends Content {
     recipient: string;
     subdomain: string;
 }
 
+/**
+ * Function to validate if the provided `content` is a valid SubdomainCreationContent object.
+ * 
+ * @param {SubdomainCreationContent} content - The SubdomainCreationContent object to be checked.
+ * @returns {boolean} Returns true if the `content` is a valid SubdomainCreationContent object, otherwise false.
+ */
 export function isSubdomainCreation(
     content: SubdomainCreationContent
 ): content is SubdomainCreationContent {
@@ -51,6 +62,25 @@ export function isSubdomainCreation(
     return true;
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "recipient": "0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+ *     "subdomain": "subdomain.domain.stark",
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested subdomain creation:
+ * - Subdomain to create
+ * - Recipient wallet address
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:

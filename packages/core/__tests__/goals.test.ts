@@ -27,6 +27,24 @@ export const mockDatabaseAdapter = {
 const services = new Map<ServiceType, Service>();
 
 // Mock the runtime
+/**
+ * Mock agent runtime implementation.
+ * * @type { IAgentRuntime }
+ * @property { any } databaseAdapter - Mock database adapter.
+ * @property { CacheManager } cacheManager - Cache manager instance with MemoryCacheAdapter.
+ * @property { string } agentId - Unique identifier for the agent.
+ * @property { string } serverUrl - Server URL.
+ * @property { null } token - Authorization token.
+ * @property { Object } messageManager - Object with message management functions.
+ * @property { Object } descriptionManager - Object with description management functions.
+ * @property { Object } loreManager - Object with lore management functions.
+ * @property { function } ensureRoomExists - Function to ensure room exists.
+ * @property { function } composeState - Function to compose state based on message and additional keys.
+ * @property { function } updateRecentMessageState - Function to update recent message state.
+ * @property { function } getService - Function to get service of specified type.
+ * @property { Array } plugins - Array of plugins.
+ * @property { function } initialize - Initialization function.
+ */
 export const mockRuntime: IAgentRuntime = {
     databaseAdapter: mockDatabaseAdapter as any,
     cacheManager: new CacheManager(new MemoryCacheAdapter()),

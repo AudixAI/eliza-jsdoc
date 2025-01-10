@@ -10,6 +10,15 @@ import { publicationUuid } from "./utils";
 import { LensClient } from "./client";
 import { AnyPublicationFragment } from "@lens-protocol/client";
 
+/**
+ * Create a memory object based on the provided publication information.
+ * @param {{
+ *   roomId: UUID;
+ *   runtime: IAgentRuntime;
+ *   publication: AnyPublicationFragment;
+ * }} params - Parameters for creating the memory object.
+ * @returns {Memory} - The memory object created based on the publication information.
+ */
 export function createPublicationMemory({
     roomId,
     runtime,
@@ -45,6 +54,15 @@ export function createPublicationMemory({
     };
 }
 
+/**
+ * Builds a conversation thread starting from a given publication.
+ * 
+ * @param {Object} params - The parameters for building the conversation thread.
+ * @param {AnyPublicationFragment} params.publication - The publication to start the thread from.
+ * @param {IAgentRuntime} params.runtime - The agent runtime.
+ * @param {LensClient} params.client - The Lens client.
+ * @returns {Promise<AnyPublicationFragment[]>} The conversation thread built from the given publication.
+ */
 export async function buildConversationThread({
     publication,
     runtime,

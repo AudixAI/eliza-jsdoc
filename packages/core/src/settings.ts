@@ -18,14 +18,24 @@ elizaLogger.info("Loading character settings:", {
     CWD: process.cwd(),
 });
 
+/**
+ * Interface representing settings with string keys and string or undefined values.
+ */
 interface Settings {
     [key: string]: string | undefined;
 }
 
+/**
+ * Interface representing namespaced settings.
+ * @typedef {Object<string, Settings>} NamespacedSettings
+ */
 interface NamespacedSettings {
     [namespace: string]: Settings;
 }
 
+/**
+ * Declares an object variable 'environmentSettings' of type 'Settings' initialized as an empty object.
+ */
 let environmentSettings: Settings = {};
 
 /**

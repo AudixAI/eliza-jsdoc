@@ -19,6 +19,12 @@ const maxContinuesInARow = 3;
  *
  * @type {string}
  */
+/**
+ * Template for generating a message handler based on various parameters.
+ * 
+ * @type {string}
+ */  
+       
 export const messageHandlerTemplate =
     // {{goals}}
     `# Action Examples

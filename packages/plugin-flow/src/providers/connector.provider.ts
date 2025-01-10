@@ -12,11 +12,20 @@ import FlowConnector, { NetworkType } from "./utils/flow.connector";
 import flowJSON from "../../flow.json" assert { type: "json" };
 
 // Singleton instance for the Flow connector
+/**
+ * Variable to hold a single instance of the FlowConnector class.
+ */
 let _instance: FlowConnector;
 
 /**
  * Get the singleton instance of the Flow connector
  * @param runtime The runtime object
+ */
+/**
+ * Asynchronously retrieves the default FlowConnector instance. If the instance does not exist, it is created using the provided IAgentRuntime and flowJSON.
+ * 
+ * @param {IAgentRuntime} runtime - The IAgentRuntime used to create the FlowConnector instance.
+ * @returns {Promise<FlowConnector>} A Promise that resolves to the default FlowConnector instance.
  */
 async function _getDefaultConnectorInstance(
     runtime: IAgentRuntime

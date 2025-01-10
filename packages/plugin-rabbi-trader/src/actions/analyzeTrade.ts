@@ -7,6 +7,23 @@ import {
     parseJSONObjectFromText,
 } from "@elizaos/core";
 
+/**
+ * Analyze a token for trading opportunities.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string} description - A brief description of the action.
+ * @property {string[]} similes - Similar terms related to the action.
+ * @property {string[]} examples - Examples related to the action.
+ * @property {async function():boolean} validate - Asynchronous function to validate the action.
+ * @property {async function(runtime: any, memory: any, state: any, params: any, callback: function):boolean} handler - Asynchronous function to handle the action.
+ * @param {any} runtime - The runtime environment.
+ * @param {any} memory - The memory storage.
+ * @param {any} state - The state of the action.
+ * @param {any} params - The parameters for the action.
+ * @param {function} callback - The callback function for the action.
+ * @returns {boolean} Returns true if the action is completed successfully, false otherwise.
+ */
 export const analyzeTradeAction: Action = {
     name: "ANALYZE_TRADE",
     description: "Analyze a token for trading opportunities",

@@ -2,6 +2,12 @@ import { IAgentRuntime, Memory, Provider, State, elizaLogger } from "@elizaos/co
 import axios from 'axios';
 import { getApiConfig, validateCoingeckoConfig } from '../environment';
 
+/**
+ * Interface representing a coin item.
+ * @property {string} id - The unique identifier of the coin item.
+ * @property {string} symbol - The symbol representing the coin.
+ * @property {string} name - The name of the coin.
+ */
 interface CoinItem {
     id: string;
     symbol: string;
@@ -12,6 +18,14 @@ const CACHE_KEY = 'coingecko:coins';
 const CACHE_TTL = 5 * 60; // 5 minutes
 const MAX_RETRIES = 3;
 
+/**
+ * Fetches a list of coins from the CoinGecko API based on the provided runtime and optional inclusion of platform coins.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object for communication and configuration
+ * @param {boolean} includePlatform - Flag to include platform coins in the response (default is false)
+ * @returns {Promise<CoinItem[]>} A promise that resolves with an array of CoinItem objects representing the fetched coins
+ * @throws {Error} If the response data is empty or invalid
+ */
 async function fetchCoins(runtime: IAgentRuntime, includePlatform: boolean = false): Promise<CoinItem[]> {
     const config = await validateCoingeckoConfig(runtime);
     const { baseUrl, apiKey } = getApiConfig(config);
@@ -37,6 +51,13 @@ async function fetchCoins(runtime: IAgentRuntime, includePlatform: boolean = fal
     return response.data;
 }
 
+/**
+ * Fetches coin items with retry mechanism.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime context for the agent.
+ * @param {boolean} includePlatform - Indicates if platform should be included in the fetch.
+ * @returns {Promise<CoinItem[]>} - A promise that resolves with an array of CoinItem objects.
+ */
 async function fetchWithRetry(runtime: IAgentRuntime, includePlatform: boolean = false): Promise<CoinItem[]> {
     let lastError: Error | null = null;
 
@@ -53,6 +74,14 @@ async function fetchWithRetry(runtime: IAgentRuntime, includePlatform: boolean =
     throw lastError || new Error("Failed to fetch coins after multiple attempts");
 }
 
+/**
+ * Asynchronously retrieves a list of coins from the runtime's cache or fetches fresh data if cache is empty.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object used to interact with the agent environment.
+ * @param {boolean} [includePlatform=false] - Flag indicating whether to include platform coins in the result.
+ * @returns {Promise<CoinItem[]>} A promise that resolves to an array of CoinItem objects.
+ * @throws {Error} If an error occurs during the operation.
+ */
 async function getCoins(runtime: IAgentRuntime, includePlatform: boolean = false): Promise<CoinItem[]> {
     try {
         // Try to get from cache first
@@ -74,6 +103,13 @@ async function getCoins(runtime: IAgentRuntime, includePlatform: boolean = false
     }
 }
 
+/**
+ * Formats the given array of CoinItems into a readable string context,
+ * showing popular coins and total available coins.
+ * 
+ * @param {CoinItem[]} coins - The array of CoinItems to format
+ * @returns {string} A formatted string context displaying popular coins and total available coins
+ */
 function formatCoinsContext(coins: CoinItem[]): string {
     const popularCoins = [
         'bitcoin', 'ethereum', 'binancecoin', 'ripple',
@@ -109,6 +145,12 @@ export const coinsProvider: Provider = {
 };
 
 // Helper function for actions to get raw coins data
+/**
+ * Asynchronously retrieves coin data using the provided Agent Runtime.
+ * @param {IAgentRuntime} runtime - The Agent Runtime to use for making the request.
+ * @param {boolean} [includePlatform=false] - Whether to include platform information in the response.
+ * @returns {Promise<CoinItem[]>} A Promise that resolves to an array of CoinItem objects representing the retrieved coin data.
+ */
 export async function getCoinsData(runtime: IAgentRuntime, includePlatform: boolean = false): Promise<CoinItem[]> {
     return getCoins(runtime, includePlatform);
 }

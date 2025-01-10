@@ -2,6 +2,13 @@ import { WeatherResponse } from "./types";
 
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
+/**
+ * Creates a Weather Service object that allows fetching weather data for a specific location.
+ * @param {string} apiKey - The API key to access the weather service.
+ * @returns {{
+ *   getWeather: (city: string, country?: string) => Promise<WeatherResponse>
+ * }} The Weather Service object with a method to get weather data for a specific location.
+ */
 export const createWeatherService = (apiKey: string) => {
     const getWeather = async (
         city: string,

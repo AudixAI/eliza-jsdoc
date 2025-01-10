@@ -7,6 +7,15 @@ import { z, ZodError } from "zod";
 
 export const DEFAULT_MAX_TWEET_LENGTH = 280;
 
+/**
+ * Schema for validating a Twitter username with the following rules:
+ * - Must be at least 1 character long
+ * - Cannot exceed 15 characters
+ * - Can contain letters, numbers, and underscores
+ * - Can start with digits
+ * - Cannot be empty
+ */
+
 const twitterUsernameSchema = z
     .string()
     .min(1, "An X/Twitter Username must be at least 1 character long")
@@ -25,6 +34,10 @@ const twitterUsernameSchema = z
 /**
  * This schema defines all required/optional environment settings,
  * including new fields like TWITTER_SPACES_ENABLE.
+ */
+/**
+ * Schema definition for Twitter environment variables.
+ * @type {import("zod").object}
  */
 export const twitterEnvSchema = z.object({
     TWITTER_DRY_RUN: z.boolean(),

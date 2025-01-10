@@ -3,15 +3,33 @@ import type { Account, TransactionStatus } from "@onflow/typedefs";
 import { IFlowScriptExecutor } from "../../types";
 import Exception from "../../types/exception";
 
+/**
+ * Defines the possible values for the network type: "mainnet", "testnet", or "emulator".
+ */
 export type NetworkType = "mainnet" | "testnet" | "emulator";
 
+/**
+ * Flag to indicate if the global variable has been initialized.
+ */
 let isGloballyInited = false;
+/**
+ * Variable to hold a globally accessible Promise object.
+ */
 let globallyPromise = null;
 
+/**
+ * Class representing a Flow Connector that implements the IFlowScriptExecutor interface.
+ */
 export class FlowConnector implements IFlowScriptExecutor {
     /**
      * Initialize the Flow SDK
      */
+/**
+ * Constructor for creating a new instance of MyClass.
+ * @param {object} flowJSON - The flow JSON object.
+ * @param {NetworkType} [network=mainnet] - The network type (default is mainnet).
+ * @param {string} [defaultRpcEndpoint] - The default RPC endpoint.
+ */
     constructor(
         private readonly flowJSON: object,
         public readonly network: NetworkType = "mainnet",

@@ -2,6 +2,12 @@ import { IAgentRuntime, Memory, Provider, State, elizaLogger } from "@elizaos/co
 import axios from 'axios';
 import { getApiConfig, validateCoingeckoConfig } from '../environment';
 
+/**
+ * Interface representing a category item.
+ * @typedef {Object} CategoryItem
+ * @property {string} category_id - The ID of the category.
+ * @property {string} name - The name of the category.
+ */
 interface CategoryItem {
     category_id: string;
     name: string;
@@ -11,6 +17,12 @@ const CACHE_KEY = 'coingecko:categories';
 const CACHE_TTL = 5 * 60; // 5 minutes
 const MAX_RETRIES = 3;
 
+/**
+ * Fetch categories from the Coingecko API.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @returns {Promise<CategoryItem[]>} A promise that resolves to an array of category items.
+ */
 async function fetchCategories(runtime: IAgentRuntime): Promise<CategoryItem[]> {
     const config = await validateCoingeckoConfig(runtime);
     const { baseUrl, apiKey } = getApiConfig(config);
@@ -33,6 +45,13 @@ async function fetchCategories(runtime: IAgentRuntime): Promise<CategoryItem[]> 
     return response.data;
 }
 
+/**
+ * Asynchronously fetches category items with retry logic.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @returns {Promise<CategoryItem[]>} A promise that resolves to an array of CategoryItem objects.
+ * @throws {Error} If fetching categories fails after multiple attempts.
+ */
 async function fetchWithRetry(runtime: IAgentRuntime): Promise<CategoryItem[]> {
     let lastError: Error | null = null;
 
@@ -49,6 +68,13 @@ async function fetchWithRetry(runtime: IAgentRuntime): Promise<CategoryItem[]> {
     throw lastError || new Error("Failed to fetch categories after multiple attempts");
 }
 
+/**
+ * Retrieves the categories from a data source, with caching capabilities.
+ *
+ * @param {IAgentRuntime} runtime - The runtime object
+ * @returns {Promise<CategoryItem[]>} A promise that resolves with an array of CategoryItem objects
+ * @throws {Error} If an error occurs while fetching the categories
+ */
 async function getCategories(runtime: IAgentRuntime): Promise<CategoryItem[]> {
     try {
         // Try to get from cache first
@@ -70,6 +96,13 @@ async function getCategories(runtime: IAgentRuntime): Promise<CategoryItem[]> {
     }
 }
 
+/**
+ * Formats the provided categories context into a string for display.
+ * 
+ * @param {CategoryItem[]} categories - The array of category items to format.
+ * @returns {string} The formatted string containing available cryptocurrency categories and 
+ * popular category information.
+ */
 function formatCategoriesContext(categories: CategoryItem[]): string {
     const popularCategories = [
         'layer-1', 'defi', 'meme', 'ai-meme-coins',
@@ -105,6 +138,12 @@ export const categoriesProvider: Provider = {
 };
 
 // Helper function for actions to get raw categories data
+/**
+ * Retrieve categories data using the provided agent runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime to use for fetching categories data.
+ * @returns {Promise<CategoryItem[]>} - A promise that resolves with an array of category items.
+ */
 export async function getCategoriesData(runtime: IAgentRuntime): Promise<CategoryItem[]> {
     return getCategories(runtime);
 }

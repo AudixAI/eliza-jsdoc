@@ -20,6 +20,11 @@ import {
  * 
  * Otherwise, respond with NO.
  */
+/**
+ * Template for determining whether an agent should mute a conversation based on recent messages.
+ * 
+ * @const {string}
+ */
 export const shouldMuteTemplate =
     `Based on the conversation so far:
 

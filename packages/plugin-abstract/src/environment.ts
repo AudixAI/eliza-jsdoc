@@ -2,6 +2,12 @@ import { IAgentRuntime } from "@elizaos/core";
 import { isAddress } from "viem";
 import { z } from "zod";
 
+/**
+ * Represents the abstract environment schema which enforces specific constraints on the ABSTRACT_ADDRESS and ABSTRACT_PRIVATE_KEY properties.
+ * 
+ * @constant
+ * @type {import("zod").ZodObject<{ ABSTRACT_ADDRESS: import("zod").ZodString, ABSTRACT_PRIVATE_KEY: import("zod").ZodString }>}
+ */
 export const abstractEnvSchema = z.object({
     ABSTRACT_ADDRESS: z
         .string()
@@ -18,8 +24,16 @@ export const abstractEnvSchema = z.object({
         }),
 });
 
+/**
+ * Represents the type of configuration that is inferred from the abstractEnvSchema.
+ */
 export type AbstractConfig = z.infer<typeof abstractEnvSchema>;
 
+/**
+ * Validates the abstract configuration settings provided by the runtime.
+ * @param {IAgentRuntime} runtime - The agent runtime object used to retrieve settings.
+ * @returns {Promise<AbstractConfig>} The validated abstract configuration object.
+ */
 export async function validateAbstractConfig(
     runtime: IAgentRuntime
 ): Promise<AbstractConfig> {

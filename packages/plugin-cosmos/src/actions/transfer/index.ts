@@ -16,6 +16,12 @@ import type {
     ICosmosWalletChains,
 } from "../../shared/interfaces";
 
+/**
+ * Create a transfer action for transferring tokens between addresses on the same chain.
+ * 
+ * @param {ICosmosPluginOptions} pluginOptions - The plugin options for the Cosmos plugin.
+ * @returns {Object} The transfer action object with name, description, handler, template, validate, examples, and similes properties.
+ */
 export const createTransferAction = (pluginOptions: ICosmosPluginOptions) => ({
     name: "COSMOS_TRANSFER",
     description: "Transfer tokens between addresses on the same chain",

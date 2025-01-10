@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+/**
+ * Defines a schema for creating a token with specified properties.
+ * @type {import('zod').ZodObject}
+ */
 export const createTokenSchema = z.object({
     tokenName: z.string().min(1, { message: "Token name is required." }),
     tokenTicker: z.string().min(1, { message: "Token ticker is required." }),

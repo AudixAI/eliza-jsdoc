@@ -10,6 +10,13 @@ import {
 import fs from "fs";
 import { LUMA_CONSTANTS } from "./constants";
 
+/**
+ * Asynchronously generates a video based on the provided prompt using the Luma API.
+ *
+ * @param {string} prompt - The prompt for the video generation.
+ * @param {IAgentRuntime} runtime - The agent runtime providing access to settings.
+ * @returns {Promise<{ success: boolean, data?: string, error?: string }>} A promise that resolves with the success status, video URL (if successful), or error message.
+ */
 const generateVideo = async (prompt: string, runtime: IAgentRuntime) => {
     const API_KEY = runtime.getSetting(LUMA_CONSTANTS.API_KEY_SETTING);
 
@@ -105,6 +112,16 @@ const generateVideo = async (prompt: string, runtime: IAgentRuntime) => {
     }
 };
 
+/**
+ * Represents an action to generate a video based on a text prompt.
+ * @typedef {Action} videoGeneration
+ * @property {string} name - The name of the action ("GENERATE_VIDEO").
+ * @property {Array<string>} similes - Related terms for video generation.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the action.
+ * @property {Function} handler - Asynchronous function to handle the action.
+ * @property {Array<Array<{user: string, content: {text: string}}>} examples - Array of example user interactions.
+ */
 const videoGeneration: Action = {
     name: "GENERATE_VIDEO",
     similes: [

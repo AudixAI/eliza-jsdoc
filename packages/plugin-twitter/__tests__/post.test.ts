@@ -47,6 +47,14 @@ vi.mock('@elizaos/core', async () => {
 });
 
 // Create mock Scraper class
+/**
+ * Mock scraper object for testing purposes.
+ * 
+ * @type {Object}
+ * @property {Function} login - Mock function that resolves to true when called.
+ * @property {Function} isLoggedIn - Mock function that resolves to true when called.
+ * @property {Function} sendTweet - Mock function that resolves to a JSON object containing mock tweet data when called.
+ */
 const mockScraper = {
     login: vi.fn().mockResolvedValue(true),
     isLoggedIn: vi.fn().mockResolvedValue(true),

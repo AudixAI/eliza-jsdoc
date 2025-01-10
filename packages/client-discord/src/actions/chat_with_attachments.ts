@@ -23,6 +23,11 @@ Summarization objective: {{objective}}
 
 # Instructions: Summarize the attachments. Return the summary. Do not acknowledge this request, just summarize and continue the existing summary if there is one. Capture any important details based on the objective. Only respond with the new summary text.`;
 
+/**
+ * Template for generating a summary of specific attachments based on recent messages and sender's name.
+ * 
+ * @type {string}
+ */
 export const attachmentIdsTemplate = `# Messages we are summarizing
 {{recentMessages}}
 
@@ -39,6 +44,13 @@ Your response must be formatted as a JSON block with this structure:
 \`\`\`
 `;
 
+/**
+ * Retrieves attachment IDs from a message using runtime, state, and memory.
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {Memory} message - The message containing the data.
+ * @param {State} state - The state of the agent.
+ * @returns {Promise<{ objective: string; attachmentIds: string[] } | null>} The retrieved attachment IDs along with the objective, or null if not found.
+ */
 const getAttachmentIds = async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -71,6 +83,12 @@ const getAttachmentIds = async (
     return null;
 };
 
+/**
+ * Object representing a summarize action with attachments.
+ * * @type { Object }
+ * @property { string } name - The name of the action ("CHAT_WITH_ATTACHMENTS").
+ * @property {Array<string>} similes - Array of similes related to the action.
+ */
 const summarizeAction = {
     name: "CHAT_WITH_ATTACHMENTS",
     similes: [

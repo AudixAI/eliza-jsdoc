@@ -12,6 +12,15 @@ import { Scraper } from "agent-twitter-client";
 import { tweetTemplate } from "../templates";
 import { isTweetContent, TweetSchema } from "../types";
 
+/**
+ * Composes a tweet based on the provided message and state.
+ *
+ * @async
+ * @param {IAgentRuntime} runtime - The Agent runtime.
+ * @param {Memory} _message - The message from memory.
+ * @param {State} [state] - The optional state object.
+ * @returns {Promise<string>} The composed tweet content.
+ */
 async function composeTweet(
     runtime: IAgentRuntime,
     _message: Memory,
@@ -59,6 +68,13 @@ async function composeTweet(
     }
 }
 
+/**
+ * Asynchronously posts a tweet to Twitter using the provided content.
+ * 
+ * @param {string} content - The content of the tweet to be posted.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the tweet was successfully posted, 
+ * or false if there was an error during the posting process.
+ */
 async function postTweet(content: string): Promise<boolean> {
     try {
         const scraper = new Scraper();
@@ -118,6 +134,16 @@ async function postTweet(content: string): Promise<boolean> {
     }
 }
 
+/**
+ * Represents a post action to post a tweet to Twitter.
+ * @type {Action}
+ * @property {string} name - The name of the action ("POST_TWEET").
+ * @property {Array<string>} similes - Array of similar action names ["TWEET", "POST", "SEND_TWEET"].
+ * @property {string} description - Description of the action ("Post a tweet to Twitter").
+ * @property {Function} validate - Async function to validate whether credentials exist.
+ * @property {Function} handler - Async function to handle posting the tweet to Twitter.
+ * @property {Array<Array<Object>>} examples - Array of example inputs and expected outputs for the action.
+ */
 export const postAction: Action = {
     name: "POST_TWEET",
     similes: ["TWEET", "POST", "SEND_TWEET"],

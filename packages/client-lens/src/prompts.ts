@@ -18,6 +18,11 @@ export const formatTimeline = (
 ${timeline.map(formatPublication).join("\n")}
 `;
 
+/**
+ * Template for rendering a header section for a character's profile.
+ *
+ * @type {string}
+ */
 export const headerTemplate = `
 {{timeline}}
 
@@ -44,6 +49,11 @@ Try to write something totally different than previous posts. Do not add comment
 
 Your response should not contain any questions. Brief, concise statements only. No emojis. Use \\n\\n (double spaces) between statements.`;
 
+/**
+ * Template for generating a message with recent interactions, thread of publications being replied to, and a task to generate a post in a specific voice, style, and perspective.
+ * 
+ * @type {string}
+ */
 export const messageHandlerTemplate =
     headerTemplate +
     `
@@ -57,6 +67,18 @@ Thread of publications You Are Replying To:
 {{currentPost}}` +
     messageCompletionFooter;
 
+/**
+ * Template for determining if an agent should respond to a message and participate in a conversation.
+ * 
+ * @param {string} agentName - The name of the agent.
+ * @param {string} bio - The agent's biography.
+ * @param {string} lensHandle - The agent's handle.
+ * @param {string} formattedConversation - The formatted conversation thread.
+ * @param {string} currentPost - The current message being considered.
+ * @param {string} shouldRespondFooter - The footer content for the response template.
+ * 
+ * @returns {string} - The decision on whether the agent should RESPOND, IGNORE, or STOP.
+ */
 export const shouldRespondTemplate =
     //
     `# Task: Decide if {{agentName}} should respond.

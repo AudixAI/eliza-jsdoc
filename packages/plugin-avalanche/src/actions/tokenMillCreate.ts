@@ -14,11 +14,24 @@ import {
 import { validateAvalancheConfig } from "../environment";
 import { createMarketAndToken } from "../utils/tokenMill";
 
+/**
+ * Interface for creating tokens with specific content configuration.
+ * Extends the Content interface.
+ * @property {string} name - The name of the token.
+ * @property {string} symbol - The unique symbol of the token.
+ */
 export interface TokenMillCreateContent extends Content {
     name: string;
     symbol: string;
 }
 
+/**
+ * Determines if the provided content is a valid TokenMillCreateContent object.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {any} content - The content object to check.
+ * @returns {boolean} Returns true if the content is a valid TokenMillCreateContent object, false otherwise.
+ */
 function isTokenMillCreateContent(
     runtime: IAgentRuntime,
     content: any
@@ -29,6 +42,29 @@ function isTokenMillCreateContent(
     );
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values.
+ * 
+ * If the user did not provide enough details, respond with what you can. Name and Symbol are required.
+ * 
+ * Example response for a new token:
+ * ```json
+ * {
+ *     "name": "Test Token",
+ *     "symbol": "TEST"
+ * }
+ * ```
+ * 
+ * ## Recent Messages
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token creation:
+ * - Name
+ * - Symbol
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values.
 
 If the user did not provide enough details, respond with what you can. Name and Symbol are required.

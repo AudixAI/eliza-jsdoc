@@ -13,6 +13,15 @@ import {
 import { BinanceService } from "../services";
 import { SpotTradeSchema } from "../types";
 
+/**
+ * Defines a spot trade template for extracting trading details based on the last response in a conversation.
+ * The trading pairs on Binance must include USDT, BUSD, or USDC. For example:
+ * - For "swap SOL for USDC" => use "SOLUSDC" as symbol
+ * - For "swap ETH for USDT" => use "ETHUSDT" as symbol
+ * - For "buy BTC with USDT" => use "BTCUSDT" as symbol
+ * 
+ * @type {string}
+ */
 const spotTradeTemplate = `Look at your LAST RESPONSE in the conversation where you confirmed a trade/swap request.
 Based on ONLY that last message, extract the trading details:
 
@@ -33,6 +42,17 @@ Trading pairs on Binance must include USDT or BUSD or USDC. For example:
 Recent conversation:
 {{recentMessages}}`;
 
+/**
+ * Action for executing a spot trade on Binance.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Array of similes related to the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Function to validate if required settings are present.
+ * @property {Function} handler - Function to handle the execution of the spot trade.
+ * @property {Array<Array<ActionExample>>} examples - Examples demonstrating the usage of the action.
+ */
 export const spotTrade: Action = {
     name: "EXECUTE_SPOT_TRADE",
     similes: [

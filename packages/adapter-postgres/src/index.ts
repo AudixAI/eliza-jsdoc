@@ -2,6 +2,9 @@ import { v4 } from "uuid";
 
 // Import the entire module as default
 import pg from "pg";
+/**
+ * Represents an alias for the pg.Pool type.
+ */
 type Pool = pg.Pool;
 
 import {
@@ -33,6 +36,12 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
+/**
+ * A database adapter for PostgreSQL that extends DatabaseAdapter<Pool> and implements IDatabaseCacheAdapter.
+ * * @class PostgresDatabaseAdapter
+ * @extends DatabaseAdapter<Pool>
+ * @implements IDatabaseCacheAdapter
+ */
 export class PostgresDatabaseAdapter
     extends DatabaseAdapter<Pool>
     implements IDatabaseCacheAdapter
@@ -44,6 +53,12 @@ export class PostgresDatabaseAdapter
     private readonly jitterMax: number = 1000; // 1 second
     private readonly connectionTimeout: number = 5000; // 5 seconds
 
+/**
+ * Constructs a new instance of the class with the provided connection configuration.
+ * Initializes a connection pool using the provided configuration options and default values.
+ * Sets up error handling for the pool and tests the connection upon initialization.
+ * @param {any} connectionConfig - The configuration options to be used for establishing the connection pool.
+ */
     constructor(connectionConfig: any) {
         super({
             //circuitbreaker stuff
@@ -72,6 +87,13 @@ export class PostgresDatabaseAdapter
         this.testConnection();
     }
 
+/**
+ * Sets up error handling for the connection pool.
+ * 
+ * Handles the "SIGINT", "SIGTERM", and "beforeExit" events by calling the cleanup method.
+ * 
+ * @private
+ */
     private setupPoolErrorHandling() {
         process.on("SIGINT", async () => {
             await this.cleanup();
@@ -88,6 +110,14 @@ export class PostgresDatabaseAdapter
         });
     }
 
+/**
+ * Executes a given operation with circuit breaker and retry functionality.
+ * @template T
+ * @param {() => Promise<T>} operation - The operation to be executed.
+ * @param {string} context - The context in which the operation is being executed.
+ * @returns {Promise<T>} A Promise that resolves to the result of the operation.
+ */ 
+
     private async withDatabase<T>(
         operation: () => Promise<T>,
         context: string
@@ -97,6 +127,14 @@ export class PostgresDatabaseAdapter
         }, context);
     }
 
+/**
+ * Executes the provided asynchronous operation with retry logic.
+ *
+ * @template T - The type of the operation's return value.
+ * @param {() => Promise<T>} operation - The asynchronous operation to be executed.
+ * @returns {Promise<T>} - A promise that resolves with the result of the operation on success.
+ * @throws {Error} - Throws the last encountered error if all retry attempts fail.
+ */
     private async withRetry<T>(operation: () => Promise<T>): Promise<T> {
         let lastError: Error = new Error("Unknown error"); // Initialize with default
 
@@ -147,6 +185,12 @@ export class PostgresDatabaseAdapter
         throw lastError;
     }
 
+/**
+ * Handles a connection error with the pool by attempting to reconnect.
+ * 
+ * @param {Error} error - The error that triggered the reconnection attempt.
+ * @throws {Error} If unable to reconnect the pool.
+ */
     private async handlePoolError(error: Error) {
         elizaLogger.error("Pool error occurred, attempting to reconnect", {
             error: error.message,
@@ -175,6 +219,13 @@ export class PostgresDatabaseAdapter
         }
     }
 
+/**
+ * Execute a SQL query on the database.
+ * 
+ * @param {string | QueryConfig<I>} queryTextOrConfig - The SQL query to execute or an object containing the query and parameters.
+ * @param {QueryConfigValues<I>} [values] - The values to substitute in the query.
+ * @returns {Promise<QueryResult<R>>} A promise that resolves to the result of the SQL query.
+ */
     async query<R extends QueryResultRow = any, I = any[]>(
         queryTextOrConfig: string | QueryConfig<I>,
         values?: QueryConfigValues<I>
@@ -184,6 +235,11 @@ export class PostgresDatabaseAdapter
         }, "query");
     }
 
+/**
+ * Asynchronously validates the setup for the 'vector' extension in the database.
+ * 
+ * @returns {Promise<boolean>} A promise that resolves with a boolean indicating if the setup is valid.
+ */
     private async validateVectorSetup(): Promise<boolean> {
         try {
             const vectorExt = await this.query(`
@@ -205,6 +261,11 @@ export class PostgresDatabaseAdapter
         }
     }
 
+/**
+ * Initializes the application by setting up the database connection, application settings, and database schema.
+ * 
+ * @returns {Promise<void>} A Promise that resolves once the initialization process is complete.
+ */
     async init() {
         await this.testConnection();
 
@@ -257,10 +318,18 @@ export class PostgresDatabaseAdapter
         }
     }
 
+/**
+ * Asynchronously closes the connection pool.
+ */
     async close() {
         await this.pool.end();
     }
 
+/**
+ * Tests the database connection by executing a query to select the current date and time.
+ * Logs success if the connection test is successful, otherwise logs the error.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the connection test is successful, otherwise rejects with an error message.
+ */
     async testConnection(): Promise<boolean> {
         let client;
         try {
@@ -281,6 +350,11 @@ export class PostgresDatabaseAdapter
         }
     }
 
+/**
+ * Asynchronously cleans up resources by ending the database pool. 
+ * 
+ * @returns {Promise<void>} A Promise that resolves once the database pool has been successfully closed.
+ */
     async cleanup(): Promise<void> {
         try {
             await this.pool.end();
@@ -290,6 +364,12 @@ export class PostgresDatabaseAdapter
         }
     }
 
+/**
+ * Retrieve the room ID from the database based on the specified room ID.
+ *
+ * @param {UUID} roomId - The UUID of the room to retrieve.
+ * @returns {Promise<UUID | null>} The room ID if found in the database, otherwise null.
+ */
     async getRoom(roomId: UUID): Promise<UUID | null> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -300,6 +380,12 @@ export class PostgresDatabaseAdapter
         }, "getRoom");
     }
 
+/**
+ * Asynchronously retrieves participants for a given account based on the provided user ID.
+ * 
+ * @param {UUID} userId - The unique identifier of the user account to retrieve participants for.
+ * @returns {Promise<Participant[]>} A Promise that resolves to an array of Participant objects representing the participants associated with the specified user account.
+ */
     async getParticipantsForAccount(userId: UUID): Promise<Participant[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -312,6 +398,12 @@ export class PostgresDatabaseAdapter
         }, "getParticipantsForAccount");
     }
 
+/**
+ * Retrieves the user state of a participant in a specific room.
+ * @param {UUID} roomId - The UUID of the room.
+ * @param {UUID} userId - The UUID of the user.
+ * @returns {Promise<"FOLLOWED" | "MUTED" | null>} - The user state of the participant: "FOLLOWED", "MUTED", or null if not found.
+ */
     async getParticipantUserState(
         roomId: UUID,
         userId: UUID
@@ -325,6 +417,15 @@ export class PostgresDatabaseAdapter
         }, "getParticipantUserState");
     }
 
+/**
+ * Retrieves memories based on room IDs.
+ * 
+ * @param {Object} params - The parameters for fetching memories.
+ * @param {UUID[]} params.roomIds - The list of room IDs to fetch memories for.
+ * @param {UUID} [params.agentId] - The agent ID to filter memories by.
+ * @param {string} params.tableName - The name of the table where memories are stored.
+ * @returns {Promise<Memory[]>} - A promise that resolves to an array of memories.
+ */
     async getMemoriesByRoomIds(params: {
         roomIds: UUID[];
         agentId?: UUID;
@@ -355,6 +456,14 @@ export class PostgresDatabaseAdapter
         }, "getMemoriesByRoomIds");
     }
 
+/**
+ * Set the user state for a participant in a room.
+ * 
+ * @param {UUID} roomId - The ID of the room.
+ * @param {UUID} userId - The ID of the user.
+ * @param {"FOLLOWED" | "MUTED" | null} state - The state to set for the user ("FOLLOWED"/"MUTED" or null).
+ * @returns {Promise<void>} - A Promise that resolves when the user state has been updated.
+ */
     async setParticipantUserState(
         roomId: UUID,
         userId: UUID,
@@ -368,6 +477,12 @@ export class PostgresDatabaseAdapter
         }, "setParticipantUserState");
     }
 
+/**
+ * Retrieves a list of participant UUIDs for a given room ID from the database.
+ *
+ * @param {UUID} roomId - The UUID of the room to retrieve participants for.
+ * @returns {Promise<UUID[]>} A Promise that resolves with an array of participant UUIDs.
+ */
     async getParticipantsForRoom(roomId: UUID): Promise<UUID[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -378,6 +493,11 @@ export class PostgresDatabaseAdapter
         }, "getParticipantsForRoom");
     }
 
+/**
+ * Retrieves an account by the specified user ID.
+ * @param {UUID} userId - The ID of the user account to retrieve.
+ * @returns {Promise<Account | null>} The account object if found, otherwise null.
+ */
     async getAccountById(userId: UUID): Promise<Account | null> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -405,6 +525,12 @@ export class PostgresDatabaseAdapter
         }, "getAccountById");
     }
 
+/**
+ * Creates a new account in the database.
+ * 
+ * @param {Account} account - The account object to be created.
+ * @returns {Promise<boolean>} A boolean representing whether the account was created successfully.
+ */
     async createAccount(account: Account): Promise<boolean> {
         return this.withDatabase(async () => {
             try {
@@ -437,6 +563,12 @@ export class PostgresDatabaseAdapter
         }, "createAccount");
     }
 
+/**
+ * Retrieves actors associated with a specific room by roomId.
+ * @param {object} params - The parameters for the query.
+ * @param {string} params.roomId - The UUID of the room to retrieve actors for.
+ * @returns {Promise<Actor[]>} A Promise that resolves with an array of Actor objects.
+ */
     async getActorById(params: { roomId: UUID }): Promise<Actor[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -484,6 +616,12 @@ export class PostgresDatabaseAdapter
         });
     }
 
+/**
+ * Retrieves a memory from the database by its unique identifier.
+ * 
+ * @param {UUID} id - The unique identifier of the memory to retrieve.
+ * @returns {Promise<Memory | null>} The memory object if found, otherwise null.
+ */
     async getMemoryById(id: UUID): Promise<Memory | null> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -502,6 +640,12 @@ export class PostgresDatabaseAdapter
         }, "getMemoryById");
     }
 
+/**
+     * Create a memory in the database.
+     * @param {Memory} memory - The memory object to be created.
+     * @param {string} tableName - The name of the table to insert the memory into.
+     * @returns {Promise<void>} A Promise that resolves once the memory is created.
+     */
     async createMemory(memory: Memory, tableName: string): Promise<void> {
         return this.withDatabase(async () => {
             elizaLogger.debug("PostgresAdapter createMemory:", {
@@ -543,6 +687,20 @@ export class PostgresDatabaseAdapter
         }, "createMemory");
     }
 
+/**
+ * Asynchronously search for memories with the specified parameters.
+ * 
+ * @param {Object} params - The parameters for the memory search.
+ * @param {string} params.tableName - The name of the table to search in.
+ * @param {UUID} params.agentId - The ID of the agent associated with the memories.
+ * @param {UUID} params.roomId - The ID of the room associated with the memories.
+ * @param {number[]} params.embedding - The embedding vector used for matching memories.
+ * @param {number} params.match_threshold - The threshold for matching similarity.
+ * @param {number} params.match_count - The maximum number of memories to match.
+ * @param {boolean} params.unique - Flag indicating whether to return unique memories only.
+ * @returns {Promise<Memory[]>} - A promise that resolves to an array of Memory objects matching the search criteria.
+ */
+      
     async searchMemories(params: {
         tableName: string;
         agentId: UUID;
@@ -562,6 +720,19 @@ export class PostgresDatabaseAdapter
         });
     }
 
+/**
+ * Asynchronously fetch memories from the database based on the provided parameters.
+ * 
+ * @param {Object} params - The parameters for fetching memories.
+ * @param {UUID} params.roomId - The ID of the room for which memories are being fetched.
+ * @param {number} [params.count] - The maximum number of memories to fetch.
+ * @param {boolean} [params.unique] - Flag to fetch unique memories only.
+ * @param {string} params.tableName - The name of the table containing the memories.
+ * @param {UUID} [params.agentId] - The ID of the agent whose memories are being fetched.
+ * @param {number} [params.start] - The start timestamp for fetching memories within a range.
+ * @param {number} [params.end] - The end timestamp for fetching memories within a range.
+ * @returns {Promise<Memory[]>} - A Promise that resolves to an array of Memory objects fetched from the database.
+ */
     async getMemories(params: {
         roomId: UUID;
         count?: number;
@@ -644,6 +815,16 @@ export class PostgresDatabaseAdapter
         }, "getMemories");
     }
 
+/**
+ * Retrieves goals based on the specified parameters.
+ * 
+ * @param {Object} params - The parameters for retrieving goals.
+ * @param {UUID} params.roomId - The UUID of the room to retrieve goals from.
+ * @param {UUID | null} [params.userId] - The UUID of the user to filter goals by. Optional.
+ * @param {boolean} [params.onlyInProgress] - Flag to filter goals by those in progress. Optional.
+ * @param {number} [params.count] - The maximum number of goals to retrieve. Optional.
+ * @returns {Promise<Goal[]>} A promise that resolves with an array of goals matching the specified parameters.
+ */
     async getGoals(params: {
         roomId: UUID;
         userId?: UUID | null;
@@ -682,6 +863,12 @@ export class PostgresDatabaseAdapter
         }, "getGoals");
     }
 
+/**
+ * Asynchronously updates a goal in the database.
+ * 
+ * @param {Goal} goal - The goal object to update.
+ * @returns {Promise<void>} A Promise that resolves when the update operation is complete.
+ */
     async updateGoal(goal: Goal): Promise<void> {
         return this.withDatabase(async () => {
             try {
@@ -706,6 +893,12 @@ export class PostgresDatabaseAdapter
         }, "updateGoal");
     }
 
+/**
+ * Asynchronously creates a new goal in the database.
+ * 
+ * @param {Goal} goal - The goal object to be created.
+ * @returns {Promise<void>} A Promise that resolves when the operation is complete.
+ */
     async createGoal(goal: Goal): Promise<void> {
         return this.withDatabase(async () => {
             await this.pool.query(
@@ -723,6 +916,13 @@ export class PostgresDatabaseAdapter
         }, "createGoal");
     }
 
+/**
+ * Asynchronously removes a goal from the database.
+ * 
+ * @param {UUID} goalId - The unique identifier of the goal to be removed.
+ * @returns {Promise<void>} - A Promise that resolves when the goal is successfully removed.
+ * @throws {Error} - If the goalId is missing or if there is an error during the removal process.
+ */
     async removeGoal(goalId: UUID): Promise<void> {
         if (!goalId) throw new Error("Goal ID is required");
 
@@ -748,6 +948,13 @@ export class PostgresDatabaseAdapter
         }, "removeGoal");
     }
 
+/**
+ * Asynchronously creates a new room in the database with an optional room ID.
+ * If no room ID is provided, a new UUID will be generated.
+ * 
+ * @param {UUID} roomId - The optional room ID for the new room.
+ * @returns {Promise<UUID>} The UUID of the newly created room.
+ */
     async createRoom(roomId?: UUID): Promise<UUID> {
         return this.withDatabase(async () => {
             const newRoomId = roomId || v4();
@@ -758,6 +965,13 @@ export class PostgresDatabaseAdapter
         }, "createRoom");
     }
 
+/**
+ * Asynchronously removes a room and its related data from the database.
+ * 
+ * @param {UUID} roomId - The ID of the room to be removed.
+ * @returns {Promise<void>} A Promise that resolves once the room and related data are successfully removed.
+ * @throws {Error} If the provided roomId is empty or if there is an error during the removal process.
+ */
     async removeRoom(roomId: UUID): Promise<void> {
         if (!roomId) throw new Error("Room ID is required");
 
@@ -818,6 +1032,14 @@ export class PostgresDatabaseAdapter
         }, "removeRoom");
     }
 
+/**
+ * Creates a relationship between two users in the database.
+ * 
+ * @param {Object} params - The parameters for creating the relationship.
+ * @param {string} params.userA - The UUID of userA.
+ * @param {string} params.userB - The UUID of userB.
+ * @returns {Promise<boolean>} - A boolean indicating whether the relationship was successfully created.
+ */
     async createRelationship(params: {
         userA: UUID;
         userB: UUID;
@@ -871,6 +1093,15 @@ export class PostgresDatabaseAdapter
         }, "createRelationship");
     }
 
+/**
+ * Retrieve the relationship between two users.
+ *
+ * @param {Object} params - The parameters for fetching the relationship.
+ * @param {UUID} params.userA - The UUID of user A.
+ * @param {UUID} params.userB - The UUID of user B.
+ * @returns {Promise<Relationship | null>} The relationship object if found, otherwise null.
+ * @throws {Error} When userA or userB is missing.
+ */
     async getRelationship(params: {
         userA: UUID;
         userB: UUID;
@@ -914,6 +1145,13 @@ export class PostgresDatabaseAdapter
         }, "getRelationship");
     }
 
+/**
+ * Retrieves relationships of a user based on their userID.
+ * 
+ * @param {Object} params - The parameters for the function.
+ * @param {UUID} params.userId - The userID of the user to retrieve relationships for.
+ * @returns {Promise<Relationship[]>} - A Promise that resolves to an array of Relationship objects.
+ */
     async getRelationships(params: { userId: UUID }): Promise<Relationship[]> {
         if (!params.userId) {
             throw new Error("userId is required");
@@ -945,6 +1183,18 @@ export class PostgresDatabaseAdapter
         }, "getRelationships");
     }
 
+/**
+ * Retrieves cached embeddings based on the provided query parameters.
+ * 
+ * @param {Object} opts - Options for fetching cached embeddings.
+ * @param {string} opts.query_table_name - The name of the query table.
+ * @param {number} opts.query_threshold - The threshold value for the query.
+ * @param {string} opts.query_input - The input string for the query.
+ * @param {string} opts.query_field_name - The field name for the query.
+ * @param {string} opts.query_field_sub_name - The sub-field name for the query.
+ * @param {number} opts.query_match_count - The match count for the query.
+ * @returns {Promise<{ embedding: number[]; levenshtein_score: number }[]>} A promise that resolves to an array of objects containing the embeddings and Levenshtein scores.
+ */
     async getCachedEmbeddings(opts: {
         query_table_name: string;
         query_threshold: number;
@@ -1053,6 +1303,17 @@ export class PostgresDatabaseAdapter
         }, "getCachedEmbeddings");
     }
 
+/**
+ * Logs an entry with the provided parameters into the database.
+ *
+ * @param {object} params - The parameters for logging.
+ * @param {object} params.body - The body of the log entry.
+ * @param {string} params.userId - The user ID associated with the log entry.
+ * @param {string} params.roomId - The room ID associated with the log entry.
+ * @param {string} params.type - The type of the log entry.
+ * @returns {Promise<void>} A Promise that resolves when the logging is complete.
+ */ 
+
     async log(params: {
         body: { [key: string]: unknown };
         userId: UUID;
@@ -1109,6 +1370,18 @@ export class PostgresDatabaseAdapter
         }, "log");
     }
 
+/**
+ * Searches memories by given embedding vector
+ * @param {number[]} embedding - The embedding vector to search for
+ * @param {Object} params - Search parameters
+ * @param {number} [params.match_threshold] - The similarity threshold to match against
+ * @param {number} [params.count] - The maximum number of results to return
+ * @param {UUID} [params.agentId] - The agent ID to filter by
+ * @param {UUID} [params.roomId] - The room ID to filter by
+ * @param {boolean} [params.unique] - Flag to return only unique results
+ * @param {string} params.tableName - The table name to search in
+ * @returns {Promise<Memory[]>} - An array of memories matching the search criteria
+ */
     async searchMemoriesByEmbedding(
         embedding: number[],
         params: {
@@ -1211,6 +1484,13 @@ export class PostgresDatabaseAdapter
         }, "searchMemoriesByEmbedding");
     }
 
+/**
+ * Add a new participant to a room in the database.
+ * 
+ * @param {UUID} userId - The unique identifier of the user to be added as a participant.
+ * @param {UUID} roomId - The unique identifier of the room where the user will be added.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the participant is successfully added, and false otherwise.
+ */
     async addParticipant(userId: UUID, roomId: UUID): Promise<boolean> {
         return this.withDatabase(async () => {
             try {
@@ -1227,6 +1507,13 @@ export class PostgresDatabaseAdapter
         }, "addParticpant");
     }
 
+/**
+ * Removes a participant from a room.
+ * 
+ * @param {UUID} userId - The unique identifier of the user to remove.
+ * @param {UUID} roomId - The unique identifier of the room from which to remove the participant.
+ * @returns {Promise<boolean>} - A Promise that resolves to true if the participant was successfully removed, false otherwise.
+ */
     async removeParticipant(userId: UUID, roomId: UUID): Promise<boolean> {
         return this.withDatabase(async () => {
             try {
@@ -1242,6 +1529,14 @@ export class PostgresDatabaseAdapter
         }, "removeParticipant");
     }
 
+/**
+ * Update the status of a goal in the database.
+ * 
+ * @param {Object} params - The parameters for updating the goal status.
+ * @param {UUID} params.goalId - The UUID of the goal to update.
+ * @param {GoalStatus} params.status - The new status of the goal.
+ * @returns {Promise<void>} - A promise that resolves when the goal status is updated.
+ */
     async updateGoalStatus(params: {
         goalId: UUID;
         status: GoalStatus;
@@ -1254,6 +1549,13 @@ export class PostgresDatabaseAdapter
         }, "updateGoalStatus");
     }
 
+/**
+ * Remove a specific memory from the database.
+ * 
+ * @param {UUID} memoryId - The unique identifier of the memory to be removed.
+ * @param {string} tableName - The name of the table where the memory is stored.
+ * @return {Promise<void>} A promise that resolves once the memory is successfully removed.
+ */
     async removeMemory(memoryId: UUID, tableName: string): Promise<void> {
         return this.withDatabase(async () => {
             await this.pool.query(
@@ -1263,6 +1565,13 @@ export class PostgresDatabaseAdapter
         }, "removeMemory");
     }
 
+/**
+ * Removes all memories from a specified room that match the given type.
+ * 
+ * @param {UUID} roomId - The ID of the room from which memories will be removed.
+ * @param {string} tableName - The type of memories to be removed.
+ * @returns {Promise<void>} A promise that resolves once all memories have been successfully removed.
+ */
     async removeAllMemories(roomId: UUID, tableName: string): Promise<void> {
         return this.withDatabase(async () => {
             await this.pool.query(
@@ -1272,6 +1581,13 @@ export class PostgresDatabaseAdapter
         }, "removeAllMemories");
     }
 
+/**
+ * Count the number of memories for a particular room in the database.
+ * @param {UUID} roomId - The ID of the room to count memories for.
+ * @param {boolean} [unique=true] - Flag indicating whether to count unique memories only. Default is true.
+ * @param {string} [tableName=""] - The name of the table to query for memories. Required.
+ * @returns {Promise<number>} - The number of memories for the specified room.
+ */
     async countMemories(
         roomId: UUID,
         unique = true,
@@ -1290,6 +1606,12 @@ export class PostgresDatabaseAdapter
         }, "countMemories");
     }
 
+/**
+ * Removes all goals associated with a specific room.
+ * 
+ * @param {UUID} roomId - The id of the room to remove goals from.
+ * @returns {Promise<void>} A Promise that resolves when all goals have been removed.
+ */
     async removeAllGoals(roomId: UUID): Promise<void> {
         return this.withDatabase(async () => {
             await this.pool.query(`DELETE FROM goals WHERE "roomId" = $1`, [
@@ -1298,6 +1620,12 @@ export class PostgresDatabaseAdapter
         }, "removeAllGoals");
     }
 
+/**
+ * Retrieve the list of room IDs that a participant is a part of.
+ * 
+ * @param {UUID} userId - The UUID of the participant to retrieve room IDs for.
+ * @returns {Promise<UUID[]>} - A promise that resolves with an array of room IDs.
+ */
     async getRoomsForParticipant(userId: UUID): Promise<UUID[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.pool.query(
@@ -1308,6 +1636,12 @@ export class PostgresDatabaseAdapter
         }, "getRoomsForParticipant");
     }
 
+/**
+ * Retrieves all the room IDs where the provided array of user IDs are participants.
+ *
+ * @param {UUID[]} userIds - An array of user IDs to search for in the 'participants' table.
+ * @returns {Promise<UUID[]>} - A Promise that resolves to an array of room IDs where the provided user IDs are participants.
+ */
     async getRoomsForParticipants(userIds: UUID[]): Promise<UUID[]> {
         return this.withDatabase(async () => {
             const placeholders = userIds.map((_, i) => `$${i + 1}`).join(", ");
@@ -1319,6 +1653,14 @@ export class PostgresDatabaseAdapter
         }, "getRoomsForParticipants");
     }
 
+/**
+ * Retrieve details of actors associated with a specified room.
+ * 
+ * @param {Object} params - The parameters for retrieving actor details.
+ * @param {string} params.roomId - The ID of the room for which actor details are being fetched.
+ * @returns {Promise<Actor[]>} The details of actors in the specified room.
+ * @throws {Error} When the roomId is not provided or if there is an error fetching actor details.
+ */
     async getActorDetails(params: { roomId: string }): Promise<Actor[]> {
         if (!params.roomId) {
             throw new Error("roomId is required");
@@ -1384,6 +1726,14 @@ export class PostgresDatabaseAdapter
         }, "getActorDetails");
     }
 
+/**
+ * Retrieves a value from the cache table based on the provided key and agentId.
+ * 
+ * @param {Object} params - The parameters for retrieving the cache value.
+ * @param {string} params.key - The key to search for in the cache table.
+ * @param {UUID} params.agentId - The agentId associated with the key.
+ * @returns {Promise<string | undefined>} The value corresponding to the key and agentId, if found; otherwise undefined.
+ */
     async getCache(params: {
         key: string;
         agentId: UUID;
@@ -1408,6 +1758,15 @@ export class PostgresDatabaseAdapter
         }, "getCache");
     }
 
+/**
+ * Set data in the cache table with provided key, agentId, and value.
+ * 
+ * @param {Object} params - The parameters for setting cache.
+ * @param {string} params.key - The key for the cache entry.
+ * @param {UUID} params.agentId - The agentId for the cache entry.
+ * @param {string} params.value - The value to be stored in the cache.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the cache was set successfully, false otherwise.
+ */
     async setCache(params: {
         key: string;
         agentId: UUID;
@@ -1451,6 +1810,13 @@ export class PostgresDatabaseAdapter
         }, "setCache");
     }
 
+/**
+ * Delete cache from the database for a specific key and agent ID.
+ * @param {Object} params - The parameters for deleting cache.
+ * @param {string} params.key - The key of the cache to delete.
+ * @param {UUID} params.agentId - The agent ID associated with the cache.
+ * @returns {Promise<boolean>} - A boolean indicating whether the cache was successfully deleted.
+ */
     async deleteCache(params: {
         key: string;
         agentId: UUID;
@@ -1490,6 +1856,16 @@ export class PostgresDatabaseAdapter
         }, "deleteCache");
     }
 
+/**
+ * Retrieves knowledge items from the database.
+ * 
+ * @param {Object} params - The parameters for fetching knowledge items.
+ * @param {UUID} [params.id] - The ID of the knowledge item to retrieve.
+ * @param {UUID} params.agentId - The ID of the agent associated with the knowledge items.
+ * @param {number} [params.limit] - The maximum number of knowledge items to retrieve.
+ * @param {string} [params.query] - The search query to filter knowledge items.
+ * @returns {Promise<RAGKnowledgeItem[]>} - A promise that resolves to an array of RAGKnowledgeItem objects.
+ */
     async getKnowledge(params: {
         id?: UUID;
         agentId: UUID;
@@ -1525,6 +1901,17 @@ export class PostgresDatabaseAdapter
         }, "getKnowledge");
     }
 
+/**
+ * Asynchronously search for relevant knowledge items based on given parameters.
+ * 
+ * @param {Object} params - The parameters for searching knowledge.
+ * @param {UUID} params.agentId - The ID of the agent performing the search.
+ * @param {Float32Array} params.embedding - The embedding vector used for similarity matching.
+ * @param {number} params.match_threshold - The minimum threshold for similarity match.
+ * @param {number} params.match_count - The number of matching results to retrieve.
+ * @param {string} [params.searchText] - Optional search text to filter results.
+ * @returns {Promise<RAGKnowledgeItem[]>} - A promise that resolves to an array of relevant knowledge items.
+ */
     async searchKnowledge(params: {
         agentId: UUID;
         embedding: Float32Array;
@@ -1610,6 +1997,12 @@ export class PostgresDatabaseAdapter
         }, "searchKnowledge");
     }
 
+/**
+ * Creates a new knowledge item in the database.
+ * 
+ * @param {RAGKnowledgeItem} knowledge - The knowledge item to be created
+ * @returns {Promise<void>} - A promise that resolves when the knowledge item is successfully created
+ */
     async createKnowledge(knowledge: RAGKnowledgeItem): Promise<void> {
         return this.withDatabase(async () => {
             const client = await this.pool.connect();
@@ -1650,12 +2043,25 @@ export class PostgresDatabaseAdapter
         }, "createKnowledge");
     }
 
+/**
+ * Removes knowledge from the database for a given ID.
+ * 
+ * @param {UUID} id - The ID of the knowledge to be removed.
+ * @returns {Promise<void>} - A Promise that resolves once the knowledge has been successfully removed.
+ */
     async removeKnowledge(id: UUID): Promise<void> {
         return this.withDatabase(async () => {
             await this.pool.query('DELETE FROM knowledge WHERE id = $1', [id]);
         }, "removeKnowledge");
     }
 
+/**
+ * Clears the knowledge data for a specific agent.
+ * 
+ * @param {UUID} agentId - The ID of the agent for which to clear knowledge.
+ * @param {boolean} [shared] - Optional parameter to specify whether to clear shared knowledge as well.
+ * @returns {Promise<void>} A promise that resolves when the knowledge data has been cleared.
+ */
     async clearKnowledge(agentId: UUID, shared?: boolean): Promise<void> {
         return this.withDatabase(async () => {
             const sql = shared ?

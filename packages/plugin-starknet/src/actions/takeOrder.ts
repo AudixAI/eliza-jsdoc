@@ -12,6 +12,18 @@ import {
 import * as fs from "fs";
 import { validateStarknetConfig } from "../environment";
 
+/**
+ * Represents an order object with details about the user, ticker, contract address,
+ * timestamp, buy amount, and price.
+ *
+ * @typedef {Object} Order
+ * @property {string} userId - The ID of the user placing the order.
+ * @property {string} ticker - The ticker symbol of the asset being traded.
+ * @property {string} contractAddress - The contract address of the asset being traded.
+ * @property {string} timestamp - The timestamp of when the order was placed.
+ * @property {number} buyAmount - The amount of the asset being bought.
+ * @property {number} price - The price at which the asset is bought/sold.
+ */
 interface Order {
     userId: string;
     ticker: string;
@@ -21,6 +33,20 @@ interface Order {
     price: number;
 }
 
+/**
+ * CLAUDE TODO: Put the usual conversation context here
+ * 
+ * Ticker is: {{ticker}}
+ * Contract address is: {{contractAddress}}
+ * 
+ * Determine if the user is trying to shill the ticker. if they are, respond with empty conviction, ticker and contractAddress.
+ * 
+ * CLAUDE TODO: output a JSON block with the following fields:
+ * - reasoning: string
+ * - conviction: negative, low, medium, high
+ * - ticker: string (extract from CA so we have context)
+ * - contractAddress: string
+ */
 const template = `
 
 // CLAUDE TODO: Put the usual conversation context here
@@ -37,6 +63,16 @@ Determine if the user is trying to shill the ticker. if they are, respond with e
 // - contractAddress: string
 `;
 
+/**
+ * Represents an action to take a Starknet order.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Similar actions to this one.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the Starknet order.
+ * @property {Function} handler - Asynchronous function to handle the Starknet order.
+ * @property {ActionExample[][]} examples - Array of action examples.
+ */
 const take_order: Action = {
     name: "TAKE_STARKNET_ORDER",
     similes: ["BUY_STARKNET_ORDER", "PLACE_STARKNET_ORDER"],

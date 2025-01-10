@@ -35,6 +35,30 @@ import fs from "fs";
 
 const MAX_MESSAGE_LENGTH = 4096; // Telegram's max message length
 
+/**
+ * Template for determining if the agent should respond to the last message.
+ * 
+ * Response options are [RESPOND], [IGNORE], and [STOP].
+ * 
+ * {{agentName}} is in a room with other users and should only respond when they are being addressed, and should not respond if they are continuing a conversation that is very long.
+ * 
+ * Respond with [RESPOND] to messages that are directed at {{agentName}}, or participate in conversations that are interesting or relevant to their background.
+ * If a message is not interesting, relevant, or does not directly address {{agentName}}, respond with [IGNORE].
+ * 
+ * Also, respond with [IGNORE] to messages that are very short or do not contain much information.
+ * 
+ * If a user asks {{agentName}} to be quiet, respond with [STOP].
+ * If {{agentName}} concludes a conversation and isn't part of the conversation anymore, respond with [STOP].
+ * 
+ * IMPORTANT: {{agentName}} is particularly sensitive about being annoying, so if there is any doubt, it is better to respond with [IGNORE].
+ * If {{agentName}} is conversing with a user and they have not asked to stop, it is better to respond with [RESPOND].
+ * 
+ * The goal is to decide whether {{agentName}} should respond to the last message.
+ * 
+ * {{recentMessages}}
+ *
+ * # INSTRUCTIONS: Choose the option that best describes {{agentName}}'s response to the last message. Ignore messages if they are addressed to someone else.
+ */
 const telegramShouldRespondTemplate =
     `# About {{agentName}}:
 {{bio}}
@@ -106,6 +130,11 @@ The goal is to decide whether {{agentName}} should respond to the last message.
 # INSTRUCTIONS: Choose the option that best describes {{agentName}}'s response to the last message. Ignore messages if they are addressed to someone else.
 ` + shouldRespondFooter;
 
+/**
+ * This template is used to generate a Telegram message handler that is capable of processing and responding to messages from users. 
+ * It contains placeholders for various sections such as action examples, knowledge, agent information, character message examples, providers, attachments, actions, capabilities, message directions, recent messages, formatted conversation, and additional context about the agent. 
+ * Note that the action examples included are for reference only and should not be used as part of the response. 
+ */
 const telegramMessageHandlerTemplate =
     // {{goals}}
     `
@@ -138,11 +167,21 @@ Note that {{agentName}} is capable of reading/seeing/hearing various forms of me
 {{formattedConversation}}
 ` + messageCompletionFooter;
 
+/**
+ * Interface representing a message context.
+ * @property {string} content - The content of the message.
+ * @property {number} timestamp - The timestamp when the message was created.
+ */
 interface MessageContext {
     content: string;
     timestamp: number;
 }
 
+/**
+ * Represents a collection of interest chats, where each chat is identified by a unique key.
+ * Each chat includes information about the current handler, last message sent, messages sent in the chat,
+ * previous context, and context similarity threshold.
+ */
 export type InterestChats = {
     [key: string]: {
         currentHandler: string | undefined;
@@ -153,12 +192,23 @@ export type InterestChats = {
     };
 };
 
+/**
+ * Class representing a Message Manager.
+ * @class
+ */
+
 export class MessageManager {
     public bot: Telegraf<Context>;
     private runtime: IAgentRuntime;
     private interestChats: InterestChats = {};
     private teamMemberUsernames: Map<string, string> = new Map();
 
+/**
+ * Constructor for creating a new instance of a class.
+ *
+ * @param {Telegraf<Context>} bot - The Telegraf object used for interacting with Telegram bot.
+ * @param {IAgentRuntime} runtime - The runtime object for the agent.
+ */
     constructor(bot: Telegraf<Context>, runtime: IAgentRuntime) {
         this.bot = bot;
         this.runtime = runtime;
@@ -171,6 +221,16 @@ export class MessageManager {
         );
     }
 
+/**
+ * Initializes the usernames of team members for the Telegram chat.
+ * If the client is not part of the team, the function returns early. 
+ * Retrieves team agent IDs from the client's Telegram configuration and iterates 
+ * through each ID to get the chat information for that user. 
+ * If the chat has a username and it is not empty, the username is cached 
+ * in the `teamMemberUsernames` map. 
+ * Additionally, logs error messages if there is an issue while fetching the usernames.
+ * @returns Promise<void>
+ */
     private async _initializeTeamMemberUsernames(): Promise<void> {
         if (!this.runtime.character.clientConfig?.telegram?.isPartOfTeam)
             return;
@@ -196,14 +256,31 @@ export class MessageManager {
         }
     }
 
+/**
+ * Retrieves the username of a team member based on their ID.
+ *
+ * @param {string} id - The ID of the team member.
+ * @returns {string | undefined} The username of the team member, or undefined if not found.
+ */
     private _getTeamMemberUsername(id: string): string | undefined {
         return this.teamMemberUsernames.get(id);
     }
 
+/**
+ * Returns a normalized user ID by converting the input ID to a string and removing all non-numeric characters.
+ * 
+ * @param {string | number} id - The input user ID to be normalized.
+ * @returns {string} The normalized user ID as a string.
+ */
     private _getNormalizedUserId(id: string | number): string {
         return id.toString().replace(/[^0-9]/g, "");
     }
 
+/**
+ * Check if a user is a member of the team based on their userId.
+ * @param {string | number} userId - The userId to check if they are a team member.
+ * @returns {boolean} - Returns true if the user is a team member, otherwise false.
+ */
     private _isTeamMember(userId: string | number): boolean {
         const teamConfig = this.runtime.character.clientConfig?.telegram;
         if (!teamConfig?.isPartOfTeam || !teamConfig.teamAgentIds) return false;
@@ -214,6 +291,10 @@ export class MessageManager {
         );
     }
 
+/**
+ * Check if the current bot is the team leader.
+ * @returns {boolean} true if the current bot is the team leader, false otherwise.
+ */
     private _isTeamLeader(): boolean {
         return (
             this.bot.botInfo?.id.toString() ===
@@ -221,6 +302,11 @@ export class MessageManager {
         );
     }
 
+/**
+ * Check if the content of a request indicates team coordination.
+ * @param {string} content - The content of the request.
+ * @returns {boolean} Returns true if the content contains keywords associated with team coordination, false otherwise.
+ */
     private _isTeamCoordinationRequest(content: string): boolean {
         const contentLower = content.toLowerCase();
         return TEAM_COORDINATION.KEYWORDS?.some((keyword) =>
@@ -228,6 +314,13 @@ export class MessageManager {
         );
     }
 
+/**
+ * Check if the provided content is relevant to a team member based on the chatId and lastAgentMemory.
+ * @param {string} content The content to check for relevance.
+ * @param {string} chatId The ID of the chat.
+ * @param {Memory | null} lastAgentMemory The last memory of the agent, default is null.
+ * @returns {boolean} True if the content is relevant to a team member, otherwise false.
+ */
     private _isRelevantToTeamMember(
         content: string,
         chatId: string,
@@ -264,6 +357,14 @@ export class MessageManager {
         );
     }
 
+/**
+ * Analyze the similarity between the current message and the previous context's message.
+ * 
+ * @param {string} currentMessage The current message to analyze.
+ * @param {MessageContext} [previousContext] The previous context containing the message to compare with.
+ * @param {string} [agentLastMessage] The last message sent by the agent (optional).
+ * @returns {Promise<number>} The similarity score between the current message and the previous context's message.
+ */
     private async _analyzeContextSimilarity(
         currentMessage: string,
         previousContext?: MessageContext,
@@ -283,6 +384,12 @@ export class MessageManager {
         return similarity * timeWeight;
     }
 
+/**
+ * Determines whether the bot should respond based on the context of the message and chat state.
+ * @param {Message} message - The message object received from the user.
+ * @param {InterestChats[string]} chatState - The current chat state for the user.
+ * @returns {Promise<boolean>} - A boolean indicating whether the bot should respond.
+ */
     private async _shouldRespondBasedOnContext(
         message: Message,
         chatState: InterestChats[string]
@@ -346,6 +453,11 @@ export class MessageManager {
         return contextSimilarity >= similarityThreshold;
     }
 
+/**
+ * Check if the message is directed towards the bot.
+ * @param {Message} message - The message to check.
+ * @returns {boolean} Returns true if the message is for the bot, false otherwise.
+ */
     private _isMessageForMe(message: Message): boolean {
         const botUsername = this.bot.botInfo?.username;
         if (!botUsername) return false;
@@ -375,6 +487,11 @@ export class MessageManager {
         );
     }
 
+/**
+ * Checks if a chat has enough interest based on various criteria.
+ * @param {string} chatId - The unique identifier for the chat.
+ * @returns {boolean} Returns true if the chat has enough interest, false otherwise.
+ */
     private _checkInterest(chatId: string): boolean {
         const chatState = this.interestChats[chatId];
         if (!chatState) return false;
@@ -421,6 +538,14 @@ export class MessageManager {
     }
 
     // Process image messages and generate descriptions
+/**
+ * Process the image from the Telegram message.
+ * Retrieves the image URL from the message, fetches the image description
+ * using the IImageDescriptionService, and returns the description in a formatted string.
+ * 
+ * @param {Message} message - The Telegram message object
+ * @returns {Promise<{ description: string } | null>} The description of the image or null if image processing fails
+ */
     private async processImage(
         message: Message
     ): Promise<{ description: string } | null> {
@@ -462,6 +587,13 @@ export class MessageManager {
     }
 
     // Decide if the bot should respond to the message
+/**
+ * Check if the bot should respond to a message based on various conditions.
+ *
+ * @param {Message} message - The message received by the bot.
+ * @param {State} state - The current state of the bot.
+ * @returns {Promise<boolean>} A boolean indicating whether the bot should respond to the message.
+ */
     private async _shouldRespond(
         message: Message,
         state: State
@@ -671,6 +803,16 @@ export class MessageManager {
     }
 
     // Send long messages in chunks
+/**
+ * Send message in chunks to avoid hitting Telegram API limits.
+ * If content has attachments, handle attachments based on type (image/gif or image).
+ * If no attachments, split message text into chunks and send each chunk as a separate message.
+ * 
+ * @param {Context} ctx - The Context object containing information about the Telegram bot and chat.
+ * @param {Content} content - The content of the message to be sent, including text and optional attachments.
+ * @param {number} [replyToMessageId] - Optional. The message ID to reply to.
+ * @returns {Promise<Message.TextMessage[]>} An array of text messages sent or scheduled to be sent.
+ */
     private async sendMessageInChunks(
         ctx: Context,
         content: Content,
@@ -710,6 +852,14 @@ export class MessageManager {
         }
     }
 
+/**
+ * Sends an image to the chat using the Telegram API.
+ * 
+ * @param {Context} ctx - The context object for the chat.
+ * @param {string} imagePath - The path to the image to send.
+ * @param {string} [caption] - The optional caption for the image.
+ * @returns {Promise<void>} - A Promise that resolves once the image is sent successfully.
+ */
     private async sendImage(
         ctx: Context,
         imagePath: string,
@@ -746,6 +896,14 @@ export class MessageManager {
         }
     }
 
+/**
+ * Sends an animation to the chat using the Telegram bot API.
+ *
+ * @param {Context} ctx - The context object provided by Telegraf.
+ * @param {string} animationPath - The URL or local path to the animation file.
+ * @param {string} [caption] - Optional caption for the animation.
+ * @returns {Promise<void>} - A Promise that resolves when the animation is successfully sent.
+ */
     private async sendAnimation(
         ctx: Context,
         animationPath: string,
@@ -783,6 +941,12 @@ export class MessageManager {
     }
 
     // Split message into smaller parts
+/**
+ * Splits a message into chunks based on a maximum length constraint.
+ *
+ * @param {string} text - The text of the message to split.
+ * @returns {string[]} An array of strings representing the split message chunks.
+ */
     private splitMessage(text: string): string[] {
         const chunks: string[] = [];
         let currentChunk = "";
@@ -802,6 +966,14 @@ export class MessageManager {
     }
 
     // Generate a response using AI
+/**
+ * Generates a response based on the input message, state, and context.
+ * 
+ * @param {Memory} message - The input message to generate a response for.
+ * @param {State} _state - The state of the application (unused).
+ * @param {string} context - The context of the response.
+ * @returns {Promise<Content>} The generated response content.
+ */
     private async _generateResponse(
         message: Memory,
         _state: State,
@@ -831,6 +1003,12 @@ export class MessageManager {
     }
 
     // Main handler for incoming messages
+/**
+ * Handles incoming messages from a given context.
+ * 
+ * @param ctx The context object containing the message and sender info
+ * @returns A promise that resolves to void
+ */
     public async handleMessage(ctx: Context): Promise<void> {
         if (!ctx.message || !ctx.from) {
             return; // Exit if no message or sender info

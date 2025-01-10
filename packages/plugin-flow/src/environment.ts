@@ -3,6 +3,10 @@ import { z } from "zod";
 
 const FLOW_MAINNET_PUBLIC_RPC = "https://mainnet.onflow.org";
 
+/**
+ * Schema for defining environment variables related to Flow blockchain.
+ * @type {import("zod").ZodObject<{ FLOW_ADDRESS: import("zod").ZodString, FLOW_PRIVATE_KEY: import("zod").ZodString, FLOW_NETWORK: import("zod").ZodString, FLOW_ENDPOINT_URL: import("zod").ZodString }>}
+ */
 export const flowEnvSchema = z.object({
     FLOW_ADDRESS: z
         .string()
@@ -16,8 +20,18 @@ export const flowEnvSchema = z.object({
     FLOW_ENDPOINT_URL: z.string().optional().default(FLOW_MAINNET_PUBLIC_RPC),
 });
 
+/**
+ * Type definition for FlowConfig that is inferred from flowEnvSchema
+ */ 
 export type FlowConfig = z.infer<typeof flowEnvSchema>;
 
+/**
+ * Validates flow configuration by retrieving and validating necessary environment variables.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime containing environment variables and settings.
+ * @returns {Promise<FlowConfig>} - The validated flow configuration.
+ * @throws {Error} - If the validation fails due to missing or invalid environment variables.
+ */
 export async function validateFlowConfig(
     runtime: IAgentRuntime
 ): Promise<FlowConfig> {

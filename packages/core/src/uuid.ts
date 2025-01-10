@@ -1,6 +1,14 @@
 import { sha1 } from "js-sha1";
 import { UUID } from "./types.ts";
 
+/**
+ * Converts a string or number to a UUID.
+ * If a number is provided, it will be converted to a string before processing.
+ * Throws a TypeError if the input value is not a string.
+ * 
+ * @param {string | number} target - The string or number to convert to a UUID.
+ * @returns {UUID} The UUID generated from the input string or number.
+ */
 export function stringToUuid(target: string | number): UUID {
     if (typeof target === "number") {
         target = (target as number).toString();

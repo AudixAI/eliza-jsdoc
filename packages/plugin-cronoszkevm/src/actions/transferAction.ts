@@ -40,12 +40,47 @@ const TransferSchema = z.object({
     amount: z.string(),
 });
 
+/**
+ * Interface representing transfer content for a token.
+ * @interface
+ * @extends Content
+ * @property {string} tokenAddress - The address of the token.
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string | number} amount - The amount to transfer, can be a string or number.
+ */ 
+       
 export interface TransferContent extends Content {
     tokenAddress: string;
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ *
+ * Here are several frequently used addresses. Use these for the corresponding tokens:
+ * - ZKCRO/zkCRO: 0x000000000000000000000000000000000000800A
+ * - USDC/usdc: 0xaa5b845f8c9c047779bedf64829601d8b264076c
+ * - ETH/eth: 0x898b3560affd6d955b1574d87ee09e46669c60ea
+ *
+ * Example response:
+ * ```json
+ * {
+ *     "tokenAddress": "0xaa5b845f8c9c047779bedf64829601d8b264076c",
+ *     "recipient": "0xCCa8009f5e09F8C5dB63cb0031052F9CB635Af62",
+ *     "amount": "1000"
+ * }
+ * ```
+ *
+ * {{recentMessages}}
+ *
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Token contract address
+ * - Recipient wallet address
+ * - Amount to transfer
+ *
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Here are several frequently used addresses. Use these for the corresponding tokens:
@@ -71,6 +106,9 @@ Given the recent messages, extract the following information about the requested
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
+/**
+ * Defines a TransferAction object with the name "SEND_TOKEN" and an array of simile strings.
+ */
 export const TransferAction: Action = {
     name: "SEND_TOKEN",
     similes: [

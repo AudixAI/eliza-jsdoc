@@ -18,6 +18,13 @@ import {
 import { WebClient } from "@slack/web-api";
 import { IAgentRuntime } from "@elizaos/core";
 
+/**
+ * Class representing a MessageManager which handles message processing.
+ * @constructor
+ * @param {WebClient} client - The WebClient instance.
+ * @param {IAgentRuntime} runtime - The IAgentRuntime instance.
+ * @param {string} botUserId - The bot user ID.
+ */
 export class MessageManager {
     private client: WebClient;
     private runtime: IAgentRuntime;
@@ -26,6 +33,13 @@ export class MessageManager {
     private messageProcessingLock: Set<string> = new Set();
     private processedMessages: Map<string, number> = new Map();
 
+/**
+ * Initialize a new instance of MessageManager.
+ * 
+ * @param {WebClient} client - The WebClient instance to interact with the messaging platform APIs.
+ * @param {IAgentRuntime} runtime - The IAgentRuntime instance for managing agent runtime environment.
+ * @param {string} botUserId - The ID of the bot user.
+ */
     constructor(client: WebClient, runtime: IAgentRuntime, botUserId: string) {
         console.log("📱 Initializing MessageManager...");
         this.client = client;
@@ -49,6 +63,12 @@ export class MessageManager {
         }, 3600000);
     }
 
+/**
+ * Generate a unique key based on the provided event data.
+ * 
+ * @param {any} event - The event object containing data to generate the key.
+ * @returns {string} The generated key based on event data.
+ */
     private generateEventKey(event: any): string {
         // Create a unique key that includes all relevant event data
         // Normalize event type to handle message and app_mention as the same type
@@ -73,6 +93,12 @@ export class MessageManager {
         return key;
     }
 
+/**
+ * Cleans the message text by removing the bot mention and trimming the whitespace.
+ * 
+ * @param {string} text - The text to be cleaned
+ * @returns {string} The cleaned text with the bot mention removed and trimmed whitespace
+ */
     private cleanMessage(text: string): string {
         elizaLogger.debug("🧹 [CLEAN] Cleaning message text:", text);
         // Remove bot mention
@@ -83,6 +109,13 @@ export class MessageManager {
         return cleaned;
     }
 
+/**
+ * Checks if the bot should respond to a given message.
+ * 
+ * @param {any} message - The message to evaluate if the bot should respond to.
+ * @param {State} state - The current state of the bot.
+ * @returns {Promise<boolean>} - A boolean indicating if the bot should respond.
+ */
     private async _shouldRespond(message: any, state: State): Promise<boolean> {
         console.log("\n=== SHOULD_RESPOND PHASE ===");
         console.log("🔍 Step 1: Evaluating if should respond to message");
@@ -132,6 +165,14 @@ export class MessageManager {
         return response === "RESPOND";
     }
 
+/**
+ * Asynchronously generates a response based on the provided memory, state, and context.
+ * 
+ * @param {Memory} memory - The memory object containing relevant information.
+ * @param {State} state - The state object representing the current state of the conversation.
+ * @param {string} context - The context of the response generation.
+ * @returns {Promise<Content>} A Promise that resolves to the generated response content.
+ */
     private async _generateResponse(
         memory: Memory,
         state: State,
@@ -174,6 +215,11 @@ export class MessageManager {
         return response;
     }
 
+/**
+* Asynchronously handles a message event.
+* 
+* @param {any} event - The message event to be handled.
+*/
     public async handleMessage(event: any) {
         console.log("\n=== MESSAGE_HANDLING PHASE ===");
         console.log("🔍 Step 1: Received new message event");

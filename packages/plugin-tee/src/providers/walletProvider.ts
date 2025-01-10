@@ -24,6 +24,19 @@ const PROVIDER_CONFIG = {
     },
 };
 
+/**
+ * Interface representing an Item.
+ * @typedef {Object} Item
+ * @property {string} name - The name of the item.
+ * @property {string} address - The address of the item.
+ * @property {string} symbol - The symbol of the item.
+ * @property {number} decimals - The decimals of the item.
+ * @property {string} balance - The balance of the item.
+ * @property {string} uiAmount - The UI amount of the item.
+ * @property {string} priceUsd - The price in USD of the item.
+ * @property {string} valueUsd - The value in USD of the item.
+ * @property {string} [valueSol] - Optional value in Sol of the item.
+ */
 export interface Item {
     name: string;
     address: string;
@@ -36,12 +49,26 @@ export interface Item {
     valueSol?: string;
 }
 
+/**
+ * Interface representing a Wallet Portfolio.
+ * @typedef { Object } WalletPortfolio
+ * @property { string } totalUsd - The total amount in USD.
+ * @property { string } [totalSol] - The total amount in SOL (optional).
+ * @property {Array<Item>} items - An array of items in the portfolio.
+ */
 interface WalletPortfolio {
     totalUsd: string;
     totalSol?: string;
     items: Array<Item>;
 }
 
+/**
+ * Interface for storing price data for various items.
+ * @typedef {Object} _BirdEyePriceData
+ * @property {Object.<string, {number, number}>} data - The data object containing price information for items.
+ * @property {number} data.price - The current price of the item.
+ * @property {number} data.priceChange24h - The price change of the item in the last 24 hours.
+ */
 interface _BirdEyePriceData {
     data: {
         [key: string]: {
@@ -51,15 +78,34 @@ interface _BirdEyePriceData {
     };
 }
 
+/**
+ * Interface representing the prices of different cryptocurrencies.
+ * @typedef {Object} Prices
+ * @property {Object} solana - Object containing the price of Solana in USD.
+ * @property {string} solana.usd - The price of Solana in USD.
+ * @property {Object} bitcoin - Object containing the price of Bitcoin in USD.
+ * @property {string} bitcoin.usd - The price of Bitcoin in USD.
+ * @property {Object} ethereum - Object containing the price of Ethereum in USD.
+ * @property {string} ethereum.usd - The price of Ethereum in USD.
+ */
 interface Prices {
     solana: { usd: string };
     bitcoin: { usd: string };
     ethereum: { usd: string };
 }
 
+/**
+ * WalletProvider class representing a provider for fetching wallet and portfolio data
+ * * @class
+ */
 export class WalletProvider {
     private cache: NodeCache;
 
+/**
+ * Constructor for creating a new instance of the class.
+ * @param {Connection} connection - The connection object.
+ * @param {PublicKey} walletPublicKey - The public key of the wallet.
+ */
     constructor(
         private connection: Connection,
         private walletPublicKey: PublicKey
@@ -67,6 +113,13 @@ export class WalletProvider {
         this.cache = new NodeCache({ stdTTL: 300 }); // Cache TTL set to 5 minutes
     }
 
+/**
+ * Makes a fetch request with retries in case of failure.
+ * @param {any} runtime - The runtime object.
+ * @param {string} url - The URL to fetch.
+ * @param {RequestInit} [options={}] - The options for the fetch request.
+ * @returns {Promise<any>} The data fetched from the URL.
+ */
     private async fetchWithRetry(
         runtime,
         url: string,
@@ -114,6 +167,12 @@ export class WalletProvider {
         throw lastError;
     }
 
+/**
+ * Fetches the portfolio value for the wallet.
+ * 
+ * @param {Runtime} runtime - The runtime environment.
+ * @returns {Promise<WalletPortfolio>} The wallet portfolio value.
+ */
     async fetchPortfolioValue(runtime): Promise<WalletPortfolio> {
         try {
             const cacheKey = `portfolio-${this.walletPublicKey.toBase58()}`;
@@ -169,6 +228,13 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Fetches the current prices of SOL, BTC, and ETH using the BIRDEYE API. 
+ *
+ * @param {any} runtime - The runtime environment information.
+ * @returns {Promise<Prices>} A Promise that resolves to an object containing the prices of SOL, BTC, and ETH.
+ * @throws {Error} If there is an error fetching the prices.
+ */
     async fetchPrices(runtime): Promise<Prices> {
         try {
             const cacheKey = "prices";
@@ -223,6 +289,14 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Formats the portfolio information into a string for display.
+ * 
+ * @param {Runtime} runtime - The runtime environment.
+ * @param {WalletPortfolio} portfolio - The user's wallet portfolio data.
+ * @param {Prices} prices - The current market prices for various cryptocurrencies.
+ * @returns {string} Formatted portfolio information as a string.
+ */
     formatPortfolio(
         runtime,
         portfolio: WalletPortfolio,
@@ -260,6 +334,11 @@ export class WalletProvider {
         return output;
     }
 
+/**
+ * Asynchronously retrieves portfolio information and formats it for display.
+ * @param {Runtime} runtime The runtime object containing the necessary information.
+ * @returns {Promise<string>} The formatted portfolio information.
+ */
     async getFormattedPortfolio(runtime): Promise<string> {
         try {
             const [portfolio, prices] = await Promise.all([
@@ -275,6 +354,14 @@ export class WalletProvider {
     }
 }
 
+/**
+ * Function to retrieve wallet information asynchronously.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Memory} _message - The memory object (not used in this function).
+ * @param {State} _state - The state object (optional).
+ * @returns {Promise<string>} The formatted portfolio information from the wallet provider.
+ */
 const walletProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,

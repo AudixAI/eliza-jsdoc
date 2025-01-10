@@ -14,6 +14,14 @@ import { encodingForModel, TiktokenModel } from "js-tiktoken";
 const DEFAULT_MAX_WEB_SEARCH_TOKENS = 4000;
 const DEFAULT_MODEL_ENCODING = "gpt-3.5-turbo";
 
+/**
+ * Calculates the total number of tokens in a given string based on the specified encoding.
+ * 
+ * @param {string} str - The input string to count tokens from.
+ * @param {TiktokenModel} encodingName - The encoding model to use for tokenization. 
+ * Defaults to DEFAULT_MODEL_ENCODING if not provided.
+ * @returns {number} The total number of tokens in the input string.
+ */
 function getTotalTokensFromString(
     str: string,
     encodingName: TiktokenModel = DEFAULT_MODEL_ENCODING
@@ -22,6 +30,14 @@ function getTotalTokensFromString(
     return encoding.encode(str).length;
 }
 
+/**
+ * Returns a truncated version of the input string if it contains more tokens than the specified maximum number of tokens,
+ * otherwise returns the original string.
+ * 
+ * @param {string} data - The input string to check for token count.
+ * @param {number} [maxTokens=DEFAULT_MAX_WEB_SEARCH_TOKENS] - The maximum number of tokens allowed in the string.
+ * @returns {string} The truncated or original input string based on token count.
+ */
 function MaxTokens(
     data: string,
     maxTokens: number = DEFAULT_MAX_WEB_SEARCH_TOKENS
@@ -32,6 +48,16 @@ function MaxTokens(
     return data;
 }
 
+/**
+ * Represents an Action object for performing a web search to find information related to the message.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action
+ * @property {Array<string>} similes - Array of similar actions
+ * @property {string} description - The description of the action
+ * @property {Function} validate - Async function to validate the action
+ * @property {Function} handler - Async function to handle the action
+ * @property {Array<Array<Object>>} examples - Array of example inputs and outputs for the action
+ */
 const webSearch: Action = {
     name: "WEB_SEARCH",
     similes: [

@@ -17,6 +17,13 @@ export const getAddressFromName = async (
     return address;
 };
 
+/**
+ * Function to generate a transfer subdomain call for transferring a subdomain to a recipient.
+ * @param {string} account - The account address initiating the transfer.
+ * @param {string} domain - The domain of the subdomain being transferred.
+ * @param {string} recipient - The account address of the recipient.
+ * @returns {Object[]} An array of objects representing the transfer subdomain call, including contract address, entrypoint, and calldata.
+ */
 export const getTransferSubdomainCall = (
     account: string,
     domain: string,

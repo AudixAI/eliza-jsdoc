@@ -9,6 +9,10 @@ const envPath = resolve(__dirname, "../../../../.env");
 elizaLogger.log("Loading environment from:", envPath);
 config({ path: envPath });
 
+/**
+ * Checks if all required environment variables are present in the process environment.
+ * @returns {boolean} Returns true if all required environment variables are present, otherwise false.
+ */
 function validateEnvironment() {
     const requiredEnvVars = [
         "SLACK_APP_ID",
@@ -30,6 +34,12 @@ function validateEnvironment() {
     return true;
 }
 
+/**
+ * Asynchronous function that executes the Transcribe Media Example using Slack integration.
+ * 
+ * @returns {Promise<void>} Promise that resolves when the example completes successfully.
+ * @throws {Error} If environment validation fails or if the connection to Slack fails.
+ */
 async function main() {
     elizaLogger.log("\n=== Starting Transcribe Media Example ===\n");
 

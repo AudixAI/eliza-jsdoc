@@ -14,6 +14,12 @@ export const wait = (minTime: number = 1000, maxTime: number = 3000) => {
     return new Promise((resolve) => setTimeout(resolve, waitTime));
 };
 
+/**
+ * Checks if a tweet is valid based on the number of hashtags, @s, and $ signs it contains.
+ * Tweets with too many of these symbols are considered spam or garbage.
+ * * @param { Tweet } tweet - The tweet object to validate.
+ * @returns { boolean } - Whether the tweet is considered valid (true) or not (false).
+ */
 export const isValidTweet = (tweet: Tweet): boolean => {
     // Filter out tweets with too many hashtags, @s, or $ signs, probably spam or garbage
     const hashtagCount = (tweet.text?.match(/#/g) || []).length;
@@ -29,6 +35,13 @@ export const isValidTweet = (tweet: Tweet): boolean => {
     );
 };
 
+/**
+ * Asynchronously builds a conversation thread starting from a given tweet.
+ * @param {Tweet} tweet - The initial tweet to start building the thread from.
+ * @param {ClientBase} client - The client instance to interact with external services.
+ * @param {number} [maxReplies=10] - The maximum number of replies to fetch for each tweet.
+ * @returns {Promise<Tweet[]>} A promise that resolves with an array of tweets representing the conversation thread.
+ */
 export async function buildConversationThread(
     tweet: Tweet,
     client: ClientBase,
@@ -164,6 +177,17 @@ export async function buildConversationThread(
     return thread;
 }
 
+/**
+ * Sends a tweet with the given content, potentially split into multiple chunks if it exceeds the maximum tweet length.
+ * 
+ * @param {ClientBase} client - The client object used for sending tweets.
+ * @param {Content} content - The content of the tweet to be sent.
+ * @param {UUID} roomId - The UUID of the room where the tweet is being sent.
+ * @param {string} twitterUsername - The Twitter username associated with the tweet.
+ * @param {string} inReplyTo - The ID of the tweet being replied to, if applicable.
+ * @returns {Promise<Memory[]>} An array of Memory objects representing the sent tweets.
+ */
+     
 export async function sendTweet(
     client: ClientBase,
     content: Content,
@@ -285,6 +309,13 @@ export async function sendTweet(
     return memories;
 }
 
+/**
+ * Splits the content of a tweet into multiple tweets based on a maximum length.
+ * 
+ * @param {string} content The content of the tweet to split.
+ * @param {number} maxLength The maximum length a single tweet can have.
+ * @returns {string[]} An array of strings representing the split tweets.
+ */
 function splitTweetContent(content: string, maxLength: number): string[] {
     const paragraphs = content.split("\n\n").map((p) => p.trim());
     const tweets: string[] = [];
@@ -321,6 +352,12 @@ function splitTweetContent(content: string, maxLength: number): string[] {
     return tweets;
 }
 
+/**
+ * Extracts URLs from a given paragraph and replaces them with unique placeholders.
+ * 
+ * @param {string} paragraph - The paragraph containing URLs to be extracted
+ * @returns {object} An object containing the updated text with placeholders and a map of placeholders to original URLs
+ */
 function extractUrls(paragraph: string): {
     textWithPlaceholders: string;
     placeholderMap: Map<string, string>;
@@ -342,6 +379,13 @@ function extractUrls(paragraph: string): {
     return { textWithPlaceholders, placeholderMap };
 }
 
+/**
+ * Split the input text into chunks to fit within a specified maximum length while maintaining sentence boundaries.
+ * 
+ * @param {string} text - The input text to split into chunks.
+ * @param {number} maxLength - The maximum length for each chunk.
+ * @returns {string[]} An array of strings containing the split chunks.
+ */
 function splitSentencesAndWords(text: string, maxLength: number): string[] {
     // Split by periods, question marks and exclamation marks
     // Note that URLs in text have been replaced with `<<URL_xxx>>` and won't be split by dots
@@ -397,6 +441,13 @@ function splitSentencesAndWords(text: string, maxLength: number): string[] {
     return chunks;
 }
 
+/**
+ * Restores the original URLs in an array of chunks based on a placeholder map.
+ * 
+ * @param {string[]} chunks - The array of chunks where the placeholder URLs exist.
+ * @param {Map<string, string>} placeholderMap - The map containing the placeholder URLs as keys and their original URLs as values.
+ * @returns {string[]} - The array of chunks with the original URLs restored.
+ */
 function restoreUrls(
     chunks: string[],
     placeholderMap: Map<string, string>
@@ -410,6 +461,13 @@ function restoreUrls(
     });
 }
 
+/**
+ * Splits a paragraph into chunks based on the given maximum length.
+ * 
+ * @param {string} paragraph - The paragraph to be split.
+ * @param {number} maxLength - The maximum length of each chunk.
+ * @returns {string[]} An array of strings representing the split chunks.
+ */
 function splitParagraph(paragraph: string, maxLength: number): string[] {
     // 1) Extract URLs and replace with placeholders
     const { textWithPlaceholders, placeholderMap } = extractUrls(paragraph);

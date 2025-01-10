@@ -3,6 +3,19 @@ import { ModelProviderName, Clients } from "./types";
 import elizaLogger from "./logger";
 
 // TODO: TO COMPLETE
+/**
+ * Schema for environment variables containing API keys with specific formats
+ * 
+ * @type {import("zod").ZodObject<{
+ *  OPENAI_API_KEY: import("zod").ZodString;
+ *  REDPILL_API_KEY: import("zod").ZodString;
+ *  GROK_API_KEY: import("zod").ZodString;
+ *  GROQ_API_KEY: import("zod").ZodString;
+ *  OPENROUTER_API_KEY: import("zod").ZodString;
+ *  GOOGLE_GENERATIVE_AI_API_KEY: import("zod").ZodString;
+ *  ELEVENLABS_XI_API_KEY: import("zod").ZodString;
+ * }>
+ */
 export const envSchema = z.object({
     // API Keys with specific formats
     OPENAI_API_KEY: z
@@ -21,9 +34,17 @@ export const envSchema = z.object({
 });
 
 // Type inference
+/**
+ * Represents the inferred type from the provided type schema for the environment configuration.
+ */
 export type EnvConfig = z.infer<typeof envSchema>;
 
 // Validation function
+/**
+ * Validates the environment variables by parsing them using the provided schema.
+ *
+ * @returns {EnvConfig} The validated environment configuration object.
+ */
 export function validateEnv(): EnvConfig {
     try {
         return envSchema.parse(process.env);
@@ -39,6 +60,26 @@ export function validateEnv(): EnvConfig {
 }
 
 // Helper schemas for nested types
+/**
+ * Schema representing an example message with user and content.
+ *
+ * @type {z.ZodObject<z.ZodRawShape<{
+ *   user: z.ZodString;
+ *   content: z.ZodObject<z.ZodRawShape<{
+ *     text: z.ZodString;
+ *     action?: z.ZodString | undefined;
+ *     source?: z.ZodString | undefined;
+ *     url?: z.ZodString | undefined;
+ *     inReplyTo?: z.ZodParsedType<string, "uuid"> | undefined;
+ *     attachments?: z.ZodArray<z.ZodTypeAny> | undefined;
+ *   }>, {
+ *     [k: string]: unknown;
+ *   }>;
+ * }, {
+ *   [k: string]: unknown;
+ * }>}
+ */
+
 const MessageExampleSchema = z.object({
     user: z.string(),
     content: z
@@ -64,6 +105,51 @@ const PluginSchema = z.object({
 });
 
 // Main Character schema
+/**
+ * Character schema defining the structure of a character object.
+ * Contains various properties such as id, name, system, modelProvider, etc.
+ * * @typedef { Object } CharacterSchema
+ * @property { string } [id] - The unique identifier of the character (optional).
+ * @property { string } name - The name of the character.
+ * @property { string } [system] - The system the character belongs to (optional).
+ * @property { ModelProviderName } modelProvider - The name of the model provider.
+ * @property { string } [modelEndpointOverride] - The endpoint override for the model (optional).
+ * @property {Record<string, string>} [templates] - Collection of templates for the character (optional).
+ * @property {(string | string[])} bio - Biography or array of biographies of the character.
+ * @property {string[]} lore - Array of lore related to the character.
+ * @property {MessageExampleSchema[][]} messageExamples - Array of arrays of message examples.
+ * @property {string[]} postExamples - Array of post examples.
+ * @property {string[]} topics - Array of topics associated with the character.
+ * @property {string[]} adjectives - Array of adjectives describing the character.
+ * @property {(string | { path: string, shared?: boolean } )[]} [knowledge] - Array of knowledge or knowledge objects (optional).
+ * @property {Clients[]} clients - Array of client names associated with the character.
+ * @property {(string[] | PluginSchema[])} plugins - Array of plugin names or PluginSchema objects.
+ * @property { Object } [settings] - Settings object containing secrets, voice, model, and embedding model properties (optional).
+ * @property {Record<string, string>} [settings.secrets] - Secrets record (optional).
+ * @property { Object } [settings.voice] - Voice settings object with model and url properties (optional).
+ * @property { string } [settings.voice.model] - Voice model (optional).
+ * @property { string } [settings.voice.url] - Voice URL (optional).
+ * @property { string } [settings.model] - Model name (optional).
+ * @property { string } [settings.embeddingModel] - Embedding model name (optional).
+ * @property { Object } [clientConfig] - Client configuration object for Discord and Telegram (optional).
+ * @property { Object } [clientConfig.discord] - Discord specific configuration object with shouldIgnoreBotMessages and shouldIgnoreDirectMessages properties (optional).
+ * @property { boolean } [clientConfig.discord.shouldIgnoreBotMessages] - Ignore bot messages on Discord (optional).
+ * @property { boolean } [clientConfig.discord.shouldIgnoreDirectMessages] - Ignore direct messages on Discord (optional).
+ * @property { Object } [clientConfig.telegram] - Telegram specific configuration object with shouldIgnoreBotMessages and shouldIgnoreDirectMessages properties (optional).
+ * @property { boolean } [clientConfig.telegram.shouldIgnoreBotMessages] - Ignore bot messages on Telegram (optional).
+ * @property { boolean } [clientConfig.telegram.shouldIgnoreDirectMessages] - Ignore direct messages on Telegram (optional).
+ * @property { Object } style - Style object containing all, chat, and post properties.
+ * @property {string[]} style.all - Array of styles for all interactions.
+ * @property {string[]} style.chat - Array of styles for chat interactions.
+ * @property {string[]} style.post - Array of styles for post interactions.
+ * @property { Object } [twitterProfile] - Twitter profile object with username, screenName, bio, and optional nicknames properties (optional).
+ * @property { string } twitterProfile.username - Twitter username of the character.
+ * @property { string } twitterProfile.screenName - Twitter screen name of the character.
+ * @property { string } twitterProfile.bio - Bio of the character on Twitter.
+ * @property {string[]} [twitterProfile.nicknames] - Array of nicknames for the character on Twitter (optional).
+ * @property { Object } [nft] - NFT object with prompt property (optional).
+ * @property { string } [nft.prompt] - Prompt related to the character for NFTs (optional).
+ */
 export const CharacterSchema = z.object({
     id: z.string().uuid().optional(),
     name: z.string(),
@@ -138,9 +224,19 @@ export const CharacterSchema = z.object({
 });
 
 // Type inference
+/**
+ * Type definition for character configuration based on CharacterSchema
+ */
 export type CharacterConfig = z.infer<typeof CharacterSchema>;
 
 // Validation function
+/**
+ * Validates a character configuration JSON object using CharacterSchema.
+ * If validation fails, logs the errors and throws an error message indicating validation failure.
+ * 
+ * @param json The JSON object to validate
+ * @returns The validated CharacterConfig object
+ */
 export function validateCharacterConfig(json: unknown): CharacterConfig {
     try {
         return CharacterSchema.parse(json);

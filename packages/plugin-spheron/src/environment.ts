@@ -16,8 +16,19 @@ export const requiredEnvVars = [
     "SPHERON_PROVIDER_PROXY_URL",
 ] as const;
 
+/**
+ * Represents the configuration object for a Spheron, inferred from the specified spheronEnvSchema.
+ */
 export type SpheronConfig = z.infer<typeof spheronEnvSchema>;
 
+/**
+ * Validates the Spheron configuration by retrieving settings from the runtime or environment variables,
+ * and parsing them using the spheronEnvSchema. If the configuration is valid, it returns the parsed config.
+ * If there is a validation error, it throws an error with the validation error messages.
+ * 
+ * @param {IAgentRuntime} runtime - The Agent runtime object used to retrieve settings.
+ * @returns {Promise<SpheronConfig>} The validated Spheron configuration.
+ */
 export async function validateSpheronConfig(
     runtime: IAgentRuntime
 ): Promise<SpheronConfig> {

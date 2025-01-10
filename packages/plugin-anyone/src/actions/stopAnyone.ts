@@ -9,6 +9,17 @@ import {
 import { AnyoneClientService } from "../services/AnyoneClientService";
 import { AnyoneProxyService } from "../services/AnyoneProxyService";
 
+/**
+ * Action to stop the Anyone client and proxy service.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - An array of similar actions.
+ * @property {Function} validate - A function to validate the action.
+ * @property {string} description - A description of the action.
+ * @property {Function} handler - A function to handle the action logic.
+ * @property {Object[][]} examples - An array of example interactions for the action.
+ */
 export const stopAnyone: Action = {
     name: "STOP_ANYONE",
     similes: ["STOP_PROXY"],

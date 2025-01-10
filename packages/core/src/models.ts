@@ -8,6 +8,16 @@ import {
     ModelSettings,
 } from "./types.ts";
 
+/**
+ * An object containing different models from various providers.
+ * @typedef {Object} Models
+ * @property {string} endpoint - The endpoint for the model provider.
+ * @property {Object} model - The specific model details.
+ * @property {string} name - The name of the model.
+ * @property {Array} stop - Array of stop words.
+ * @property {number} maxInputTokens - The maximum input tokens allowed.
+ * @property {number} maxOutputTokens - The maximum output tokens allowed.
+ */
 export const models: Models = {
     [ModelProviderName.OPENAI]: {
         endpoint: settings.OPENAI_API_URL || "https://api.openai.com/v1",
@@ -928,6 +938,12 @@ export const models: Models = {
     },
 };
 
+/**
+ * Retrieves the settings for a specific model based on the provider and model type.
+ * @param {ModelProviderName} provider - The provider of the model.
+ * @param {ModelClass} type - The type of the model.
+ * @returns {ModelSettings | undefined} The settings for the specified model, or undefined if not found.
+ */
 export function getModelSettings(
     provider: ModelProviderName,
     type: ModelClass
@@ -935,6 +951,12 @@ export function getModelSettings(
     return models[provider]?.model[type] as ModelSettings | undefined;
 }
 
+/**
+ * Retrieves the settings for the image model based on the provided model provider.
+ *
+ * @param {ModelProviderName} provider - The name of the model provider.
+ * @returns {ImageModelSettings | undefined} The settings for the image model, or undefined if not found.
+ */
 export function getImageModelSettings(
     provider: ModelProviderName
 ): ImageModelSettings | undefined {
@@ -943,6 +965,12 @@ export function getImageModelSettings(
         | undefined;
 }
 
+/**
+ * Retrieves the settings for the embedding model based on the provider name.
+ * 
+ * @param provider The name of the model provider.
+ * @returns The embedding model settings, or undefined if not found.
+ */
 export function getEmbeddingModelSettings(
     provider: ModelProviderName
 ): EmbeddingModelSettings | undefined {
@@ -951,6 +979,12 @@ export function getEmbeddingModelSettings(
         | undefined;
 }
 
+/**
+ * Returns the endpoint for a given ModelProviderName.
+ *
+ * @param {ModelProviderName} provider - The ModelProviderName to retrieve the endpoint for.
+ * @returns {string} The endpoint associated with the provided ModelProviderName.
+ */
 export function getEndpoint(provider: ModelProviderName) {
     return models[provider].endpoint;
 }

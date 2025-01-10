@@ -6,8 +6,17 @@ import { ObsidianProvider } from "./providers/obsidianClient";
 import { validateObsidianConfig } from "./enviroment";
 import { searchQuerySchema, NoteHierarchy, NoteContent } from "./types";
 
+/**
+ * Variable to hold an instance of the ObsidianProvider class or undefined.
+ */
 let obsidianInstance: ObsidianProvider | undefined;
 
+/**
+ * Retrieves the ObsidianProvider instance. If the instance does not exist, a new one is created based on the provided IAgentRuntime.
+ *
+ * @param {IAgentRuntime} runtime - The runtime information needed to create the ObsidianProvider instance.
+ * @returns {Promise<ObsidianProvider>} The ObsidianProvider instance.
+ */
 export async function getObsidian(runtime: IAgentRuntime): Promise<ObsidianProvider> {
     if (!obsidianInstance) {
         elizaLogger.debug("Creating new ObsidianProvider instance");
@@ -24,6 +33,11 @@ export async function getObsidian(runtime: IAgentRuntime): Promise<ObsidianProvi
 
 
 // Extract outgoing links from the note content
+/**
+ * Extracts links from a given note content by searching for text enclosed in double square brackets "[[ ]]".
+ * @param {NoteContent} noteContent - The content of the note to extract links from.
+ * @returns {string[]} An array of extracted links.
+ */
 export function extractLinks(noteContent: NoteContent): string[] {
     const linkRegex = /\[\[(.*?)\]\]/g;
     const links: string[] = [];
@@ -39,6 +53,14 @@ export function extractLinks(noteContent: NoteContent): string[] {
 }
 
 // Store the hierarchical link data in the AI agent's memory
+/**
+ * Store the provided NoteHierarchy in memory.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime context.
+ * @param {Memory} message - The message containing the room and user IDs.
+ * @param {NoteHierarchy} hierarchy - The hierarchy to be stored in memory.
+ * @returns {Promise<void>} - A Promise that resolves once the hierarchy is stored in memory.
+ */
 export async function storeHierarchyInMemory(runtime: IAgentRuntime, message: Memory, hierarchy: NoteHierarchy) {
     const memory: Memory = {
         id: stringToUuid(hierarchy.path),
@@ -64,6 +86,14 @@ export async function storeHierarchyInMemory(runtime: IAgentRuntime, message: Me
 }
 
 // Retrieve and utilize the stored hierarchy
+/**
+ * Retrieves the hierarchy for a given note path from memory.
+ * 
+ * @param {IAgentRuntime} runtime - The Agent Runtime object.
+ * @param {Memory} message - The memory message object.
+ * @param {string} notePath - The path of the note to retrieve hierarchy for.
+ * @returns {Promise<NoteHierarchy | null>} The hierarchy of the note, or null if not found.
+ */
 export async function retrieveHierarchyFromMemory(runtime: IAgentRuntime, message: Memory, notePath: string): Promise<NoteHierarchy | null> {
 
     const memoryManager = new MemoryManager({
@@ -107,6 +137,11 @@ export async function retrieveHierarchyFromMemory(runtime: IAgentRuntime, messag
  *
  * @param markdown - The markdown text to convert
  * @returns The plaintext version of the markdown
+ */
+/**
+ * Converts markdown formatted text to plaintext by removing markdown-specific syntax.
+ * @param {string} markdown - The markdown text to convert to plaintext.
+ * @returns {string} The converted plaintext text.
  */
 export function markdownToPlaintext(markdown: string): string {
     // Handle empty or invalid input

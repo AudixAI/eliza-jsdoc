@@ -18,6 +18,12 @@ import {
 import { ClientBase } from "./base";
 import { buildConversationThread, sendTweet, wait } from "./utils.ts";
 
+/**
+ * Template for generating a Twitter message handler that includes areas of expertise, bio, lore, topics, providers, character post examples,
+ * post directions, recent interactions, recent posts, and instructions on generating a post in the voice, style, and perspective of a Twitter user.
+ * 
+ * @type {string}
+ */
 export const twitterMessageHandlerTemplate =
     `
 # Areas of Expertise
@@ -55,6 +61,37 @@ Here is the current post text again. Remember to include an action if the curren
 {{currentPost}}
 ` + messageCompletionFooter;
 
+/**
+ * Determines if {{agentName}} (@{{twitterUserName}}) should respond to the message and participate in the conversation.
+ * @param {string} targetUsersStr - List of users who should always be responded to regardless of topic or message content
+ * @returns {string} - Response options for {{agentName}}: RESPOND, IGNORE, or STOP
+ * 
+ * PRIORITY RULE: ALWAYS RESPOND to the users in targetUsersStr list. Topic relevance should be ignored for these users.
+ * 
+ * For other users:
+ * - {{agentName}} should RESPOND to messages directed at them
+ * - {{agentName}} should RESPOND to conversations relevant to their background
+ * - {{agentName}} should IGNORE irrelevant messages
+ * - {{agentName}} should IGNORE very short messages unless directly addressed
+ * - {{agentName}} should STOP if asked to stop
+ * - {{agentName}} should STOP if conversation is concluded
+ * - {{agentName}} is in a room with other users and wants to be conversational, but not annoying.
+ * 
+ * IMPORTANT:
+ * - {{agentName}} (@{{twitterUserName}}) is particularly sensitive about being annoying, so if there is any doubt, it is better to IGNORE than to RESPOND.
+ * - For users not in the priority list, {{agentName}} (@{{twitterUserName}}) should err on the side of IGNORE rather than RESPOND if in doubt.
+ * 
+ * Recent Posts:
+ * {{recentPosts}}
+ * 
+ * Current Post:
+ * {{currentPost}}
+ * 
+ * Thread of Tweets You Are Replying To:
+ * {{formattedConversation}}
+ * 
+ * # INSTRUCTIONS: Respond with [RESPOND] if {{agentName}} should respond, [IGNORE] if {{agentName}} should not respond to the last message, or [STOP] if {{agentName}} should stop participating in the conversation.
+ */
 export const twitterShouldRespondTemplate = (targetUsersStr: string) =>
     `# INSTRUCTIONS: Determine if {{agentName}} (@{{twitterUserName}}) should respond to the message and participate in the conversation. Do not comment. Just respond with "true" or "false".
 
@@ -87,16 +124,33 @@ Thread of Tweets You Are Replying To:
 # INSTRUCTIONS: Respond with [RESPOND] if {{agentName}} should respond, or [IGNORE] if {{agentName}} should not respond to the last message and [STOP] if {{agentName}} should stop participating in the conversation.
 ` + shouldRespondFooter;
 
+/**
+ * TwitterInteractionClient class representing a client for interacting with Twitter.
+ * 
+ * @class
+ * @public
+ * @param {ClientBase} client - The client used for interacting with Twitter.
+ * @param {IAgentRuntime} runtime - The runtime environment.
+ */
 export class TwitterInteractionClient {
     client: ClientBase;
     runtime: IAgentRuntime;
     private isDryRun: boolean;
+/**
+ * Constructor for creating a new instance of a class.
+ * @param {ClientBase} client - The client to be used for interaction.
+ * @param {IAgentRuntime} runtime - The runtime information for the agent.
+ */
     constructor(client: ClientBase, runtime: IAgentRuntime) {
         this.client = client;
         this.runtime = runtime;
         this.isDryRun = this.client.twitterConfig.TWITTER_DRY_RUN;
     }
 
+/**
+ * Asynchronously starts the process of handling Twitter interactions in a loop.
+ * Calls the handleTwitterInteractions method periodically based on the configured Twitter poll interval.
+ */
     async start() {
         const handleTwitterInteractionsLoop = () => {
             this.handleTwitterInteractions();
@@ -109,6 +163,15 @@ export class TwitterInteractionClient {
         handleTwitterInteractionsLoop();
     }
 
+/**
+ * Asynchronously handles Twitter interactions by checking for mentions and processing tweets from configured target users.
+ * Retrieves tweets mentioning the Twitter username, as well as recent tweets from specified target users. 
+ * Filters out processed, reply, and retweet tweets, and selects one valid tweet from each target user. 
+ * Each tweet is processed by creating a conversation thread and sending a message response. 
+ * Updates the last checked tweet ID after processing each tweet and saves the latest checked tweet ID to a file.
+ * 
+ * @returns {Promise<void>} A Promise that resolves once all Twitter interactions have been handled.
+ */
     async handleTwitterInteractions() {
         elizaLogger.log("Checking Twitter interactions");
 
@@ -297,6 +360,15 @@ export class TwitterInteractionClient {
         }
     }
 
+/**
+ * Handles the processing of a tweet.
+ * 
+ * @param {Object} param - The parameters object.
+ * @param {Tweet} param.tweet - The tweet to handle.
+ * @param {Memory} param.message - The memory object associated with the tweet.
+ * @param {Tweet[]} param.thread - The array of tweets in the conversation thread.
+ * @returns {Promise<Object>} - A Promise with the response text and action.
+ */
     private async handleTweet({
         tweet,
         message,
@@ -492,6 +564,13 @@ export class TwitterInteractionClient {
         }
     }
 
+/**
+ * Asynchronously builds a conversation thread for a given tweet.
+ *
+ * @param {Tweet} tweet - The initial tweet to start the thread from.
+ * @param {number} [maxReplies=10] - The maximum number of replies to include in the thread.
+ * @returns {Promise<Tweet[]>} - A promise that resolves to an array of tweets representing the conversation thread.
+ */
     async buildConversationThread(
         tweet: Tweet,
         maxReplies: number = 10

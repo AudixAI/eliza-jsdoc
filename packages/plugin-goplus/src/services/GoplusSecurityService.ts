@@ -2,20 +2,42 @@ import { IAgentRuntime, ModelClass, Service, ServiceType, elizaLogger, generateO
 import { GoPlusManage, GoPlusParamType, GoPlusType } from "../lib/GoPlusManage";
 import { requestPrompt, responsePrompt } from "../templates";
 
+/**
+ * Interface for a service that handles security checks in the Goplus application.
+ * @interface
+ */
+
 export interface IGoplusSecurityService extends Service {
     check(text: string): Promise<string>;
 }
 
+/**
+ * Class representing the Goplus Security Service.
+ * @extends Service
+ * @implements IGoplusSecurityService
+ */
 export class GoplusSecurityService extends Service implements IGoplusSecurityService {
     private apiKey: string;
     private runtime: IAgentRuntime;
+/**
+ * Returns the instance of GoplusSecurityService.
+ * @returns {GoplusSecurityService} The instance of GoplusSecurityService.
+ */
     getInstance(): GoplusSecurityService {
         return this;
     }
+/**
+ * Retrieves the service type as GOPLUS_SECURITY.
+ */
     static get serviceType() {
         return ServiceType.GOPLUS_SECURITY;
     }
 
+/**
+ * Initializes the agent with the provided runtime and sets the api key from the runtime settings.
+ * @param {IAgentRuntime} runtime - The runtime object for the agent.
+ * @returns {Promise<void>} A promise that resolves when the initialization is complete.
+ */
     initialize(runtime: IAgentRuntime): Promise<void> {
         this.runtime = runtime;
         this.apiKey = runtime.getSetting("GOPLUS_API_KEY");
@@ -26,6 +48,11 @@ export class GoplusSecurityService extends Service implements IGoplusSecuritySer
     /**
      * Connect to WebSocket and send a message
      */
+/**
+ * Asynchronously checks the input text for security vulnerabilities using various security checks.
+ * * @param { string } text - The input text to be checked for security vulnerabilities.
+ * @returns {Promise<string>} - A promise that resolves with the response text after performing security checks.
+ */
     async check(text: string): Promise<string> {
         try {
             elizaLogger.log("check input text", text);

@@ -11,6 +11,21 @@ import NodeCache from "node-cache";
 import { getWalletKey } from "../keypairUtils";
 
 // Provider configuration
+/**
+ * Configuration object for provider details including various API endpoints, token addresses, and retry settings.
+ *
+ * @constant
+ * @type {Object}
+ * @property {string} BIRDEYE_API - URL for BirdEye API.
+ * @property {number} MAX_RETRIES - Maximum number of retries allowed.
+ * @property {number} RETRY_DELAY - Delay in milliseconds between retries.
+ * @property {string} DEFAULT_RPC - Default RPC endpoint for Solana.
+ * @property {string} GRAPHQL_ENDPOINT - URL for GraphQL endpoint.
+ * @property {Object} TOKEN_ADDRESSES - Object containing token addresses for various cryptocurrencies.
+ * @property {string} TOKEN_ADDRESSES.SOL - Token address for SOL (Solana) cryptocurrency.
+ * @property {string} TOKEN_ADDRESSES.BTC - Token address for BTC (Bitcoin) cryptocurrency.
+ * @property {string} TOKEN_ADDRESSES.ETH - Token address for ETH (Ethereum) cryptocurrency.
+ */
 const PROVIDER_CONFIG = {
     BIRDEYE_API: "https://public-api.birdeye.so",
     MAX_RETRIES: 3,
@@ -24,6 +39,20 @@ const PROVIDER_CONFIG = {
     },
 };
 
+/**
+ * Represents an item with properties including name, address, symbol, decimals, balance, uiAmount, 
+ * priceUsd, valueUsd, and optional valueSol.
+ * @interface Item
+ * @property {string} name - The name of the item.
+ * @property {string} address - The address of the item.
+ * @property {string} symbol - The symbol of the item.
+ * @property {number} decimals - The decimal places used for the item.
+ * @property {string} balance - The balance of the item.
+ * @property {string} uiAmount - The user interface amount of the item.
+ * @property {string} priceUsd - The price of the item in USD.
+ * @property {string} valueUsd - The value of the item in USD.
+ * @property {string} [valueSol] - An optional value of the item in SOL.
+ */
 export interface Item {
     name: string;
     address: string;
@@ -36,12 +65,23 @@ export interface Item {
     valueSol?: string;
 }
 
+/**
+ * Represents a wallet portfolio containing the total USD balance, 
+ * total SOL balance (optional), and an array of items.
+ * @interface
+ */
+         
 interface WalletPortfolio {
     totalUsd: string;
     totalSol?: string;
     items: Array<Item>;
 }
 
+/**
+ * Defines the structure of bird eye price data.
+ * @interface _BirdEyePriceData
+ * @property {Object.<string, {price: number, priceChange24h: number}>} data - Contains key-value pairs where the key is a string and the value is an object with price and priceChange24h properties.
+ */
 interface _BirdEyePriceData {
     data: {
         [key: string]: {
@@ -51,15 +91,36 @@ interface _BirdEyePriceData {
     };
 }
 
+/**
+ * Interface representing different cryptocurrency prices in USD.
+ * @property {object} solana - Object containing the price of Solana in USD.
+ * @property {string} solana.usd - Price of Solana in USD.
+ * @property {object} bitcoin - Object containing the price of Bitcoin in USD.
+ * @property {string} bitcoin.usd - Price of Bitcoin in USD.
+ * @property {object} ethereum - Object containing the price of Ethereum in USD.
+ * @property {string} ethereum.usd - Price of Ethereum in USD.
+ */
 interface Prices {
     solana: { usd: string };
     bitcoin: { usd: string };
     ethereum: { usd: string };
 }
 
+/**
+ * A class representing a wallet provider that manages caching and connection to a wallet.
+ * 
+ * @constructor
+ * @param {Connection} connection - The connection to use for interacting with the wallet.
+ * @param {PublicKey} walletPublicKey - The public key of the wallet.
+ */
 export class WalletProvider {
     private cache: NodeCache;
 
+/**
+ * Constructor for creating a new instance of the class.
+ * @param {Connection} connection - The connection object to use for communication.
+ * @param {PublicKey} walletPublicKey - The public key of the wallet.
+ */
     constructor(
         private connection: Connection,
         private walletPublicKey: PublicKey
@@ -67,6 +128,13 @@ export class WalletProvider {
         this.cache = new NodeCache({ stdTTL: 300 }); // Cache TTL set to 5 minutes
     }
 
+/**
+ * Fetches data from a specified URL with retry mechanism.
+ * @param {Object} runtime - The runtime object.
+ * @param {string} url - The URL to fetch data from.
+ * @param {RequestInit} [options={}] - Additional options for the fetch request.
+ * @returns {Promise<any>} - A promise that resolves with the fetched data.
+ */
     private async fetchWithRetry(
         runtime,
         url: string,
@@ -114,6 +182,12 @@ export class WalletProvider {
         throw lastError;
     }
 
+/**
+ * Fetches the portfolio value of the wallet.
+ * 
+ * @param {any} runtime - The runtime environment.
+ * @returns {Promise<WalletPortfolio>} - The wallet portfolio value.
+ */
     async fetchPortfolioValue(runtime): Promise<WalletPortfolio> {
         try {
             const cacheKey = `portfolio-${this.walletPublicKey.toBase58()}`;
@@ -201,6 +275,12 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Fetches the portfolio value for the wallet using Codex API.
+ *
+ * @param {Runtime} runtime - The runtime environment.
+ * @returns {Promise<WalletPortfolio>} The portfolio value for the wallet.
+ */
     async fetchPortfolioValueCodex(runtime): Promise<WalletPortfolio> {
         try {
             const cacheKey = `portfolio-${this.walletPublicKey.toBase58()}`;
@@ -298,6 +378,14 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Asynchronously fetches prices for SOL, BTC, and ETH tokens from a given runtime.
+ * Uses cache to store and retrieve previously fetched prices.
+ *
+ * @async
+ * @param {any} runtime - The runtime to fetch prices from
+ * @returns {Promise<Prices>} - A promise that resolves to an object containing prices for SOL, BTC, and ETH tokens
+ */
     async fetchPrices(runtime): Promise<Prices> {
         try {
             const cacheKey = "prices";
@@ -352,6 +440,13 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Formats the portfolio data into a readable string with detailed information.
+ * * @param { Runtime } runtime The runtime environment object.
+ * @param { WalletPortfolio } portfolio The portfolio object containing wallet information.
+ * @param { Prices } prices The prices object containing market prices.
+ * @returns { string } The formatted portfolio information as a string.
+ */
     formatPortfolio(
         runtime,
         portfolio: WalletPortfolio,
@@ -389,6 +484,11 @@ export class WalletProvider {
         return output;
     }
 
+/**
+ * Asynchronously fetches the portfolio value and prices, then formats and returns the portfolio as a string.
+ * @param {string} runtime - The runtime environment
+ * @returns {Promise<string>} A Promise that resolves with the formatted portfolio string or an error message if fetching fails
+ */
     async getFormattedPortfolio(runtime): Promise<string> {
         try {
             const [portfolio, prices] = await Promise.all([
@@ -403,6 +503,12 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Retrieve token accounts associated with a given wallet address.
+ * 
+ * @param {string} walletAddress - The address of the wallet to get token accounts for.
+ * @returns {Array} An array of token accounts associated with the wallet address.
+ */
     private async getTokenAccounts(walletAddress: string) {
         try {
             const accounts =
@@ -422,6 +528,15 @@ export class WalletProvider {
     }
 }
 
+/**
+ * Get the wallet information for the user.
+ *
+ * @async
+ * @param {IAgentRuntime} runtime - The AEA runtime.
+ * @param {Memory} _message - The current message data.
+ * @param {State} [_state] - The current state of the AEA.
+ * @returns {Promise<string | null>} A promise that resolves with the wallet information or null if there is an error.
+ */
 const walletProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,

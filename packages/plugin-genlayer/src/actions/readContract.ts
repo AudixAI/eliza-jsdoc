@@ -9,6 +9,11 @@ import { ReadContractParams } from "../types";
 import { ClientProvider } from "../providers/client";
 import { getParamsWithLLM } from "../utils/llm";
 
+/**
+ * Contains the template for reading a contract from the GenLayer protocol.
+ * The user's request will be inserted into the template before providing a response.
+ * The response must be formatted as a JSON block with the specified structure.
+ */
 const readContractTemplate = `
 # Task: Determine the contract address, function name, and function arguments to read from the contract.
 
@@ -27,6 +32,17 @@ Here is the user's request:
 \`\`\`
 `;
 
+/**
+ * Action to read a contract from the GenLayer protocol.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - An array of similar actions.
+ * @property {string} description - A description of the action.
+ * @property {Function} validate - Async function to validate the action.
+ * @property {Function} handler - Async function to handle the action.
+ * @property {Object[]} examples - Array of examples of using the action.
+ */
 export const readContractAction: Action = {
     name: "READ_CONTRACT",
     similes: ["READ_CONTRACT"],

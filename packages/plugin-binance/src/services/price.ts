@@ -8,6 +8,20 @@ import { BaseService } from "./base";
 /**
  * Service for handling price-related operations
  */
+/**
+ * Service for handling price-related operations
+ * PriceService class provides methods for fetching and formatting price data.
+ * @extends {BaseService}
+ * @description Get current price for a symbol
+ * @param {PriceCheckRequest} request - The request object containing symbol and quoteCurrency
+ * @returns {Promise<PriceResponse>} The response object containing symbol, price, and timestamp
+ * @description Validates symbol format
+ * @param {string} symbol - The symbol to validate
+ * @throws {BinanceError} if symbol format is invalid
+ * @description Format price for display
+ * @param {number | string} price - The price to format
+ * @returns {string} The formatted price as a string
+ */
 export class PriceService extends BaseService {
     /**
      * Get current price for a symbol

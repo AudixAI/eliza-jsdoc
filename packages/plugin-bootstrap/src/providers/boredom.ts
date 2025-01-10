@@ -5,6 +5,15 @@ import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
  * Each object in the array contains the minimum score required for that level of boredom
  * and an array of status messages associated with that level.
  */
+/**
+ * Represents an array of boredom levels with corresponding status messages.
+ * Each boredom level has a minimum score and an array of status messages.
+ * The status messages are templates that include the agent's name ({{agentName}}).
+ * 
+ * @type {Array}
+ * @property {number} minScore - The minimum score required to reach this boredom level.
+ * @property {Array} statusMessages - An array of strings representing status messages for this boredom level.
+ */
 const boredomLevels = [
     {
         minScore: -10000,

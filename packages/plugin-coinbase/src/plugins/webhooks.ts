@@ -16,6 +16,13 @@ import { WebhookSchema, isWebhookContent, WebhookContent } from "../types";
 import { webhookTemplate } from "../templates";
 import { appendWebhooksToCsv } from "../utils";
 
+/**
+ * Retrieves the list of webhooks by calling the Coinbase API.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime instance.
+ * @param {Memory} _message - Memory object (not used in this function).
+ * @returns {Promise<{webhooks: {id: string, networkId: string, eventType: string, eventFilters: string[], eventTypeFilter: string, notificationURI: string}[]}>} The list of webhooks retrieved from the Coinbase API.
+ */
 export const webhookProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.debug("Starting webhookProvider.get function");
@@ -50,6 +57,16 @@ export const webhookProvider: Provider = {
     },
 };
 
+/**
+ * Represents an action to create a new webhook using the Coinbase SDK.
+ * @type {Action}
+ * @property {string} name - The name of the action ("CREATE_WEBHOOK").
+ * @property {string} description - The description of the action.
+ * @property {Function} validate - Asynchronous function to validate the runtime for the action.
+ * @property {Function} handler - Asynchronous function to handle the action logic.
+ * @property {string[]} similes - An array of related terms.
+ * @property {Object[]} examples - An array of example interactions for this action.
+ */
 export const createWebhookAction: Action = {
     name: "CREATE_WEBHOOK",
     description: "Create a new webhook using the Coinbase SDK.",

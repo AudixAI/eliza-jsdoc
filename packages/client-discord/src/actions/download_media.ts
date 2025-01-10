@@ -15,6 +15,11 @@ import {
 } from "@elizaos/core";
 import { generateText } from "@elizaos/core";
 
+/**
+ * Template for generating a media URL based on recent messages and sender information.
+ * 
+ * @type {string}
+ */
 export const mediaUrlTemplate = `# Messages we are searching for a media URL
 {{recentMessages}}
 
@@ -29,6 +34,13 @@ Your response must be formatted as a JSON block with this structure:
 \`\`\`
 `;
 
+/**
+ * Function to retrieve a media URL asynchronously.
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Memory} message - The message object containing memory information.
+ * @param {State} state - The state object to be used.
+ * @returns {Promise<string | null>} A Promise that resolves to a string containing the media URL, or null if no media URL was found.
+ */
 const getMediaUrl = async (
     runtime: IAgentRuntime,
     message: Memory,

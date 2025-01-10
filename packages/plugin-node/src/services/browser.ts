@@ -9,6 +9,13 @@ import CaptchaSolver from "capsolver-npm";
 import { Browser, BrowserContext, chromium, Page } from "playwright";
 import { elizaLogger } from "@elizaos/core";
 
+/**
+ * Asynchronously generates a summary for a given text using a neural network model.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent
+ * @param {string} text - The input text to generate a summary for
+ * @returns {Promise<{ title: string; description: string }>} A promise that resolves to an object with the generated title and description
+ */
 async function generateSummary(
     runtime: IAgentRuntime,
     text: string
@@ -51,12 +58,23 @@ async function generateSummary(
     };
 }
 
+/**
+ * Represents the content of a page, including its title, description, and body content.
+ * @typedef { Object } PageContent
+ * @property { string } title - The title of the page.
+ * @property { string } description - The description of the page.
+ * @property { string } bodyContent - The main content of the page.
+ */
 type PageContent = {
     title: string;
     description: string;
     bodyContent: string;
 };
 
+/**
+ * Browser service class that extends the base Service class and implements IBrowserService interface.
+ * Manages the browser instance, browser context, Playwright blocker, captcha solver, and cache key.
+ */
 export class BrowserService extends Service implements IBrowserService {
     private browser: Browser | undefined;
     private context: BrowserContext | undefined;
@@ -66,15 +84,29 @@ export class BrowserService extends Service implements IBrowserService {
 
     static serviceType: ServiceType = ServiceType.BROWSER;
 
+/**
+ * Register the agent runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime to register.
+ * @returns {IAgentRuntime} The registered agent runtime.
+ */
     static register(runtime: IAgentRuntime): IAgentRuntime {
         // since we are lazy loading, do nothing
         return runtime;
     }
 
+/**
+ * Gets an instance of the browser service.
+ * @returns {IBrowserService} An instance of the browser service.
+ */
     getInstance(): IBrowserService {
         return BrowserService.getInstance();
     }
 
+/**
+ * Constructor for creating a new instance of a class.
+ * Initializes the browser, context, blocker, and captcha solver.
+ */
     constructor() {
         super();
         this.browser = undefined;
@@ -85,8 +117,20 @@ export class BrowserService extends Service implements IBrowserService {
         );
     }
 
+/**
+ * Asynchronously initializes something.
+ */
     async initialize() {}
 
+/**
+ * Asynchronously initializes the browser if it hasn't been initialized already.
+ * This method launches a Chromium instance with specific configurations such as headless mode,
+ * disabling dev-shm-usage to prevent memory issues on low-memory systems, and blocking creation of new windows/tabs.
+ * It also sets the user agent based on the platform to reduce bot detection.
+ * If the browser is successfully launched, a new browsing context is created with specified user agent
+ * and download acceptance disabled. Additionally, a PlaywrightBlocker instance is created
+ * to block prebuilt ads and tracking requests.
+ */
     async initializeBrowser() {
         if (!this.browser) {
             this.browser = await chromium.launch({
@@ -129,6 +173,10 @@ export class BrowserService extends Service implements IBrowserService {
         }
     }
 
+/**
+ * Closes the browser and any associated context. If a context exists, it is closed and set to undefined.
+ * If a browser object exists, it is closed and set to undefined.
+ */
     async closeBrowser() {
         if (this.context) {
             await this.context.close();
@@ -140,6 +188,13 @@ export class BrowserService extends Service implements IBrowserService {
         }
     }
 
+/**
+ * Asynchronously fetches and returns the content of a page defined by the provided URL.
+ * 
+ * @param {string} url - The URL of the page to fetch content from.
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @returns {Promise<PageContent>} - A promise that resolves to the content of the page.
+ */
     async getPageContent(
         url: string,
         runtime: IAgentRuntime
@@ -148,10 +203,23 @@ export class BrowserService extends Service implements IBrowserService {
         return await this.fetchPageContent(url, runtime);
     }
 
+/**
+ * Generate a unique cache key based on the provided URL using the stringToUuid function.
+ * 
+ * @param {string} url - The URL to generate the cache key for.
+ * @returns {string} - The unique cache key generated based on the URL.
+ */
     private getCacheKey(url: string): string {
         return stringToUuid(url);
     }
 
+/**
+ * Fetches the content of a page from the provided URL.
+ * 
+ * @param {string} url - The URL of the page to fetch.
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @returns {Promise<PageContent>} The content of the fetched page.
+ */
     private async fetchPageContent(
         url: string,
         runtime: IAgentRuntime
@@ -230,6 +298,11 @@ export class BrowserService extends Service implements IBrowserService {
         }
     }
 
+/**
+ * Detects the presence of a captcha on the given page by checking for specific selectors.
+ * @param {Page} page - The page to detect the captcha on.
+ * @returns {Promise<boolean>} A promise that resolves to true if a captcha is found, false otherwise.
+ */
     private async detectCaptcha(page: Page): Promise<boolean> {
         const captchaSelectors = [
             'iframe[src*="captcha"]',
@@ -247,6 +320,13 @@ export class BrowserService extends Service implements IBrowserService {
         return false;
     }
 
+/**
+ * Solves the CAPTCHA on the given page using either HCaptcha or ReCaptcha.
+ * 
+ * @param {Page} page - The Puppeteer Page object where the CAPTCHA is displayed.
+ * @param {string} url - The URL of the website with the CAPTCHA.
+ * @returns {Promise<void>} A Promise that resolves after the CAPTCHA is solved.
+ */
     private async solveCaptcha(page: Page, url: string): Promise<void> {
         try {
             const hcaptchaKey = await this.getHCaptchaWebsiteKey(page);
@@ -281,6 +361,12 @@ export class BrowserService extends Service implements IBrowserService {
         }
     }
 
+/**
+ * Retrieves the hCaptcha website key from a given Puppeteer Page object
+ * 
+ * @param {Page} page - The Puppeteer Page object where the hCaptcha website key will be retrieved from
+ * @returns {Promise<string>} The hCaptcha website key string
+ */
     private async getHCaptchaWebsiteKey(page: Page): Promise<string> {
         return page.evaluate(() => {
             const hcaptchaIframe = document.querySelector(
@@ -295,6 +381,12 @@ export class BrowserService extends Service implements IBrowserService {
         });
     }
 
+/**
+ * Retrieves the ReCaptcha website key from the provided page by evaluating the DOM element with the class "g-recaptcha".
+ * 
+ * @param {Page} page - The page to extract the ReCaptcha website key from.
+ * @returns {Promise<string>} The ReCaptcha website key, or an empty string if not found.
+ */
     private async getReCaptchaWebsiteKey(page: Page): Promise<string> {
         return page.evaluate(() => {
             const recaptchaElement = document.querySelector(".g-recaptcha");
@@ -304,6 +396,12 @@ export class BrowserService extends Service implements IBrowserService {
         });
     }
 
+/**
+ * Tries to retrieve the page content from alternative sources if the original URL fetch fails.
+ * @param {string} url - The URL of the content to fetch
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent
+ * @returns {Promise<{ title: string; description: string; bodyContent: string }>} - The title, description, and body content of the fetched page
+ */
     private async tryAlternativeSources(
         url: string,
         runtime: IAgentRuntime

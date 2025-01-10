@@ -11,7 +11,16 @@ import * as Portfolios from './portfolios';
 import * as Products from './products';
 import * as Public from './public';
 
+/**
+ * Represents a REST Client that provides methods for interacting with various API endpoints.
+ * @extends RESTBase
+ */
 export class RESTClient extends RESTBase {
+/**
+ * Initializes a new instance of the class.
+ * @param {string} [key] - The key to authenticate.
+ * @param {string} [secret] - The secret to authenticate.
+ */
     constructor(key?: string | undefined, secret?: string | undefined) {
         super(key, secret);
     }

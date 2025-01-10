@@ -6,8 +6,17 @@ export const movementEnvSchema = z.object({
     MOVEMENT_NETWORK: z.enum(["mainnet", "bardock"]).default("bardock"),
 });
 
+/**
+ * Represents the inferred type of the 'movementEnvSchema' schema,
+ * used as the configuration object for movements.
+ */
 export type MovementConfig = z.infer<typeof movementEnvSchema>;
 
+/**
+ * Validates the movement configuration settings based on the provided runtime.
+ * @param {IAgentRuntime} runtime - The agent runtime instance.
+ * @returns {Promise<MovementConfig>} A Promise that resolves to the validated MovementConfig.
+ */
 export async function validateMovementConfig(
     runtime: IAgentRuntime
 ): Promise<MovementConfig> {

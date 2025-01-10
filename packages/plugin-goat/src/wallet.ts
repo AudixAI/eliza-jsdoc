@@ -8,6 +8,12 @@ import { mode } from "viem/chains";
 // the EVM_PROVIDER_URL to the correct one for the chain
 export const chain = mode;
 
+/**
+ * Retrieves the wallet client using the provided function to get settings.
+ * 
+ * @param {Function} getSetting - The function to retrieve settings
+ * @returns {Object} - The wallet client object
+ */
 export function getWalletClient(
     getSetting: (key: string) => string | undefined
 ) {
@@ -26,6 +32,11 @@ export function getWalletClient(
     return viem(wallet);
 }
 
+/**
+ * Retrieves wallet information from a provided WalletClientBase instance.
+ * @param {WalletClientBase} walletClient - The wallet client instance to use for retrieving wallet information.
+ * @returns {Object} An object with a `get` method that returns a Promise with the wallet address and balance in Ethereum.
+ */
 export function getWalletProvider(walletClient: WalletClientBase) {
     return {
         async get(): Promise<string | null> {

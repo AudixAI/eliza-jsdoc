@@ -8,6 +8,13 @@ const DEFUALT_EVENTS = [
     { eventName: "tip_refund", attributeType: "tip" },
 ];
 
+/**
+ * Function to calculate the total paid fee from a given receipt by selecting specific events based on their type and attributes.
+ *
+ * @param {ExecuteResult | DeliverTxResponse} receipt - The receipt containing events to calculate the paid fee from.
+ * @param {Array<{ eventName: string, attributeType: string }>} eventsToPickGasFor - The list of events to consider for calculating the fee.
+ * @returns {number} The total paid fee amount based on the selected events and their attributes.
+ */
 export const getPaidFeeFromReceipt = (
     receipt: ExecuteResult | DeliverTxResponse,
     eventsToPickGasFor = DEFUALT_EVENTS

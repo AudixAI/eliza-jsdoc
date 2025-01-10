@@ -13,15 +13,30 @@ import { PrivateKeyAccount, keccak256 } from "viem";
 import { RemoteAttestationProvider } from "./remoteAttestationProvider";
 import { TEEMode, RemoteAttestationQuote } from "../types/tee";
 
+/**
+ * Interface for the data required to derive a key attestation.
+ * @typedef {object} DeriveKeyAttestationData
+ * @property {string} agentId - The identifier of the agent.
+ * @property {string} publicKey - The public key to use for attestation.
+ */
 interface DeriveKeyAttestationData {
     agentId: string;
     publicKey: string;
 }
 
+/**
+ * Class representing a DeriveKeyProvider for handling key derivation operations in a Trusted Execution Environment (TEE).
+ */
 class DeriveKeyProvider {
     private client: TappdClient;
     private raProvider: RemoteAttestationProvider;
 
+/**
+ * Constructor for TEEManager class.
+ * Initializes the TEEManager with the specified teeMode.
+ * @param {string} teeMode - The mode in which the TEEManager should operate (LOCAL, DOCKER, PRODUCTION).
+ * @constructor
+ */
     constructor(teeMode?: string) {
         let endpoint: string | undefined;
 
@@ -55,6 +70,13 @@ class DeriveKeyProvider {
         this.raProvider = new RemoteAttestationProvider(teeMode);
     }
 
+/**
+ * Generates a remote attestation quote for deriving a key.
+ *
+ * @param {string} agentId - The ID of the agent.
+ * @param {string} publicKey - The public key for the attestation.
+ * @returns {Promise<RemoteAttestationQuote>} The generated remote attestation quote.
+ */
     private async generateDeriveKeyAttestation(
         agentId: string,
         publicKey: string
@@ -72,6 +94,13 @@ class DeriveKeyProvider {
         return quote;
     }
 
+/**
+ * Asynchronously derives a key based on the provided path and subject.
+ * 
+ * @param {string} path - The path used to derive the key.
+ * @param {string} subject - The subject used to derive the key.
+ * @returns {Promise<DeriveKeyResponse>} A promise that resolves with the derived key response.
+ */
     async rawDeriveKey(
         path: string,
         subject: string
@@ -94,6 +123,15 @@ class DeriveKeyProvider {
         }
     }
 
+/**
+ * Asynchronously derives an Ed25519 keypair using the provided path, subject, and agentId.
+ * 
+ * @param {string} path - The path used for key derivation.
+ * @param {string} subject - The subject used for key derivation.
+ * @param {string} agentId - The agent id associated with the key derivation process.
+ * @returns {Promise<{ keypair: Keypair; attestation: RemoteAttestationQuote }>} A promise that resolves to an object containing the derived keypair and attestation.
+ * @throws Error if an error occurs during the key derivation process.
+ */
     async deriveEd25519Keypair(
         path: string,
         subject: string,
@@ -130,6 +168,15 @@ class DeriveKeyProvider {
         }
     }
 
+/**
+ * Asynchronously derive an ECDSA keypair using a given path, subject, and agent ID.
+ * 
+ * @param {string} path - The path for key derivation.
+ * @param {string} subject - The subject for key derivation.
+ * @param {string} agentId - The agent ID for generating attestation.
+ * @returns {Promise<{ keypair: PrivateKeyAccount, attestation: RemoteAttestationQuote }>} - Object containing the derived keypair and attestation.
+ * @throws {Error} - If there is an error during the key derivation process.
+ */
     async deriveEcdsaKeypair(
         path: string,
         subject: string,
@@ -166,6 +213,14 @@ class DeriveKeyProvider {
     }
 }
 
+/**
+ * A provider for deriving key pairs for Solana and EVM based on the TEE mode set in the runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object containing the settings and agent ID.
+ * @param {Memory} [_message] - Optional message data.
+ * @param {State} [_state] - Optional state data.
+ * @returns {Promise<string>} - A Promise that resolves to a JSON string containing the public keys of the derived key pairs.
+ */
 const deriveKeyProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message?: Memory, _state?: State) => {
         const teeMode = runtime.getSetting("TEE_MODE");

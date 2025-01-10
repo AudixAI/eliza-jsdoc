@@ -2,6 +2,10 @@ import { IAgentRuntime } from "@elizaos/core";
 import { isAddress } from "viem";
 import { z } from "zod";
 
+/**
+ * Schema for Cronos zkEVM environment variables.
+ * @type {import('zod').ZodObject<{ CRONOSZKEVM_ADDRESS: import('zod').ZodString; CRONOSZKEVM_PRIVATE_KEY: import('zod').ZodString; }, "strip" | "omit" | "default" | "nonstrict">
+ */
 export const CronosZkEVMEnvSchema = z.object({
     CRONOSZKEVM_ADDRESS: z
         .string()
@@ -18,8 +22,16 @@ export const CronosZkEVMEnvSchema = z.object({
         }),
 });
 
+/**
+ * Type definition for the CronoszkEVMConfig based on the CronosZkEVMEnvSchema
+ */
 export type CronoszkEVMConfig = z.infer<typeof CronosZkEVMEnvSchema>;
 
+/**
+ * Validates the CronosZkEVM configuration based on the provided runtime settings.
+ * @param {IAgentRuntime} runtime - The agent runtime object containing settings.
+ * @returns {Promise<CronoszkEVMConfig>} - A promise that resolves with the validated CronosZkEVM configuration.
+ */
 export async function validateCronosZkevmConfig(
     runtime: IAgentRuntime
 ): Promise<CronoszkEVMConfig> {

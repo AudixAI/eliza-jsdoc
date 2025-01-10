@@ -7,11 +7,22 @@ import {
     stringToUuid,
 } from "@elizaos/core";
 
+/**
+ * Represents a provider for Obsidian services.
+ *
+ * @class
+ */
 export class ObsidianProvider {
     private connected: boolean = false;
     private runtime: AgentRuntime;
     private static instance: ObsidianProvider | null = null;
 
+/**
+ * Class constructor for creating an instance of the class.
+ * @param {number} port - The port number to connect to (default is 27123).
+ * @param {string} token - The token for authentication.
+ * @param {string} host_url - The URL of the host to connect to.
+ */
     private constructor(
         private port: number = 27123,
         private token: string,
@@ -26,6 +37,14 @@ export class ObsidianProvider {
      * @param host_url - The URL of the Obsidian server.
      * @returns An instance of the ObsidianProvider class.
      */
+/**
+ * Creates a new instance of ObsidianProvider if it does not already exist and returns it.
+ * @param {AgentRuntime} runtime - The AgentRuntime object to set on the instance.
+ * @param {number} port - The port number to use for the instance.
+ * @param {string} token - The token string to use for the instance.
+ * @param {string} host_url - The host URL to use for the instance. Defaults to 'http://127.0.0.1:${port}' if not provided.
+ * @returns {Promise<ObsidianProvider>} A Promise that resolves with the created instance of ObsidianProvider.
+ */
     static async create(
         runtime: AgentRuntime,
         port: number,

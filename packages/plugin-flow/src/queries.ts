@@ -7,6 +7,14 @@ import { FlowAccountBalanceInfo, IFlowScriptExecutor } from "./types";
  * @param owner
  * @param evmContractAddress
  */
+/**
+ * Queries the balance of an ERC20 token in an Ethereum Virtual Machine (EVM) contract.
+ * 
+ * @param {IFlowScriptExecutor} executor The executor for running FlowScript.
+ * @param {string} owner The address of the token owner.
+ * @param {string} evmContractAddress The address of the EVM contract.
+ * @returns {Promise<bigint>} The balance of the ERC20 token as a bigint.
+ */
 export async function queryEvmERC20BalanceOf(
     executor: IFlowScriptExecutor,
     owner: string,

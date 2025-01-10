@@ -2,6 +2,14 @@ import { getVoiceConnection } from "@discordjs/voice";
 import { ChannelType, Message as DiscordMessage } from "discord.js";
 import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
 
+/**
+ * Provides a method to retrieve the current voice state information for the bot agent.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {Memory} message - The message object being processed.
+ * @param {State} [state] - The optional state object containing the agent and discord message/channel data.
+ * @returns {string} - The status message indicating the bot agent's current voice channel state.
+ */
 const voiceStateProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
         // Voice doesn't get a discord message, so we need to use the channel for guild data

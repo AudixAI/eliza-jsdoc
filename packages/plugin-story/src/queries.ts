@@ -1,11 +1,22 @@
 import { Account, HttpTransport, Chain, Address, PublicClient } from "viem";
 
+/**
+ * Represents a request to check if a license registry has an IP attached to specific license terms.
+ * @typedef {Object} LicenseRegistryHasIpAttachedLicenseTermsRequest
+ * @property {Address} ipId - The ID of the IP to check.
+ * @property {Address} licenseTemplate - The address of the license template.
+ * @property {bigint} licenseTermsId - The ID of the license terms to check for attachment.
+ */
 type LicenseRegistryHasIpAttachedLicenseTermsRequest = {
     ipId: Address;
     licenseTemplate: Address;
     licenseTermsId: bigint;
 };
 
+/**
+ * An array containing the ABI for the licenseRegistry contract.
+ * @type {Array<{type: string, inputs: Array<{name: string, internalType: string, type: string}>}>}
+ */
 export const licenseRegistryAbi = [
     {
         type: "constructor",
@@ -969,6 +980,12 @@ export const licenseRegistryAbi = [
     },
 ] as const;
 
+/**
+ * Check if a specific IP has attached license terms.
+ * @param {PublicClient<HttpTransport, Chain, Account | undefined>} publicClient - The public client for interacting with the blockchain.
+ * @param {LicenseRegistryHasIpAttachedLicenseTermsRequest} request - The request object containing IP ID, license template, and license terms ID.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the IP has attached license terms.
+ */
 export async function hasIpAttachedLicenseTerms(
     publicClient: PublicClient<HttpTransport, Chain, Account | undefined>,
     request: LicenseRegistryHasIpAttachedLicenseTermsRequest

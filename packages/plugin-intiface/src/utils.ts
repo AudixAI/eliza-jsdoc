@@ -6,8 +6,18 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * Variable representing the running process of Intiface.
+ */
 let intifaceProcess: ChildProcess | null = null;
 
+/**
+ * Checks if a given port is available for use by attempting to create a server 
+ * and listening on the specified port. 
+ * @param {number} port - The port to be checked for availability.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the port is available,
+ * and false if the port is not available.
+ */
 export async function isPortAvailable(port: number): Promise<boolean> {
     return new Promise((resolve) => {
         const server = net
@@ -21,6 +31,11 @@ export async function isPortAvailable(port: number): Promise<boolean> {
     });
 }
 
+/**
+ * Function to start the Intiface Engine, which is responsible for managing connections
+ * between user devices and the server.
+ * @returns {Promise<void>} A promise that resolves when the Intiface Engine is successfully started.
+ */
 export async function startIntifaceEngine(): Promise<void> {
     const configPath = path.join(
         __dirname,
@@ -55,6 +70,9 @@ export async function startIntifaceEngine(): Promise<void> {
     }
 }
 
+/**
+ * Asynchronous function to perform cleanup actions for the Intiface Engine process.
+ */
 async function cleanup() {
     if (intifaceProcess) {
         console.log("[utils] Shutting down Intiface Engine...");

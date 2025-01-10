@@ -34,6 +34,16 @@ import { names, uniqueNamesGenerator } from "unique-names-generator";
  * const contextSimple = composeContext({ state, template });
  */
 
+/**
+ * Function to compose a context using a state, template, and templating engine.
+ * If templating engine is "handlebars", it compiles the template and returns the rendered result.
+ * If no templating engine is specified or it's not "handlebars", it replaces placeholders in the template with values from the state object.
+ * @param {Object} options - The options object containing state, template, and optionally templatingEngine.
+ * @param {State} options.state - The state object containing values to be used in the template.
+ * @param {TemplateType} options.template - The template string or function to be used for composing the context.
+ * @param {"handlebars"} [options.templatingEngine] - The templating engine to use, currently only "handlebars" is supported.
+ * @returns {string} The composed context based on the state and template provided.
+ */
 export const composeContext = ({
     state,
     template,

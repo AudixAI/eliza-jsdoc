@@ -2,6 +2,19 @@ import { IAgentRuntime } from "@elizaos/core";
 import { elizaLogger } from "@elizaos/core";
 import { z } from "zod";
 
+/**
+ * Schema for Slack environment variables.
+ * 
+ * @type {import("zod").ZodObject<{
+ *   SLACK_APP_ID: import("zod").ZodString;
+ *   SLACK_CLIENT_ID: import("zod").ZodString;
+ *   SLACK_CLIENT_SECRET: import("zod").ZodString;
+ *   SLACK_SIGNING_SECRET: import("zod").ZodString;
+ *   SLACK_VERIFICATION_TOKEN: import("zod").ZodString;
+ *   SLACK_BOT_TOKEN: import("zod").ZodString;
+ *   SLACK_SERVER_PORT: import("zod").ZodString;
+ * }>
+ */
 export const slackEnvSchema = z.object({
     SLACK_APP_ID: z.string().min(1, "Slack application ID is required"),
     SLACK_CLIENT_ID: z.string().min(1, "Slack client ID is required"),
@@ -17,8 +30,17 @@ export const slackEnvSchema = z.object({
         .transform((val) => (val ? parseInt(val) : 3000)),
 });
 
+/**
+ * Represents a Slack configuration object that is inferred from the slackEnvSchema.
+ */
 export type SlackConfig = z.infer<typeof slackEnvSchema>;
 
+/**
+ * Validates the Slack configuration settings using the provided runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object containing the setting values.
+ * @returns {Promise<SlackConfig>} - A Promise that resolves to the validated Slack configuration.
+ */
 export async function validateSlackConfig(
     runtime: IAgentRuntime
 ): Promise<SlackConfig> {

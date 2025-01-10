@@ -23,11 +23,24 @@ import {
 import { walletProvider } from "../providers/wallet";
 import { MOVEMENT_NETWORK_CONFIG, MOVE_DECIMALS, MOVEMENT_EXPLORER_URL } from "../constants";
 
+/**
+ * Interface representing transfer content.
+ * Extends Content interface.
+ * @interface
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string | number} amount - The amount being transferred (can be a string or number).
+ */
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Checks if the given content is valid transfer content.
+ * 
+ * @param {any} content The content to validate.
+ * @returns {boolean} True if the content is valid transfer content, false otherwise.
+ */
 function isTransferContent(content: any): content is TransferContent {
     elizaLogger.debug("Validating transfer content:", content);
     return (
@@ -37,6 +50,32 @@ function isTransferContent(content: any): content is TransferContent {
     );
 }
 
+/**
+ * Template for processing a token transfer request.
+ * The function should extract the recipient address and amount from the message.
+ * 
+ * Example request: "can you send 1 move to 0x123..."
+ * Example response:
+ * ```json
+ * {
+ *    "recipient": "0x123...",
+ *    "amount": "1"
+ * }
+ * ```
+ * 
+ * Rules:
+ * 1. The recipient address always starts with "0x"
+ * 2. The amount is typically a number less than 100
+ * 3. Return exact values found in the message
+ * 
+ * Recent messages: {{recentMessages}}
+ * 
+ * Extract and return ONLY the following in a JSON block:
+ * - recipient: The wallet address starting with 0x
+ * - amount: The number of tokens to send
+ * 
+ * Return ONLY the JSON block with these two fields.
+ */
 const transferTemplate = `You are processing a token transfer request. Extract the recipient address and amount from the message.
 
 Example request: "can you send 1 move to 0x123..."

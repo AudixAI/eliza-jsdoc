@@ -3,6 +3,12 @@ import { DeriveKeyProvider, TEEMode } from "@elizaos/plugin-tee";
 import bs58 from "bs58";
 import { IAgentRuntime, elizaLogger } from "@elizaos/core";
 
+/**
+ * Interface representing the result of a keypair generation operation.
+ * @typedef {Object} KeypairResult
+ * @property {Keypair} [keypair] - The generated keypair.
+ * @property {PublicKey} [publicKey] - The public key generated from the keypair.
+ */
 export interface KeypairResult {
     keypair?: Keypair;
     publicKey?: PublicKey;
@@ -13,6 +19,13 @@ export interface KeypairResult {
  * @param runtime The agent runtime
  * @param requirePrivateKey Whether to return a full keypair (true) or just public key (false)
  * @returns KeypairResult containing either keypair or public key
+ */
+/**
+ * Retrieves the wallet keypair or public key based on the provided runtime and settings.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime instance for the agent.
+ * @param {boolean} requirePrivateKey - Flag indicating if the private key is required. Default is true.
+ * @returns {Promise<KeypairResult>} - The keypair result which includes either the keypair or the public key.
  */
 export async function getWalletKey(
     runtime: IAgentRuntime,

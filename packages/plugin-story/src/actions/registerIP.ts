@@ -18,9 +18,28 @@ import { RegisterIPParams } from "../types";
 
 export { registerIPTemplate };
 
+/**
+ * Class representing a RegisterIPAction.
+ * @param {WalletProvider} walletProvider - The wallet provider used for the action.
+ * @method registerIP
+ * @param {RegisterIPParams} params - The parameters needed to register an IP.
+ * @param {IAgentRuntime} runtime - The runtime environment for the action.
+ * @returns {Promise<RegisterIpResponse>} A Promise that resolves with the response of the IP registration.
+ */
 export class RegisterIPAction {
+/**
+ * Constructor for creating an instance of the class.
+ * @param {WalletProvider} walletProvider - The wallet provider used by the class.
+ */
     constructor(private walletProvider: WalletProvider) {}
 
+/**
+ * Asynchronously registers an IP asset with the given parameters.
+ * 
+ * @param {RegisterIPParams} params - The parameters for registering the IP asset.
+ * @param {IAgentRuntime} runtime - The runtime object for the agent.
+ * @returns {Promise<RegisterIpResponse>} A promise that resolves with the response from registering the IP asset.
+ */
     async registerIP(
         params: RegisterIPParams,
         runtime: IAgentRuntime
@@ -72,6 +91,17 @@ export class RegisterIPAction {
     }
 }
 
+/**
+ * An action to register an NFT as an IP Asset on Story.
+ *
+ * @async
+ * @param {IAgentRuntime} runtime - The runtime environment for the action.
+ * @param {Memory} message - The message that triggered the action.
+ * @param {State} state - The current state of the conversation.
+ * @param {any} options - Additional options for the action.
+ * @param {HandlerCallback} [callback] - Optional callback function to handle the action response.
+ * @returns {Promise<boolean>} A promise that resolves with a boolean value indicating the success of the registration.
+ */
 export const registerIPAction = {
     name: "REGISTER_IP",
     description: "Register an NFT as an IP Asset on Story",

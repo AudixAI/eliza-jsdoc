@@ -15,6 +15,13 @@ import { Buffer } from "buffer";
 import * as path from "path";
 import * as process from "process";
 
+/**
+ * Generates a 3D model using the provided prompt and the FAL API.
+ * 
+ * @param {string} prompt - The prompt for generating the 3D model.
+ * @param {IAgentRuntime} runtime - The IAgentRuntime object for accessing settings.
+ * @returns {Promise<{success: boolean, url: string, file_name: string}>} An object containing information about the generated 3D model, including the success status, URL of the model, and the file name.
+ */
 const generate3D = async (prompt: string, runtime: IAgentRuntime) => {
     process.env["FAL_KEY"] =
         FAL_CONSTANTS.API_KEY_SETTING || runtime.getSetting("FAL_API_KEY");
@@ -61,6 +68,18 @@ const generate3D = async (prompt: string, runtime: IAgentRuntime) => {
     }
 };
 
+/**
+ * Action for generating a 3D object based on a text prompt.
+ * This action validates the presence of FAL_API_KEY and generates a 3D object using the prompt provided.
+ *
+ * @typedef {Action} ThreeDGeneration
+ * @property {string} name - The name of the action
+ * @property {Array<string>} similes - Array of similes related to 3D generation
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Async function for validating the action
+ * @property {Function} handler - Async function for handling the 3D generation request
+ * @property {Array<Array<Memory>>} examples - Array of examples demonstrating the usage of the action
+ */
 const ThreeDGeneration: Action = {
     name: "GENERATE_3D",
     similes: [

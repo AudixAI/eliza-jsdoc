@@ -7,6 +7,17 @@ import {
 } from "@elizaos/core";
 import { ClientProvider } from "../providers/client";
 
+/**
+ * Action to get contract schema from the GenLayer protocol
+ * 
+ * @type {Action}
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Similar actions
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Function to validate the action
+ * @property {Function} handler - Function to handle the action
+ * @property {Object[]} examples - Examples of using the action
+ */
 export const getContractSchemaAction: Action = {
     name: "GET_CONTRACT_SCHEMA",
     similes: ["GET_CONTRACT_SCHEMA"],

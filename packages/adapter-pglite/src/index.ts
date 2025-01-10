@@ -31,10 +31,20 @@ import { fuzzystrmatch } from "@electric-sql/pglite/contrib/fuzzystrmatch";
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
+/**
+ * PGLiteDatabaseAdapter class represents a DatabaseAdapter implementation for PGLite databases, implementing IDatabaseCacheAdapter interface.
+ * @constructor
+ * @param {PGliteOptions} options - The options object for initializing the PGLite database.
+ */
 export class PGLiteDatabaseAdapter
     extends DatabaseAdapter<PGlite>
     implements IDatabaseCacheAdapter
 {
+/**
+ * Constructor for the PGliteConnection class.
+ * 
+ * @param {PGliteOptions} options - The options for configuring the PGlite connection.
+ */
     constructor(options: PGliteOptions) {
         super();
         this.db = new PGlite({
@@ -48,6 +58,9 @@ export class PGLiteDatabaseAdapter
         });
     }
 
+/** 
+ * Initialize the application by setting the appropriate embedding configuration and executing the schema SQL scripts within a transaction.
+ */
     async init() {
         await this.db.waitReady;
 
@@ -80,10 +93,21 @@ export class PGLiteDatabaseAdapter
         }, "init");
     }
 
+/**
+ * Asynchronously closes the database connection.
+ */
     async close() {
         await this.db.close();
     }
 
+/**
+ * Executes the given operation with circuit breaker protection and returns the result
+ * 
+ * @template T The type of the result
+ * @param {() => Promise<T>} operation The operation to be executed
+ * @param {string} context The context in which the operation is being executed
+ * @returns {Promise<T>} A Promise that resolves with the result of the operation
+ */
     private async withDatabase<T>(
         operation: () => Promise<T>,
         context: string
@@ -93,6 +117,14 @@ export class PGLiteDatabaseAdapter
         }, context);
     }
 
+/**
+ * Executes the provided `operation` within a transaction using the given `context`.
+ * 
+ * @template T
+ * @param {Function} operation The operation to be executed within the transaction.
+ * @param {string} context The context in which the operation is being performed.
+ * @returns {Promise<T | undefined>} A Promise that resolves with the result of the operation within the transaction or undefined if an error occurs.
+ */
     private async withTransaction<T>(
         operation: (tx: Transaction) => Promise<T>,
         context: string
@@ -102,6 +134,14 @@ export class PGLiteDatabaseAdapter
         }, context);
     }
 
+/**
+ * Execute a database query asynchronously.
+ * 
+ * @template R The type of the query result
+ * @param {string} queryTextOrConfig The SQL query string or configuration object
+ * @param {unknown[]} [values] Optional array of values to be used in the query
+ * @return {Promise<Results<R>>} A promise that resolves to the query results
+ */
     async query<R>(
         queryTextOrConfig: string,
         values?: unknown[]
@@ -111,6 +151,12 @@ export class PGLiteDatabaseAdapter
         }, "query");
     }
 
+/**
+ * Asynchronously retrieves the room ID for the specified room from the database.
+ * 
+ * @param {UUID} roomId - The UUID of the room to retrieve the ID for.
+ * @returns {Promise<UUID | null>} A promise that resolves with the room ID if found, null otherwise.
+ */
     async getRoom(roomId: UUID): Promise<UUID | null> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<{ id: UUID }>(
@@ -121,6 +167,11 @@ export class PGLiteDatabaseAdapter
         }, "getRoom");
     }
 
+/**
+* Retrieves participants associated with a specific account.
+* @param {UUID} userId - The unique identifier for the user account.
+* @returns {Promise<Participant[]>} - A promise that resolves to an array of Participant objects.
+*/
     async getParticipantsForAccount(userId: UUID): Promise<Participant[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<Participant>(
@@ -133,6 +184,13 @@ export class PGLiteDatabaseAdapter
         }, "getParticipantsForAccount");
     }
 
+/**
+ * Retrieves the user state (FOLLOWED, MUTED, or null) for a specific participant in a room.
+ *
+ * @param {UUID} roomId - The ID of the room.
+ * @param {UUID} userId - The ID of the user.
+ * @returns {Promise<"FOLLOWED" | "MUTED" | null>} The user state of the participant.
+ */
     async getParticipantUserState(
         roomId: UUID,
         userId: UUID
@@ -148,6 +206,14 @@ export class PGLiteDatabaseAdapter
         }, "getParticipantUserState");
     }
 
+/**
+ * Retrieves memories by room IDs from the database.
+ * @param {Object} params - The parameters for fetching memories.
+ * @param {UUID[]} params.roomIds - The array of room IDs to filter memories.
+ * @param {UUID} [params.agentId] - Optional agent ID to filter memories.
+ * @param {string} params.tableName - The table name to query memories from.
+ * @returns {Promise<Memory[]>} A promise that resolves to an array of memories matching the provided room IDs and optional agent ID.
+ */
     async getMemoriesByRoomIds(params: {
         roomIds: UUID[];
         agentId?: UUID;
@@ -178,6 +244,13 @@ export class PGLiteDatabaseAdapter
         }, "getMemoriesByRoomIds");
     }
 
+/**
+ * Set the user state for a participant in a specific room.
+ * @param {UUID} roomId - The ID of the room
+ * @param {UUID} userId - The ID of the user
+ * @param {"FOLLOWED" | "MUTED" | null} state - The state to set for the user in the room
+ * @returns {Promise<void>} - A Promise that resolves when the user state is updated
+ */
     async setParticipantUserState(
         roomId: UUID,
         userId: UUID,
@@ -191,6 +264,11 @@ export class PGLiteDatabaseAdapter
         }, "setParticipantUserState");
     }
 
+/**
+ * Retrieves the participants for a given room ID from the database.
+ * @param {UUID} roomId - The ID of the room to fetch participants for.
+ * @returns {Promise<UUID[]>} - A promise that resolves to an array of UUIDs representing the participants.
+ */
     async getParticipantsForRoom(roomId: UUID): Promise<UUID[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<{ userId: UUID }>(
@@ -201,6 +279,12 @@ export class PGLiteDatabaseAdapter
         }, "getParticipantsForRoom");
     }
 
+/**
+ * Retrieve an account from the database by its unique ID.
+ * 
+ * @param {UUID} userId - The unique ID of the account to retrieve.
+ * @returns {Promise<Account | null>} The account object if it exists, otherwise null.
+ */
     async getAccountById(userId: UUID): Promise<Account | null> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<Account>(
@@ -228,6 +312,13 @@ export class PGLiteDatabaseAdapter
         }, "getAccountById");
     }
 
+/**
+ * Asynchronously creates an account in the database.
+ * Returns a boolean indicating success or failure of the operation.
+ * 
+ * @param {Account} account - The account object to be created.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the account was created successfully, false otherwise.
+ */
     async createAccount(account: Account): Promise<boolean> {
         return this.withDatabase(async () => {
             try {
@@ -260,6 +351,13 @@ export class PGLiteDatabaseAdapter
         }, "createAccount");
     }
 
+/**
+ * Retrieves actors by room ID from the database.
+ * 
+ * @param {Object} params - The parameters for fetching actors.
+ * @param {UUID} params.roomId - The room ID to fetch actors for.
+ * @returns {Promise<Actor[]>} The list of actors in the room.
+ */
     async getActorById(params: { roomId: UUID }): Promise<Actor[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<Actor>(
@@ -307,6 +405,12 @@ export class PGLiteDatabaseAdapter
         });
     }
 
+/**
+ * Retrieve a Memory object by its ID from the database.
+ * 
+ * @param {UUID} id - The ID of the Memory to retrieve.
+ * @returns {Promise<Memory | null>} A Promise that resolves to the Memory object corresponding to the ID, or null if no Memory is found.
+ */
     async getMemoryById(id: UUID): Promise<Memory | null> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<Memory>(
@@ -325,6 +429,12 @@ export class PGLiteDatabaseAdapter
         }, "getMemoryById");
     }
 
+/**
+ * Creates a new memory in the database.
+ * @param {Memory} memory - The memory object to be created.
+ * @param {string} tableName - The name of the table where the memory will be stored.
+ * @returns {Promise<void>} A promise that resolves once the memory is created.
+ */
     async createMemory(memory: Memory, tableName: string): Promise<void> {
         return this.withDatabase(async () => {
             elizaLogger.debug("PostgresAdapter createMemory:", {
@@ -366,6 +476,19 @@ export class PGLiteDatabaseAdapter
         }, "createMemory");
     }
 
+/**
+ * Asynchronously search memories based on specified criteria.
+ * 
+ * @param {Object} params - The parameters for searching memories.
+ * @param {string} params.tableName - The name of the table to search in.
+ * @param {UUID} params.agentId - The ID of the agent associated with the memories.
+ * @param {UUID} params.roomId - The ID of the room associated with the memories.
+ * @param {number[]} params.embedding - The embedding to use for similarity search.
+ * @param {number} params.match_threshold - The threshold for similarity matching.
+ * @param {number} params.match_count - The number of matching memories to return.
+ * @param {boolean} params.unique - Indicates whether to return only unique memories.
+ * @returns {Promise<Memory[]>} The memories that match the specified criteria.
+ */
     async searchMemories(params: {
         tableName: string;
         agentId: UUID;
@@ -385,6 +508,18 @@ export class PGLiteDatabaseAdapter
         });
     }
 
+/**
+ * Retrieves memories from the database based on specified parameters.
+ * @param {Object} params - The parameters for fetching memories.
+ * @param {UUID} params.roomId - The ID of the room to fetch memories for.
+ * @param {number} [params.count] - The maximum number of memories to retrieve.
+ * @param {boolean} [params.unique] - Flag to indicate if only unique memories should be returned.
+ * @param {string} params.tableName - The name of the table to fetch memories from.
+ * @param {UUID} [params.agentId] - The ID of the agent associated with the memories.
+ * @param {number} [params.start] - The start time range for memories (in milliseconds).
+ * @param {number} [params.end] - The end time range for memories (in milliseconds).
+ * @returns {Promise<Memory[]>} The array of memories that match the specified criteria.
+ */
     async getMemories(params: {
         roomId: UUID;
         count?: number;
@@ -467,6 +602,16 @@ export class PGLiteDatabaseAdapter
         }, "getMemories");
     }
 
+/**
+ * Retrieve goals based on the provided parameters.
+ * 
+ * @param {Object} params - The parameters for fetching goals.
+ * @param {UUID} params.roomId - The ID of the room to fetch goals for.
+ * @param {UUID | null} [params.userId] - The optional user ID to fetch goals for.
+ * @param {boolean} [params.onlyInProgress] - Flag to indicate fetching only in-progress goals.
+ * @param {number} [params.count] - The maximum number of goals to return.
+ * @returns {Promise<Goal[]>} - A promise that resolves to an array of goals matching the provided criteria.
+ */
     async getGoals(params: {
         roomId: UUID;
         userId?: UUID | null;
@@ -505,6 +650,12 @@ export class PGLiteDatabaseAdapter
         }, "getGoals");
     }
 
+/**
+ * Updates a goal in the database.
+ * 
+ * @param {Goal} goal - The goal object to be updated.
+ * @returns {Promise<void>} A promise that resolves when the goal is successfully updated.
+ */
     async updateGoal(goal: Goal): Promise<void> {
         return this.withDatabase(async () => {
             try {
@@ -529,6 +680,12 @@ export class PGLiteDatabaseAdapter
         }, "updateGoal");
     }
 
+/**
+ * Asynchronously creates a new goal in the database.
+ * 
+ * @param {Goal} goal - The goal object to be inserted into the database.
+ * @returns {Promise<void>} A Promise that resolves when the goal has been successfully created.
+ */
     async createGoal(goal: Goal): Promise<void> {
         return this.withDatabase(async () => {
             await this.query(
@@ -546,6 +703,13 @@ export class PGLiteDatabaseAdapter
         }, "createGoal");
     }
 
+/**
+ * Asynchronously removes a goal from the database.
+ * 
+ * @param {UUID} goalId - The ID of the goal to be removed.
+ * @returns {Promise<void>} A Promise that resolves once the goal has been successfully removed.
+ * @throws {Error} If goalId is not provided or if an error occurs during the removal process.
+ */
     async removeGoal(goalId: UUID): Promise<void> {
         if (!goalId) throw new Error("Goal ID is required");
 
@@ -571,6 +735,12 @@ export class PGLiteDatabaseAdapter
         }, "removeGoal");
     }
 
+/**
+ * Creates a new room in the database with an optional roomId parameter.
+ * If no roomId is provided, a new UUID will be generated using v4().
+ * @param {UUID} [roomId] - The optional roomId for the new room.
+ * @returns {Promise<UUID>} - The UUID of the newly created room.
+ */
     async createRoom(roomId?: UUID): Promise<UUID> {
         return this.withDatabase(async () => {
             const newRoomId = roomId || v4();
@@ -579,6 +749,13 @@ export class PGLiteDatabaseAdapter
         }, "createRoom");
     }
 
+/**
+ * Asynchronously removes a room and its related data from the database.
+ * 
+ * @param {UUID} roomId - The ID of the room to be removed.
+ * @returns {Promise<void>} A Promise that resolves when the room and related data have been successfully removed.
+ * @throws {Error} If the room ID is not provided or if there is an error during the removal process.
+ */
     async removeRoom(roomId: UUID): Promise<void> {
         if (!roomId) throw new Error("Room ID is required");
 
@@ -632,6 +809,13 @@ export class PGLiteDatabaseAdapter
         }, "removeRoom");
     }
 
+/**
+ * Creates a relationship between two users in the database.
+ * @param {Object} params - The parameters for creating the relationship.
+ * @param {UUID} params.userA - The UUID of user A.
+ * @param {UUID} params.userB - The UUID of user B.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the relationship is created successfully, false otherwise.
+ */
     async createRelationship(params: {
         userA: UUID;
         userB: UUID;
@@ -685,6 +869,15 @@ export class PGLiteDatabaseAdapter
         }, "createRelationship");
     }
 
+/**
+ * Asynchronously fetches the Relationship between two users.
+ *
+ * @param {Object} params - The parameters for the relationship query.
+ * @param {UUID} params.userA - The UUID of the first user.
+ * @param {UUID} params.userB - The UUID of the second user.
+ * @returns {Promise<Relationship | null>} A Promise that resolves with the Relationship object if found, or null if not found.
+ * @throws {Error} If either userA or userB is missing in the parameters.
+ */
     async getRelationship(params: {
         userA: UUID;
         userB: UUID;
@@ -728,6 +921,14 @@ export class PGLiteDatabaseAdapter
         }, "getRelationship");
     }
 
+/**
+ * Retrieves relationships for a user.
+ * 
+ * @param {Object} params - The parameters for retrieving relationships.
+ * @param {UUID} params.userId - The ID of the user to retrieve relationships for.
+ * @returns {Promise<Relationship[]>} - A promise that resolves to an array of Relationship objects.
+ * @throws {Error} - If userId is not provided.
+ */
     async getRelationships(params: { userId: UUID }): Promise<Relationship[]> {
         if (!params.userId) {
             throw new Error("userId is required");
@@ -759,6 +960,18 @@ export class PGLiteDatabaseAdapter
         }, "getRelationships");
     }
 
+/**
+ * Retrieves cached embeddings based on the provided query parameters.
+ * 
+ * @param {object} opts - The options object.
+ * @param {string} opts.query_table_name - The name of the query table.
+ * @param {number} opts.query_threshold - The query threshold number.
+ * @param {string} opts.query_input - The input for the query.
+ * @param {string} opts.query_field_name - The name of the query field.
+ * @param {string} opts.query_field_sub_name - The sub name of the query field.
+ * @param {number} opts.query_match_count - The number of matches to query.
+ * @returns {Promise<{ embedding: number[]; levenshtein_score: number }[]>} - The cached embeddings with the corresponding Levenshtein scores.
+ */
     async getCachedEmbeddings(opts: {
         query_table_name: string;
         query_threshold: number;
@@ -870,6 +1083,17 @@ export class PGLiteDatabaseAdapter
         }, "getCachedEmbeddings");
     }
 
+/**
+ * Logs an entry to the database.
+ * 
+ * @param {Object} params - The parameters for logging an entry.
+ * @param {Object} params.body - The body of the log entry.
+ * @param {string} params.userId - The ID of the user associated with the log entry.
+ * @param {string} params.roomId - The ID of the room associated with the log entry.
+ * @param {string} params.type - The type of the log entry.
+ * @returns {Promise<void>} - A Promise that resolves when the log entry is successfully created.
+ * @throws {Error} If any of the required parameters are missing or if the body is not a valid object.
+ */
     async log(params: {
         body: { [key: string]: unknown };
         userId: UUID;
@@ -926,6 +1150,19 @@ export class PGLiteDatabaseAdapter
         }, "log");
     }
 
+/**
+ * Searches for memories by embedding.
+ * 
+ * @param {number[]} embedding - Input vector to search for.
+ * @param {Object} params - Search parameters.
+ * @param {number} [params.match_threshold] - Similarity threshold for search results.
+ * @param {number} [params.count] - Number of results to return.
+ * @param {UUID} [params.agentId] - Agent ID to filter by.
+ * @param {UUID} [params.roomId] - Room ID to filter by.
+ * @param {boolean} [params.unique] - Whether to return unique memories.
+ * @param {string} params.tableName - Name of the database table.
+ * @returns {Promise<Memory[]>} - Array of memories matching the search criteria.
+ */
     async searchMemoriesByEmbedding(
         embedding: number[],
         params: {
@@ -1028,6 +1265,13 @@ export class PGLiteDatabaseAdapter
         }, "searchMemoriesByEmbedding");
     }
 
+/**
+ * Add a participant to a room.
+ * 
+ * @param {UUID} userId - The ID of the user to add as a participant.
+ * @param {UUID} roomId - The ID of the room where the user will be added.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the participant was successfully added, false otherwise.
+ */
     async addParticipant(userId: UUID, roomId: UUID): Promise<boolean> {
         return this.withDatabase(async () => {
             try {
@@ -1044,6 +1288,12 @@ export class PGLiteDatabaseAdapter
         }, "addParticpant");
     }
 
+/**
+ * Removes a participant from a room in the database.
+ * @param {UUID} userId - The ID of the user to remove from the room.
+ * @param {UUID} roomId - The ID of the room from which to remove the participant.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the participant was successfully removed, false otherwise.
+ */
     async removeParticipant(userId: UUID, roomId: UUID): Promise<boolean> {
         return this.withDatabase(async () => {
             try {
@@ -1059,6 +1309,14 @@ export class PGLiteDatabaseAdapter
         }, "removeParticipant");
     }
 
+/**
+ * Update the status of a goal in the database.
+ * 
+ * @param {Object} params - The parameters for updating the goal status.
+ * @param {UUID} params.goalId - The unique identifier of the goal.
+ * @param {GoalStatus} params.status - The new status for the goal.
+ * @returns {Promise<void>} A promise that resolves when the goal status is updated.
+ */
     async updateGoalStatus(params: {
         goalId: UUID;
         status: GoalStatus;
@@ -1071,6 +1329,13 @@ export class PGLiteDatabaseAdapter
         }, "updateGoalStatus");
     }
 
+/**
+ * Removes a memory from the database.
+ * 
+ * @param {UUID} memoryId - The unique identifier of the memory to remove.
+ * @param {string} tableName - The name of the table containing the memory.
+ * @returns {Promise<void>} A promise that resolves when the memory has been successfully removed.
+ */
     async removeMemory(memoryId: UUID, tableName: string): Promise<void> {
         return this.withDatabase(async () => {
             await this.query(
@@ -1080,6 +1345,13 @@ export class PGLiteDatabaseAdapter
         }, "removeMemory");
     }
 
+/**
+ * Removes all memories from a specified room.
+ * 
+ * @param {UUID} roomId - The ID of the room from which memories are to be removed.
+ * @param {string} tableName - The name of the table containing the memories to be removed.
+ * @returns {Promise<void>} A Promise that resolves once all memories are removed.
+ */
     async removeAllMemories(roomId: UUID, tableName: string): Promise<void> {
         return this.withDatabase(async () => {
             await this.query(
@@ -1089,6 +1361,14 @@ export class PGLiteDatabaseAdapter
         }, "removeAllMemories");
     }
 
+/**
+ * Count the number of memories in a specified room, optionally considering uniqueness.
+ * 
+ * @param {UUID} roomId - The ID of the room to count memories for.
+ * @param {boolean} unique - If true, only count unique memories. Default is true.
+ * @param {string} tableName - The name of the memories table to query from. Required.
+ * @returns {Promise<number>} The number of memories in the specified room.
+ */
     async countMemories(
         roomId: UUID,
         unique = true,
@@ -1110,12 +1390,23 @@ export class PGLiteDatabaseAdapter
         }, "countMemories");
     }
 
+/**
+ * Remove all goals associated with a specific room
+ * @param {UUID} roomId - The ID of the room to remove goals from
+ * @returns {Promise<void>} - A Promise that resolves when all goals are removed
+ */
     async removeAllGoals(roomId: UUID): Promise<void> {
         return this.withDatabase(async () => {
             await this.query(`DELETE FROM goals WHERE "roomId" = $1`, [roomId]);
         }, "removeAllGoals");
     }
 
+/**
+ * Retrieves a list of room IDs for a given participant ID.
+ * 
+ * @param {UUID} userId - The UUID of the participant to retrieve room IDs for.
+ * @returns {Promise<UUID[]>} List of room IDs associated with the participant.
+ */
     async getRoomsForParticipant(userId: UUID): Promise<UUID[]> {
         return this.withDatabase(async () => {
             const { rows } = await this.query<{ roomId: UUID }>(
@@ -1126,6 +1417,12 @@ export class PGLiteDatabaseAdapter
         }, "getRoomsForParticipant");
     }
 
+/**
+ * Retrieves the list of room UUIDs for the given participants' user IDs.
+ * 
+ * @param {UUID[]} userIds - An array of user IDs of the participants
+ * @returns {Promise<UUID[]>} The array of room UUIDs associated with the participants
+ */
     async getRoomsForParticipants(userIds: UUID[]): Promise<UUID[]> {
         return this.withDatabase(async () => {
             const placeholders = userIds.map((_, i) => `$${i + 1}`).join(", ");
@@ -1137,6 +1434,14 @@ export class PGLiteDatabaseAdapter
         }, "getRoomsForParticipants");
     }
 
+/**
+ * Asynchronously retrieves actor details based on the given room ID.
+ * 
+ * @param {Object} params - The parameters object containing the room ID.
+ * @param {string} params.roomId - The ID of the room to fetch actor details for.
+ * @returns {Promise<Actor[]>} A promise that resolves to an array of Actor objects with their details.
+ * @throws {Error} If the room ID is missing or if there's an error while fetching actor details.
+ */
     async getActorDetails(params: { roomId: string }): Promise<Actor[]> {
         if (!params.roomId) {
             throw new Error("roomId is required");
@@ -1200,6 +1505,14 @@ export class PGLiteDatabaseAdapter
         }, "getActorDetails");
     }
 
+/**
+ * Asynchronously retrieves a value from the cache table based on the provided key and agent ID.
+ * 
+ * @param {object} params - The parameters for retrieving the cache value.
+ * @param {string} params.key - The key to search for in the cache table.
+ * @param {UUID} params.agentId - The agent ID associated with the cache value.
+ * @returns {Promise<string | undefined>} The value associated with the provided key and agent ID, or undefined if not found or an error occurs.
+ */
     async getCache(params: {
         key: string;
         agentId: UUID;
@@ -1224,6 +1537,15 @@ export class PGLiteDatabaseAdapter
         }, "getCache");
     }
 
+/**
+ * Asynchronously sets a cache value in the database.
+ *
+ * @param {Object} params - The parameters for setting the cache value.
+ * @param {string} params.key - The key for the cache entry.
+ * @param {UUID} params.agentId - The agent ID associated with the cache entry.
+ * @param {string} params.value - The value to be stored in the cache.
+ * @returns {Promise<boolean>} A boolean indicating if the cache value was successfully set.
+ */
     async setCache(params: {
         key: string;
         agentId: UUID;
@@ -1256,6 +1578,14 @@ export class PGLiteDatabaseAdapter
         );
     }
 
+/**
+ * Deletes a cache entry from the database.
+ * 
+ * @param {object} params - The parameters for deleting the cache entry.
+ * @param {string} params.key - The key of the cache entry to delete.
+ * @param {UUID} params.agentId - The ID of the agent associated with the cache entry.
+ * @returns {Promise<boolean>} - A Promise that resolves to true if the cache entry was successfully deleted, and false otherwise.
+ */
     async deleteCache(params: {
         key: string;
         agentId: UUID;
@@ -1284,6 +1614,15 @@ export class PGLiteDatabaseAdapter
         );
     }
 
+/**
+ * Retrieves knowledge items based on the provided parameters.
+ * @param {Object} params - The parameters for querying knowledge items.
+ * @param {UUID} [params.id] - The ID of the knowledge item to retrieve.
+ * @param {UUID} params.agentId - The ID of the agent associated with the knowledge items.
+ * @param {number} [params.limit] - The maximum number of knowledge items to retrieve.
+ * @param {string} [params.query] - The search query to filter knowledge items.
+ * @returns {Promise<RAGKnowledgeItem[]>} A promise that resolves to an array of knowledge items that match the query parameters.
+ */
     async getKnowledge(params: {
         id?: UUID;
         agentId: UUID;
@@ -1341,6 +1680,16 @@ export class PGLiteDatabaseAdapter
         }, "getKnowledge");
     }
 
+/**
+ * Search for knowledge items based on the provided parameters.
+ * @param {Object} params - The parameters for searching knowledge
+ * @param {UUID} params.agentId - The UUID of the agent
+ * @param {Float32Array} params.embedding - The embedding to search for
+ * @param {number} params.match_threshold - The threshold for matching
+ * @param {number} params.match_count - The number of matches to return
+ * @param {string} [params.searchText] - The optional search text
+ * @returns {Promise<RAGKnowledgeItem[]>} A promise that resolves to an array of RAGKnowledgeItem objects
+ */
     async searchKnowledge(params: {
         agentId: UUID;
         embedding: Float32Array;
@@ -1455,6 +1804,12 @@ export class PGLiteDatabaseAdapter
         }, "searchKnowledge");
     }
 
+/**
+ * Asynchronously creates a knowledge item in the database.
+ * 
+ * @param {RAGKnowledgeItem} knowledge - The knowledge item to be created.
+ * @returns {Promise<void>} A Promise that resolves when the knowledge item is successfully created.
+ */
     async createKnowledge(knowledge: RAGKnowledgeItem): Promise<void> {
         return this.withTransaction(async (tx) => {
             try {
@@ -1492,6 +1847,11 @@ export class PGLiteDatabaseAdapter
         }, "createKnowledge");
     }
 
+/**
+ * Removes knowledge from the database.
+ * @param {UUID} id - The unique identifier of the knowledge to be removed.
+ * @returns {Promise<void>} A promise that resolves once the knowledge is successfully removed.
+ */
     async removeKnowledge(id: UUID): Promise<void> {
         return await this.withTransaction(async (tx) => {
             try {
@@ -1507,6 +1867,13 @@ export class PGLiteDatabaseAdapter
         }, "removeKnowledge");
     }
 
+/**
+ * Clear knowledge from the database for a specific agent with the option to clear shared knowledge.
+ * 
+ * @param {UUID} agentId - The unique identifier of the agent.
+ * @param {boolean} [shared] - Flag to indicate if shared knowledge should also be cleared.
+ * @returns {Promise<void>} A Promise that resolves when the operation is complete.
+ */
     async clearKnowledge(agentId: UUID, shared?: boolean): Promise<void> {
         return await this.withTransaction(async (tx) => {
             try {

@@ -15,6 +15,12 @@ const __dirname = path.dirname(__filename);
 
 const WEBSOCKET_PORT = 54817;
 
+/**
+ * Checks if a given port is available for use.
+ * 
+ * @param {number} port - The port number to check for availability.
+ * @returns {Promise<boolean>} A promise that resolves to true if the port is available, false otherwise.
+ */
 export async function isPortAvailable(port: number): Promise<boolean> {
     return new Promise((resolve) => {
         const server = net
@@ -28,6 +34,21 @@ export async function isPortAvailable(port: number): Promise<boolean> {
     });
 }
 
+/**
+ * Interface representing a test device.
+ * 
+ * @interface
+ * @property {string} name - Name of the device.
+ * @method vibrate - Method to start vibration.
+ * @param {number} speed - The speed of vibration.
+ * @returns {Promise<void>}
+ * @method stop - Method to stop vibration.
+ * @returns {Promise<void>}
+ * @method disconnect - Method to disconnect from the device.
+ * @returns {Promise<void>}
+ * @method getBatteryLevel - Method to get the battery level of the device, if available.
+ * @returns {Promise<number>} The battery level of the device, if available.
+ */
 interface TestDevice {
     name: string;
     vibrate(speed: number): Promise<void>;
@@ -36,7 +57,17 @@ interface TestDevice {
     getBatteryLevel?(): Promise<number>;
 }
 
+/**
+ * Represents a wrapper class for interacting with Buttplug devices.
+ * @implements {TestDevice}
+ */
+
 class ButtplugDeviceWrapper implements TestDevice {
+/**
+ * Creates a new instance of the class.
+ * @param {ButtplugClientDevice} device - The Buttplug client device.
+ * @param {ButtplugClient} client - The Buttplug client.
+ */
     constructor(
         private device: ButtplugClientDevice,
         private client: ButtplugClient
@@ -44,6 +75,14 @@ class ButtplugDeviceWrapper implements TestDevice {
         this.name = device.name;
     }
     name: string;
+
+/**
+ * Asynchronously triggers the device to vibrate at a specified speed.
+ * 
+ * @param {number} speed - The speed at which the device should vibrate.
+ * @returns {Promise<void>} A promise that resolves after the device has vibrated at the specified speed.
+ * @throws If there is an error while triggering the vibration.
+ */ 
 
     async vibrate(speed: number) {
         try {
@@ -57,6 +96,12 @@ class ButtplugDeviceWrapper implements TestDevice {
         }
     }
 
+/**
+ * Asynchronously stops the simulation, calling the stop method of the device and logging a message.
+ * 
+ * @returns {Promise<void>} A promise that resolves once the simulation is stopped.
+ * @throws {Error} If there is an error stopping the simulation.
+ */
     async stop() {
         try {
             await this.device.stop();
@@ -67,6 +112,10 @@ class ButtplugDeviceWrapper implements TestDevice {
         }
     }
 
+/**
+ * Disconnects the client from the server, stops the device, and kills the Intiface Engine server process.
+ * @async
+ */
     async disconnect() {
         try {
             await this.device.stop();
@@ -93,6 +142,12 @@ class ButtplugDeviceWrapper implements TestDevice {
         }
     }
 
+/**
+ * Asynchronously retrieves the battery level of the device.
+ * 
+ * @returns {Promise<number>} The battery level as a percentage (0-100).
+ * @throws {Error} If there is an error retrieving the battery level.
+ */
     async getBatteryLevel(): Promise<number> {
         try {
             const battery = await this.device.battery();
@@ -107,6 +162,12 @@ class ButtplugDeviceWrapper implements TestDevice {
     }
 }
 
+/**
+ * Starts the Intiface Engine by spawning a child process and running it with specified parameters.
+ * 
+ * @return {Promise<void>} A Promise that resolves once Intiface Engine has been started successfully.
+ * @throws {Error} If there is an error starting the Intiface Engine.
+ */
 export async function startIntifaceEngine(): Promise<void> {
     try {
         const child = spawn(
@@ -139,6 +200,11 @@ export async function startIntifaceEngine(): Promise<void> {
     }
 }
 
+/**
+ * Function to get a test device using Buttplug for communication with sex toys.
+ * 
+ * @returns {Promise<TestDevice>} A Promise that resolves with the TestDevice instance.
+ */
 async function getTestDevice(): Promise<TestDevice> {
     const client = new ButtplugClient("Test Client");
     const connector = new ButtplugNodeWebsocketClientConnector(
@@ -195,6 +261,12 @@ async function getTestDevice(): Promise<TestDevice> {
     }
 }
 
+/**
+ * Runs a sequence of tests on the provided test device.
+ * 
+ * @param {TestDevice} device - The test device on which to run the tests.
+ * @returns {Promise<void>} - A Promise that resolves when the test sequence is complete.
+ */
 async function runTestSequence(device: TestDevice) {
     console.log("Starting test sequence with:", device.name);
     await new Promise((r) => setTimeout(r, 1000));
@@ -282,6 +354,11 @@ async function runTestSequence(device: TestDevice) {
     await new Promise((r) => setTimeout(r, 500));
 }
 
+/**
+ * Asynchronous function that serves as the entry point for running a test sequence.
+ * 
+ * @returns {Promise<void>} A promise that resolves when the test sequence is completed.
+ */
 async function main() {
     let device: TestDevice | null = null;
     try {

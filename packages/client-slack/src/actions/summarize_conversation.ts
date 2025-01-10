@@ -33,6 +33,11 @@ Summarization objective: {{objective}}
 # Instructions: Summarize the conversation so far. Return the summary. Do not acknowledge this request, just summarize and continue the existing summary if there is one. Capture any important details to the objective. Only respond with the new summary text.
 Your response should be extremely detailed and include any and all relevant information.`;
 
+/**
+ * Template for creating a summary of messages based on conversation and user's request.
+ * 
+ * @type {string}
+ */
 export const dateRangeTemplate = `# Messages we are summarizing (the conversation is continued after this)
 {{recentMessages}}
 
@@ -58,6 +63,15 @@ If the user asks for "today", use "24 hours ago" as start and "0 minutes ago" as
 If no time range is specified, default to "2 hours ago" for start and "0 minutes ago" for end.
 `;
 
+/**
+ * Asynchronously retrieves a date range object from a given runtime, message and state.
+ * Parses the response to extract the objective, start time, and end time.
+ * Parses time strings like "5 minutes ago", "2 hours ago", etc. to calculate the actual time.
+ * @param {IAgentRuntime} runtime - The agent runtime instance
+ * @param {Memory} message - The message object
+ * @param {State} state - The state object
+ * @returns {Promise<{ objective: string; start: number; end: number } | undefined>} - A promise that resolves with the date range object if successful, otherwise undefined
+ */
 const getDateRange = async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -135,6 +149,12 @@ const getDateRange = async (
     return undefined;
 };
 
+/**
+ * Object representing a summarize action.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {Array<string>} similes - An array of related terms or phrases.
+ */
 const summarizeAction: Action = {
     name: "SUMMARIZE_CONVERSATION",
     similes: [

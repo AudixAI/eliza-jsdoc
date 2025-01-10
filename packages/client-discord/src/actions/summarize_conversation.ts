@@ -24,6 +24,13 @@ Summarization objective: {{objective}}
 # Instructions: Summarize the conversation so far. Return the summary. Do not acknowledge this request, just summarize and continue the existing summary if there is one. Capture any important details to the objective. Only respond with the new summary text.
 Your response should be extremely detailed and include any and all relevant information.`;
 
+/**
+ * Template for generating a summary of conversation messages.
+ *
+ * This template includes instructions on how to determine the objective of the conversation summary and the range of dates it covers.
+ *
+ * @type {string}
+ */
 export const dateRangeTemplate = `# Messages we are summarizing (the conversation is continued after this)
 {{recentMessages}}
 
@@ -42,6 +49,14 @@ Your response must be formatted as a JSON block with this structure:
 \`\`\`
 `;
 
+/**
+ * Retrieves a date range object from the given runtime, message, and state.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime to compose state from.
+ * @param {Memory} message - The message used to compose state.
+ * @param {State} state - The current state.
+ * @returns {Promise<{objective: string, start: string | number, end: string | number} | null>} The date range object containing objective, start, and end times, or null if parsing fails.
+ */
 const getDateRange = async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -127,6 +142,9 @@ const getDateRange = async (
     }
 };
 
+/**
+ * Object representing the action of summarizing a conversation.
+ */
 const summarizeAction = {
     name: "SUMMARIZE_CONVERSATION",
     similes: [

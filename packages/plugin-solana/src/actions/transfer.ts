@@ -25,12 +25,27 @@ import { composeContext } from "@elizaos/core";
 import { getWalletKey } from "../keypairUtils";
 import { generateObjectDeprecated } from "@elizaos/core";
 
+/**
+ * Interface for transferring content with specified token address, recipient, and amount.
+ * @interface
+ * @extends Content
+ * @property {string} tokenAddress - The address of the token to be transferred.
+ * @property {string} recipient - The address of the recipient.
+ * @property {string | number} amount - The amount of tokens to transfer, can be either a string or a number.
+ */
 export interface TransferContent extends Content {
     tokenAddress: string;
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Checks if the provided `content` is an instance of TransferContent.
+ * 
+ * @param {IAgentRuntime} runtime - The IAgentRuntime object.
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} Returns true if the `content` is of type TransferContent, otherwise false.
+ */
 function isTransferContent(
     runtime: IAgentRuntime,
     content: any
@@ -44,6 +59,27 @@ function isTransferContent(
     );
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "tokenAddress": "BieefG47jAHCGZBxi2q87RDuHyGZyYC3vAzxpyu8pump",
+ *     "recipient": "9jW8FPr6BSSsemWPV22UUCzSqkVdTp6HTyPqeqyuBbCa",
+ *     "amount": "1000"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Token contract address
+ * - Recipient wallet address
+ * - Amount to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:

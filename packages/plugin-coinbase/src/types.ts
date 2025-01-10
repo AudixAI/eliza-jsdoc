@@ -15,6 +15,15 @@ export const ChargeSchema = z.object({
     description: z.string().min(1),
 });
 
+/**
+ * Interface representing the content of a charge.
+ * @property {string | null} id - The unique identifier of the charge.
+ * @property {number} price - The price of the charge.
+ * @property {string} type - The type of the charge.
+ * @property {string} currency - The currency code (e.g., USD) of the charge.
+ * @property {string} name - The name of the charge.
+ * @property {string} description - The description of the charge.
+ */
 export interface ChargeContent {
     id: string | null;
     price: number;
@@ -39,6 +48,14 @@ export const TransferSchema = z.object({
     assetId: z.string().toLowerCase(),
 });
 
+/**
+ * Interface for defining the content of a transfer, including network, receiving addresses, transfer amount, and asset ID.
+ * @typedef {object} TransferContent
+ * @property {string} network - The name of the network where the transfer will take place.
+ * @property {string[]} receivingAddresses - An array of strings representing the addresses where the transfer will be received.
+ * @property {number} transferAmount - The amount to be transferred.
+ * @property {string} assetId - The identifier of the asset to be transferred.
+ */
 export interface TransferContent {
     network: string;
     receivingAddresses: string[];
@@ -50,6 +67,15 @@ export const isTransferContent = (object: any): object is TransferContent => {
     return TransferSchema.safeParse(object).success;
 };
 
+/**
+ * Represents a transaction with the following properties:
+ * @typedef {Object} Transaction
+ * @property {string} address - The address of the transaction
+ * @property {number} amount - The amount of the transaction
+ * @property {string} status - The status of the transaction
+ * @property {string | null} errorCode - The error code of the transaction, or null if no error
+ * @property {string | null} transactionUrl - The URL of the transaction, or null if no URL is available
+ */
 export type Transaction = {
     address: string;
     amount: number;
@@ -66,6 +92,10 @@ export const TradeSchema = z.object({
     side: z.enum(["BUY", "SELL"]),
 });
 
+/**
+ * Represents the details of a trade including the network, amount, source asset, target asset, and side of the trade (BUY or SELL).
+ */ 
+         
 export interface TradeContent {
     network: string;
     amount: number;
@@ -78,6 +108,19 @@ export const isTradeContent = (object: any): object is TradeContent => {
     return TradeSchema.safeParse(object).success;
 };
 
+/**
+ * Represents a trade transaction object.
+ * @typedef TradeTransaction
+ * @type {Object}
+ * @property {string} network - The network on which the transaction occurred.
+ * @property {number} amount - The amount involved in the transaction.
+ * @property {string} sourceAsset - The asset used as the source in the transaction.
+ * @property {string} targetAsset - The asset targeted in the transaction.
+ * @property {string} status - The status of the transaction.
+ * @property {string | null} errorCode - The error code associated with the transaction, if any.
+ * @property {string | null} transactionUrl - The URL for viewing more details about the transaction, if available.
+ */
+  
 export type TradeTransaction = {
     network: string;
     amount: number;
@@ -88,6 +131,16 @@ export type TradeTransaction = {
     transactionUrl: string | null;
 };
 
+/**
+ * Interface representing the content of a token contract.
+ * @typedef {object} TokenContractContent
+ * @property {string} contractType - The type of the contract (ERC20, ERC721, ERC1155).
+ * @property {string} name - The name of the token.
+ * @property {string} symbol - The symbol of the token.
+ * @property {string} network - The network on which the contract is deployed.
+ * @property {string} [baseURI] - The base URI for token metadata.
+ * @property {number} [totalSupply] - The total supply of the token.
+ */
 export interface TokenContractContent {
     contractType: "ERC20" | "ERC721" | "ERC1155";
     name: string;
@@ -97,6 +150,20 @@ export interface TokenContractContent {
     totalSupply?: number;
 }
 
+/**
+ * Schema for token contract configuration.
+ * @type {import("zod").ZodObject<{
+ *   contractType: import("zod").ZodEnum<"ERC20" | "ERC721" | "ERC1155">;
+ *   name: import("zod").ZodString;
+ *   symbol: import("zod").ZodString;
+ *   network: import("zod").ZodString;
+ *   baseURI: import("zod").ZodString | undefined;
+ *   totalSupply: import("zod").ZodNumber | undefined;
+ * } & { contractType: "ERC20", totalSupply?: number } & { contractType: "ERC721" | "ERC1155", baseURI?: string }, {
+ *   message: string;
+ *   path: string[];
+ * }>
+ */
 export const TokenContractSchema = z
     .object({
         contractType: z
@@ -145,6 +212,17 @@ export const isTokenContractContent = (
 };
 
 // Add to types.ts
+/**
+ * Represents the content required for invoking a smart contract on a blockchain network.
+ * @typedef {Object} ContractInvocationContent
+ * @property {string} contractAddress - The address of the smart contract to be invoked.
+ * @property {string} method - The name of the method to be called on the smart contract.
+ * @property {Array} abi - The ABI (Application Binary Interface) of the smart contract.
+ * @property {Object=} args - Optional arguments to be passed to the smart contract method.
+ * @property {string=} amount - The amount of cryptocurrency to be sent along with the contract invocation.
+ * @property {string} assetId - The ID of the asset (e.g. cryptocurrency) being used for the contract invocation.
+ * @property {string} networkId - The ID of the blockchain network on which the contract is deployed.
+ */
 export interface ContractInvocationContent {
     contractAddress: string;
     method: string;
@@ -155,6 +233,18 @@ export interface ContractInvocationContent {
     networkId: string;
 }
 
+/**
+ * ContractInvocationSchema data schema.
+ * 
+ * @typedef {Object} ContractInvocationSchema
+ * @property {string} contractAddress - The address of the contract to invoke
+ * @property {string} method - The method to invoke on the contract
+ * @property {Array<any>} abi - The ABI of the contract
+ * @property {Object.<string, any>} [args] - The arguments to pass to the contract method
+ * @property {string} [amount] - The amount of the asset to send (as string to handle large numbers)
+ * @property {string} assetId - The ID of the asset to send (e.g., 'USDC')
+ * @property {string} networkId - The network ID to use (e.g., 'ethereum-mainnet')
+ */
 export const ContractInvocationSchema = z.object({
     contractAddress: z
         .string()
@@ -190,6 +280,10 @@ export const WebhookSchema = z.object({
     eventFilters: z.array(z.custom<WebhookEventFilter>()).optional(),
 });
 
+/**
+ * Type definition for the content of a webhook, inferred from the WebhookSchema.
+ * @type {WebhookContent}
+ */
 export type WebhookContent = z.infer<typeof WebhookSchema>;
 
 export const isWebhookContent = (object: any): object is WebhookContent => {
@@ -204,6 +298,15 @@ export const AdvancedTradeSchema = z.object({
     limitPrice: z.number().optional(),
 });
 
+/**
+ * Represents advanced trade content information.
+ * @typedef {Object} AdvancedTradeContent
+ * @property {string} productId - The identifier of the product.
+ * @property {"BUY" | "SELL"} side - The side of the trade, either "BUY" or "SELL".
+ * @property {number} amount - The amount being traded.
+ * @property {"MARKET" | "LIMIT"} orderType - The type of order, either "MARKET" or "LIMIT".
+ * @property {number} [limitPrice] - The limit price for a limit order.
+ */
 export interface AdvancedTradeContent {
     productId: string;
     side: "BUY" | "SELL";
@@ -218,6 +321,15 @@ export const isAdvancedTradeContent = (
     return AdvancedTradeSchema.safeParse(object).success;
 };
 
+/**
+ * Interface representing the content needed to read data from a smart contract.
+ * @typedef {Object} ReadContractContent
+ * @property {string} contractAddress - The address of the smart contract to read data from.
+ * @property {string} method - The method to call on the smart contract.
+ * @property {string} networkId - The network ID where the smart contract is deployed.
+ * @property {Record<string, any>} args - The arguments to pass to the method.
+ * @property {Array<any>} [abi] - The optional ABI (Application Binary Interface) of the smart contract.
+ */
 export interface ReadContractContent {
     contractAddress: `0x${string}`;
     method: string;

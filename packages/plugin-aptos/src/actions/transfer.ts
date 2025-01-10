@@ -22,11 +22,25 @@ import {
 } from "@aptos-labs/ts-sdk";
 import { walletProvider } from "../providers/wallet";
 
+/**
+ * Represents the content to be transferred, extending from the Content interface.
+ * @interface TransferContent
+ * @extends Content
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string | number} amount - The amount to be transferred, can be either a string or number.
+ */
+     
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Check if the provided content is a valid TransferContent object.
+ * It logs the content for transfer to ElizaLogger.
+ * @param content The content to check if it is a TransferContent object.
+ * @returns True if the content is a valid TransferContent object, otherwise false.
+ */
 function isTransferContent(content: any): content is TransferContent {
     elizaLogger.log("Content for transfer", content);
     return (
@@ -36,6 +50,25 @@ function isTransferContent(content: any): content is TransferContent {
     );
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "recipient": "0x2badda48c062e861ef17a96a806c451fd296a49f45b272dee17f85b0e32663fd",
+ *     "amount": "1000"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Recipient wallet address
+ * - Amount to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:

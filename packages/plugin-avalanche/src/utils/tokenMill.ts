@@ -4,6 +4,13 @@ import { IAgentRuntime, elizaLogger } from "@elizaos/core";
 import { TokenMillMarketCreationParameters } from "../types";
 import { Address, encodeAbiParameters, parseUnits } from "viem";
 
+/**
+ * Creates a new market and token using the provided runtime, name, and symbol.
+ * @param {IAgentRuntime} runtime - The runtime instance.
+ * @param {string} name - The name of the token.
+ * @param {string} symbol - The symbol of the token.
+ * @returns {Promise<{ tx: any, baseToken: any, market: any }>} Object containing the transaction, base token address, and market address.
+ */
 export const createMarketAndToken = async (
     runtime: IAgentRuntime,
     name: string,

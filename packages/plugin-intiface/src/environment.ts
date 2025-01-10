@@ -1,6 +1,10 @@
 import { IAgentRuntime } from "@elizaos/core";
 import { z } from "zod";
 
+/**
+ * Schema for Intiface environment variables
+ * @type {import('zod').ZodObject}
+ */
 export const intifaceEnvSchema = z
     .object({
         INTIFACE_URL: z.string().default("ws://localhost:12345"),
@@ -20,8 +24,16 @@ export const intifaceEnvSchema = z
         }
     );
 
+/**
+ * Type definition for IntifaceConfig, inferred from intifaceEnvSchema.
+ */
 export type IntifaceConfig = z.infer<typeof intifaceEnvSchema>;
 
+/**
+ * Validates the Intiface configuration based on the provided runtime object.
+ * @param {IAgentRuntime} runtime - The runtime object containing settings and environment variables.
+ * @returns {Promise<IntifaceConfig>} The validated Intiface configuration.
+ */
 export async function validateIntifaceConfig(
     runtime: IAgentRuntime
 ): Promise<IntifaceConfig> {

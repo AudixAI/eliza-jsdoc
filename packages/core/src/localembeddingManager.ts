@@ -3,14 +3,25 @@ import { fileURLToPath } from "url";
 import { FlagEmbedding, EmbeddingModel } from "fastembed";
 import elizaLogger from "./logger";
 
+/**
+ * Manages the local embedding model for generating embeddings from input strings.
+ */
 class LocalEmbeddingModelManager {
     private static instance: LocalEmbeddingModelManager | null;
     private model: FlagEmbedding | null = null;
     private initPromise: Promise<void> | null = null;
     private initializationLock = false;
 
+/**
+ * Private constructor.
+ */
     private constructor() {}
 
+/**
+ * Retrieves the singleton instance of LocalEmbeddingModelManager.
+ * If an instance does not already exist, a new one is created.
+ * @returns {LocalEmbeddingModelManager} The singleton instance of LocalEmbeddingModelManager
+ */
     public static getInstance(): LocalEmbeddingModelManager {
         if (!LocalEmbeddingModelManager.instance) {
             LocalEmbeddingModelManager.instance =
@@ -19,6 +30,10 @@ class LocalEmbeddingModelManager {
         return LocalEmbeddingModelManager.instance;
     }
 
+/**
+ * Retrieves the root path of the project based on the current file's path.
+ * @returns {Promise<string>} A Promise that resolves to the root path of the project.
+ */
     private async getRootPath(): Promise<string> {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
@@ -28,6 +43,13 @@ class LocalEmbeddingModelManager {
             : path.resolve(__dirname, "..");
     }
 
+/**
+ * Asynchronously initializes the model if it has not already been initialized.
+ * If initialization is in progress, waits for it to complete.
+ * Uses a lock to prevent multiple simultaneous initializations.
+ * 
+ * @returns A Promise that resolves once the model is initialized.
+ */
     public async initialize(): Promise<void> {
         // If already initialized, return immediately
         if (this.model) {
@@ -59,6 +81,14 @@ class LocalEmbeddingModelManager {
         }
     }
 
+/**
+ * Initializes the BGE embedding model for local embedding.
+ * This method checks if the code is running in a Node.js environment,
+ * creates a cache directory if it does not exist,
+ * and initializes the BGE embedding model with specified parameters.
+ * 
+ * @returns A Promise that resolves when the model is successfully initialized or rejects with an error.
+ */
     private async initializeModel(): Promise<void> {
         const isNode =
             typeof process !== "undefined" &&
@@ -92,6 +122,13 @@ class LocalEmbeddingModelManager {
         }
     }
 
+/**
+ * Generates an embedding for the input string using the model. If the model has not been initialized, it will be initialized before generating the embedding.
+ * 
+ * @param {string} input The input string to generate an embedding for.
+ * @return {Promise<number[]>} The generated embedding as an array of numbers.
+ * @throws {Error} If the model fails to initialize or if the embedding generation fails.
+ */
     public async generateEmbedding(input: string): Promise<number[]> {
         if (!this.model) {
             await this.initialize();
@@ -122,6 +159,13 @@ class LocalEmbeddingModelManager {
         }
     }
 
+/**
+ * Processes the provided embedding and returns a standardized array format.
+ * 
+ * @param {number[]} embedding - The embedding to process.
+ * @returns {number[]} - The standardized array format of the embedding.
+ * @throws {Error} - If the embedding format is unexpected or invalid.
+ */
     private processEmbedding(embedding: number[]): number[] {
         let finalEmbedding: number[];
 
@@ -159,6 +203,11 @@ class LocalEmbeddingModelManager {
         return finalEmbedding;
     }
 
+/**
+ * Resets the state of the object by setting the model to null, initPromise to null, and initializationLock to false.
+ * If the model exists, any cleanup logic can be added before setting it to null.
+ * @returns {Promise<void>} A Promise that resolves when the reset operation is complete.
+ */
     public async reset(): Promise<void> {
         if (this.model) {
             // Add any cleanup logic here if needed
@@ -169,6 +218,10 @@ class LocalEmbeddingModelManager {
     }
 
     // For testing purposes
+/**
+ * Resets the instance of LocalEmbeddingModelManager by calling the reset method 
+ * and setting the instance to null.
+ */
     public static resetInstance(): void {
         if (LocalEmbeddingModelManager.instance) {
             LocalEmbeddingModelManager.instance.reset();

@@ -1,3 +1,8 @@
+/**
+ * Object containing keywords related to team coordination.
+ * 
+ * @type {{ KEYWORDS: readonly string[] }}
+ */
 export const TEAM_COORDINATION = {
     KEYWORDS: [
         "team",
@@ -46,6 +51,10 @@ export const RESPONSE_CHANCES = {
     FREQUENT_CHATTER: 0.5, // Base chance for frequent responders
 } as const;
 
+/**
+ * Array containing words that indicate the user is losing interest in the conversation and wants the bot to stop talking.
+ * Words include "shut up", "stop", "please shut up", "shut up please", "dont talk", "silence", and more.
+ */
 export const LOSE_INTEREST_WORDS = [
     "shut up",
     "stop",

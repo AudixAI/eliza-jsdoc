@@ -4,6 +4,11 @@ import { InteractionClient } from "./interactions";
 import { EchoChamberConfig } from "./types";
 import { validateEchoChamberConfig } from "./environment";
 
+/**
+ * Interface for the EchoChamber client that allows starting and stopping the client.
+ * 
+ * @type {Client}
+ */
 export const EchoChamberClientInterface: Client = {
     async start(runtime: IAgentRuntime) {
         try {

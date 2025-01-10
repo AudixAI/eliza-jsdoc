@@ -13,6 +13,10 @@ const MAX_RETRIES = 3;
 
 const RETRY_DELAY = 5000;
 
+/**
+ * Class representing a client for interacting with the EchoChamber API.
+ * @class
+ */
 export class EchoChamberClient {
     private runtime: IAgentRuntime;
     private config: EchoChamberConfig;
@@ -21,6 +25,12 @@ export class EchoChamberClient {
     private pollInterval: NodeJS.Timeout | null = null;
     private watchedRoom: string | null = null;
 
+/**
+ * Constructor for EchoChamber class.
+ * 
+ * @param {IAgentRuntime} runtime - The Agent Runtime to use.
+ * @param {EchoChamberConfig} config - The configuration object for EchoChamber.
+ */
     constructor(runtime: IAgentRuntime, config: EchoChamberConfig) {
         this.runtime = runtime;
         this.config = config;
@@ -31,18 +41,36 @@ export class EchoChamberClient {
         };
     }
 
+/**
+ * Get the username from the model info.
+ * @returns {string} The username from the model info.
+ */
     public getUsername(): string {
         return this.modelInfo.username;
     }
+
+/**
+ * Retrieve information about the model.
+ * @returns {ModelInfo} An object containing the model information.
+ */ 
 
     public getModelInfo(): ModelInfo {
         return { ...this.modelInfo };
     }
 
+/**
+ * Returns a copy of the current configuration object.
+ * 
+ * @returns {EchoChamberConfig} A copy of the current configuration object.
+ */
     public getConfig(): EchoChamberConfig {
         return { ...this.config };
     }
 
+/**
+ * Returns the authentication headers for the request.
+ * @returns {Object} The authentication headers with keys as strings and values as strings.
+ */
     private getAuthHeaders(): { [key: string]: string } {
         return {
             "Content-Type": "application/json",
@@ -50,6 +78,12 @@ export class EchoChamberClient {
         };
     }
 
+/**
+ * Set the watched room for the user.
+ * 
+ * @param {string} roomId - The ID of the room to set as watched.
+ * @returns {Promise<void>} - A Promise that resolves once the watched room is set.
+ */
     public async setWatchedRoom(roomId: string): Promise<void> {
         try {
             // Verify room exists
@@ -70,10 +104,22 @@ export class EchoChamberClient {
         }
     }
 
+/**
+ * Retrieves the room that is currently being watched.
+ * 
+ * @returns The room that is being watched, or null if no room is being watched.
+ */
     public getWatchedRoom(): string | null {
         return this.watchedRoom;
     }
 
+/**
+ * Retries the given asynchronous operation until it succeeds or the maximum number of retries is reached.
+ * @template T
+ * @param {() => Promise<T>} operation - The asynchronous operation to retry.
+ * @param {number} retries - The maximum number of retries (default is MAX_RETRIES).
+ * @returns {Promise<T>} - The result of the operation after successful completion.
+ */
     private async retryOperation<T>(
         operation: () => Promise<T>,
         retries: number = MAX_RETRIES
@@ -91,6 +137,11 @@ export class EchoChamberClient {
         throw new Error("Max retries exceeded");
     }
 
+/**
+ * Asynchronous function to start the EchoChamber client.
+ * 
+ * @returns {Promise<void>} A Promise that resolves when the client is started.
+ */
     public async start(): Promise<void> {
         elizaLogger.log("🚀 Starting EchoChamber client...");
         try {
@@ -110,6 +161,11 @@ export class EchoChamberClient {
         }
     }
 
+/**
+ * Stops the EchoChamber client by clearing the polling interval and leaving the watched room if any.
+ * 
+ * @returns {Promise<void>} A Promise that resolves once the client is stopped.
+ */
     public async stop(): Promise<void> {
         if (this.pollInterval) {
             clearInterval(this.pollInterval);
@@ -131,6 +187,12 @@ export class EchoChamberClient {
         elizaLogger.log("Stopping EchoChamber client...");
     }
 
+/**
+ * Retrieves a list of chat rooms based on the provided tags.
+ * 
+ * @param {string[]} [tags] - Optional array of tags to filter the chat rooms by.
+ * @returns {Promise<ChatRoom[]>} A Promise that resolves to an array of ChatRoom objects.
+ */
     public async listRooms(tags?: string[]): Promise<ChatRoom[]> {
         try {
             const url = new URL(this.apiUrl);
@@ -151,6 +213,11 @@ export class EchoChamberClient {
         }
     }
 
+/**
+ * Retrieves the history of messages for a specific room.
+ * @param {string} roomId - The ID of the room to retrieve history for.
+ * @returns {Promise<ChatMessage[]>} A promise that resolves to an array of ChatMessage objects representing the room history.
+ */
     public async getRoomHistory(roomId: string): Promise<ChatMessage[]> {
         return this.retryOperation(async () => {
             const response = await fetch(`${this.apiUrl}/${roomId}/history`);
@@ -165,6 +232,12 @@ export class EchoChamberClient {
         });
     }
 
+/**
+ * Sends a message to a specific chat room.
+ * @param {string} roomId - The ID of the chat room where the message will be sent.
+ * @param {string} content - The content of the message to be sent.
+ * @returns {Promise<ChatMessage>} A promise that resolves with the ChatMessage object representing the sent message.
+ */
     public async sendMessage(
         roomId: string,
         content: string

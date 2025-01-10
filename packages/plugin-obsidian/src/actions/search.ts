@@ -9,6 +9,13 @@ import {
 import { getObsidian, markdownToPlaintext, processUserInput }  from "../helper";
 import { isSearchQuery } from "../types";
 
+/**
+ * Represents the search action.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {Array<string>} similes - Array of similar words for search action.
+ */
 export const searchAction: Action = {
     name: "SEARCH",
     similes: [

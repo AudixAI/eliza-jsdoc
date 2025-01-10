@@ -25,6 +25,15 @@ import { confluxBridgeTransferTemplate } from "../templates/bridgeTransfer";
 import { TransferSchema, isTransferContent } from "../types";
 import CrossSpaceCallAbi from "../abi/crossSpaceCall";
 
+/**
+ * Sends CFX tokens from one wallet to another through a bridge contract.
+ * 
+ * @param {string} secretKey The secret key of the sender wallet in hexadecimal format.
+ * @param {string} rpcUrl The URL of the RPC server.
+ * @param {string} espaceTo The receiver's wallet address in hexadecimal format.
+ * @param {string} amount The amount of CFX tokens to send.
+ * @returns {Promise<string>} The transaction hash of the sent tokens.
+ */
 const bridgeSendCFX = async (
     secretKey: `0x${string}`,
     rpcUrl: string,
@@ -65,6 +74,17 @@ const bridgeSendCFX = async (
     return hash;
 };
 
+/**
+ * Represents an action for bridge transfer.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string} description - The description of the action.
+ * @property {string[]} similes - Similar actions.
+ * @property {Object[]} examples - Examples of the action being used.
+ * @property {Function} validate - A function to validate the action.
+ * @property {Function} handler - A function to handle the action.
+ */
 export const bridgeTransfer: Action = {
     name: "BRIDGE_SEND_CFX",
     description:

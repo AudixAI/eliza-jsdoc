@@ -24,6 +24,14 @@ export const getUserBalance = async (
     return await sdk.escrow.getUserBalance(token, walletAddress);
 };
 
+/**
+ * Deposits a specified amount of a token into the user's escrow balance.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime of the agent.
+ * @param {string} token - The token to deposit.
+ * @param {number} amount - The amount to deposit.
+ * @returns {Promise<any>} Promise that resolves with the deposit result.
+ */
 export const depositBalance = async (
     runtime: IAgentRuntime,
     token: string,
@@ -40,6 +48,14 @@ export const depositBalance = async (
     });
 };
 
+/**
+ * Performs a withdrawal of a specified balance from a user's escrow account.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime instance of the agent.
+ * @param {string} token - The token symbol to withdraw balance in.
+ * @param {number} amount - The amount of balance to withdraw.
+ * @returns {Promise<any>} - A promise that resolves with the result of the withdrawal.
+ */
 export const withdrawBalance = async (
     runtime: IAgentRuntime,
     token: string,
@@ -57,6 +73,12 @@ export const withdrawBalance = async (
 };
 
 // Deployment Operations
+/**
+ * Starts deployment process by checking balance, creating deployment order, and waiting for deployment to be ready.
+ * @param {IAgentRuntime} runtime - The agent runtime object
+ * @param {SpheronComputeConfig} computeConfig - The compute configuration object for deployment
+ * @returns {Promise<any>} - A promise that resolves with the deployment result
+ */
 export const startDeployment = async (
     runtime: IAgentRuntime,
     computeConfig: SpheronComputeConfig
@@ -120,6 +142,14 @@ export const startDeployment = async (
     return result;
 };
 
+/**
+ * Updates a deployment with the specified runtime, lease ID, and compute configuration.
+ *
+ * @param {IAgentRuntime} runtime - The runtime object containing necessary runtime information.
+ * @param {string} leaseId - The ID of the lease associated with the deployment.
+ * @param {SpheronComputeConfig} computeConfig - The compute configuration for the deployment.
+ * @returns {Promise<any>} A promise that resolves with the result of the deployment update.
+ */
 export const updateDeployment = async (
     runtime: IAgentRuntime,
     leaseId: string,
@@ -186,6 +216,13 @@ export const updateDeployment = async (
     return result;
 };
 
+/**
+ * Function to create an order using the given iclYaml string.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object containing necessary information.
+ * @param {string} iclYaml - The iclYaml string used to create the order.
+ * @returns {Promise<{ leaseId: string; transaction: any }>} - A Promise that resolves to an object with leaseId and transaction values.
+ */
 export const createOrder = async (
     runtime: IAgentRuntime,
     iclYaml: string
@@ -199,6 +236,14 @@ export const createOrder = async (
     );
 };
 
+/**
+ * Updates an order by calling the updateDeployment method of the SDK instance.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime instance.
+ * @param {string} leaseId - The ID of the lease to update.
+ * @param {string} iclYaml - The ICL YAML string for the update.
+ * @returns {Promise<{ providerAddress: string }>} Result object with the provider address.
+ */
 export const updateOrder = async (
     runtime: IAgentRuntime,
     leaseId: string,
@@ -213,6 +258,13 @@ export const updateOrder = async (
     );
 };
 
+/**
+ * Retrieves details of a specific deployment using the lease ID.
+ * 
+ * @param {IAgentRuntime} runtime The runtime context of the agent.
+ * @param {string} leaseId The unique identifier of the deployment.
+ * @return {Promise<DeploymentDetails>} The details of the deployment.
+ */
 export const getDeployment = async (
     runtime: IAgentRuntime,
     leaseId: string
@@ -234,6 +286,15 @@ export const closeDeployment = async (
     return await sdk.deployment.closeDeployment(leaseId);
 };
 
+/**
+ * Retrieves the deployment status for a specific deployment ID.
+ * 
+ * @param {IAgentRuntime} runtime The agent runtime to use for retrieving the deployment status.
+ * @param {string} deploymentId The ID of the deployment to retrieve the status for.
+ * @returns {Promise<boolean>} A boolean indicating if the deployment is ready or not.
+ * @throws {Error} If there was an error retrieving the deployment status.
+ */ 
+
 export async function getDeploymentStatus(
     runtime: IAgentRuntime,
     deploymentId: string
@@ -247,6 +308,15 @@ export async function getDeploymentStatus(
     }
 }
 
+/**
+ * Calculate the total price for a GPU based on its model and count.
+ * 
+ * @param {Object} gpu - The GPU object containing model and count.
+ * @param {string} gpu.model - The model of the GPU.
+ * @param {number} gpu.count - The quantity of GPUs.
+ * 
+ * @returns {number} Total price for the GPU(s).
+ */
 function calculateGPUPrice(gpu?: { model?: string; count?: number }): number {
     if (!gpu) return 1;
 
@@ -281,6 +351,12 @@ function calculateGPUPrice(gpu?: { model?: string; count?: number }): number {
     return basePrice * (gpu.count || 1);
 }
 
+/**
+ * Generates an ICL YAML configuration based on the provided SpheronComputeConfig
+ * 
+ * @param {SpheronComputeConfig} config - The SpheronComputeConfig object containing the configuration details
+ * @returns {string} The resulting ICL YAML configuration string
+ */
 export function generateICLYaml(config: SpheronComputeConfig): string {
     return `version: "1.0"
 services:
@@ -343,6 +419,13 @@ deployment:
       count: ${config.replicas || 1}`;
 }
 
+/**
+ * Parses the given duration string and converts it to a number value in hours.
+ * 
+ * @param {string} duration The duration string to parse (format: number followed by h(hours), d(days), w(weeks), or m(months))
+ * @returns {number} The parsed duration value in hours
+ * @throws {Error} If the duration string is in an invalid format
+ */
 function parseDuration(duration: string): number {
     const match = duration.match(/^(\d*\.?\d+)(h|d|w|m)$/);
     if (!match) {

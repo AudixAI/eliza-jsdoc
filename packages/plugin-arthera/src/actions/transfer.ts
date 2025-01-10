@@ -16,9 +16,36 @@ import { transferTemplate } from "../templates";
 export { transferTemplate };
 
 // Exported for tests
+/**
+ * Class representing a Transfer Action.
+ */
+ 
+/**
+ * Create a new Transfer Action.
+ * @param {WalletProvider} walletProvider - The wallet provider to use for the transfer action.
+ */
+ 
+/**
+ * Transfer tokens between wallets on different chains.
+ * @async
+ * @param {TransferParams} params - The parameters for the transfer.
+ * @returns {Promise<Transaction>} - The transaction information of the transfer.
+ * @throws {Error} - If the transfer fails.
+ */
 export class TransferAction {
+/**
+ * Constructor for creating a new class instance.
+ * @param {WalletProvider} walletProvider - The wallet provider to be injected into the class.
+ */
     constructor(private walletProvider: WalletProvider) {}
 
+/**
+ * Transfers tokens from one address to another on a specified blockchain.
+ * 
+ * @param {TransferParams} params - The parameters for the transfer including fromChain, amount, toAddress, and optional data.
+ * @returns {Promise<Transaction>} - A promise that resolves to an object representing the transaction details including hash, from address, to address, value, and optional data.
+ * @throws {Error} - If the transfer fails, an error is thrown with a message detailing the failure.
+ */
     async transfer(params: TransferParams): Promise<Transaction> {
         const walletClient = this.walletProvider.getWalletClient(
             params.fromChain
@@ -65,6 +92,13 @@ export class TransferAction {
     }
 }
 
+/**
+ * Build transfer details for a specific state, agent runtime, and wallet provider
+ * @param {State} state - The current state of the application
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent
+ * @param {WalletProvider} wp - The wallet provider used for the transfer
+ * @returns {Promise<TransferParams>} A promise that resolves to transfer details including fromChain, toChain, amount, and other transfer parameters
+ */
 const buildTransferDetails = async (
     state: State,
     runtime: IAgentRuntime,
@@ -102,6 +136,17 @@ const buildTransferDetails = async (
     return transferDetails;
 };
 
+/**
+ * Action handler for transferring tokens between addresses on the same chain.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {Memory} _message - The message data.
+ * @param {State} state - The current state of the agent.
+ * @param {Record<string, unknown>} _options - Additional options for the transfer action.
+ * @param {HandlerCallback} [callback] - Optional callback function to handle the response.
+ * 
+ * @returns {boolean} Returns true if the transfer was successful, false otherwise.
+ */
 export const transferAction = {
     name: "transfer",
     description: "Transfer tokens between addresses on the same chain",

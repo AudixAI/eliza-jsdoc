@@ -23,6 +23,11 @@ const __dirname = path.dirname(__filename);
 
 const execAsync = promisify(exec);
 
+/**
+ * Class representing a Transcription Service.
+ * This service extends the base Service class and implements the ITranscriptionService interface.
+ * It provides methods for transcription of audio content.
+ */
 export class TranscriptionService
     extends Service
     implements ITranscriptionService

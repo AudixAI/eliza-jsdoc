@@ -13,6 +13,10 @@ const defaultMatchCount = 10;
 /**
  * Manage memories in the database.
  */
+/**
+ * MemoryManager class to manage memory operations.
+ * @implements { IMemoryManager }
+ */
 export class MemoryManager implements IMemoryManager {
     /**
      * The AgentRuntime instance associated with this manager.

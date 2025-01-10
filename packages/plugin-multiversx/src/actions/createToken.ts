@@ -14,6 +14,10 @@ import {
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../enviroment";
 import { createTokenSchema } from "../utils/schemas";
+/**
+ * Interface for the content of a token creation request.
+ * Contains information about the token name, ticker symbol, decimals, and initial amount.
+ */
 export interface CreateTokenContent extends Content {
     tokenName: string;
     tokenTicker: string;
@@ -21,6 +25,13 @@ export interface CreateTokenContent extends Content {
     amount: string;
 }
 
+/**
+ * Check if the given content is valid for creating a token.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object used for executing agent code.
+ * @param {CreateTokenContent} content - The content object containing information for creating a token.
+ * @returns {boolean} Returns true if the content is valid for creating a token, otherwise false.
+ */
 function isCreateTokenContent(
     runtime: IAgentRuntime,
     content: CreateTokenContent
@@ -29,6 +40,29 @@ function isCreateTokenContent(
     return content.tokenName && content.tokenName && content.tokenName;
 }
 
+/**
+ * Creates a token template and specifies the expected information to be extracted from recent messages for token creation.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "tokenName": "TEST",
+ *     "tokenTicker": "TST",
+ *     "amount: 100,
+ *     "decimals": 18
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token creation:
+ * - Token name
+ * - Token ticker
+ * - Amount
+ * - Decimals
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const createTokenTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:

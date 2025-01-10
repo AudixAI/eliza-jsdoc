@@ -15,6 +15,13 @@ import { stringToUuid } from "@elizaos/core";
 import { ClientBase } from "./base";
 import { buildConversationThread, sendTweet, wait } from "./utils.ts";
 
+/**
+ * Template for generating a message containing a series of sections
+ * related to a Twitter profile and recent interactions.
+ * 
+ * @constant
+ * @type {string}
+ */
 const twitterSearchTemplate =
     `{{timeline}}
 
@@ -42,22 +49,40 @@ Your response should not contain any questions. Brief, concise statements only. 
 
 ` + messageCompletionFooter;
 
+/**
+ * Represents a client for searching Twitter for specific tweets.
+ * @class
+ */
 export class TwitterSearchClient {
     client: ClientBase;
     runtime: IAgentRuntime;
     twitterUsername: string;
     private respondedTweets: Set<string> = new Set();
 
+/**
+ * Constructor for creating a new instance.
+ * 
+ * @param {ClientBase} client - The client to use for communication.
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ */
     constructor(client: ClientBase, runtime: IAgentRuntime) {
         this.client = client;
         this.runtime = runtime;
         this.twitterUsername = this.client.twitterConfig.TWITTER_USERNAME;
     }
 
+/**
+ * Asynchronously starts the process by engaging in a loop with search terms.
+ */
     async start() {
         this.engageWithSearchTermsLoop();
     }
 
+/**
+ * Private method that engages with search terms by calling engageWithSearchTerms,
+ * logs the next Twitter search schedule, and sets a timeout to call engageWithSearchTermsLoop again
+ * after a random number of minutes between 60 and 120.
+ */
     private engageWithSearchTermsLoop() {
         this.engageWithSearchTerms().then();
         const randomMinutes = Math.floor(Math.random() * (120 - 60 + 1)) + 60;
@@ -70,6 +95,11 @@ export class TwitterSearchClient {
         );
     }
 
+/**
+ * Engages with search terms by selecting a random search term from this.runtime.character.topics and fetching search tweets.
+ * 
+ * @returns {Promise<void>} A promise that resolves once the search tweets are fetched.
+ */
     private async engageWithSearchTerms() {
         elizaLogger.log("Engaging with search terms");
         try {

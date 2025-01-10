@@ -12,9 +12,21 @@ import { castUuid, MAX_CAST_LENGTH } from "./utils";
 import { createCastMemory } from "./memory";
 import { sendCast } from "./actions";
 
+/**
+ * Class representing a Farcaster Post Manager.
+ */
+       
 export class FarcasterPostManager {
     private timeout: NodeJS.Timeout | undefined;
 
+/**
+ * Constructor for creating a new instance of a class.
+ *
+ * @param {FarcasterClient} client - The Farcaster client.
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {string} signerUuid - The signer UUID.
+ * @param {Map<string, any>} cache - The cache for storing key-value pairs.
+ */
     constructor(
         public client: FarcasterClient,
         public runtime: IAgentRuntime,
@@ -22,6 +34,9 @@ export class FarcasterPostManager {
         public cache: Map<string, any>
     ) {}
 
+/**
+ * Method to start generating new casts at random intervals.
+ */
     public async start() {
         const generateNewCastLoop = async () => {
             try {
@@ -40,10 +55,21 @@ export class FarcasterPostManager {
         generateNewCastLoop();
     }
 
+/**
+ * Method to stop the asynchronous process by clearing the timeout.
+ */
     public async stop() {
         if (this.timeout) clearTimeout(this.timeout);
     }
 
+/**
+ * Asynchronously generates a new cast for the farcaster agent.
+ * Retrieves the farcaster fid from the runtime settings and fetches the corresponding profile.
+ * Ensures that the user exists in the runtime and retrieves the timeline for the farcaster fid.
+ * Formats the timeline, composes the state for generating a new cast, and generates the new content based on the template.
+ * Trims and truncates the content to fit within the maximum cast length.
+ * Logs a message if in dry run mode or catches and logs errors during the process.
+ */
     private async generateNewCast() {
         elizaLogger.info("Generating new cast");
         try {

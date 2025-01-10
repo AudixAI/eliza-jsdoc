@@ -26,6 +26,15 @@ export * as providers from "./providers";
  * @property {Evaluator[]} evaluators - List of evaluators available for the plugin.
  * @property {Provider[]} providers - List of providers available for the plugin.
  */
+/**
+ * Plugin representing agent bootstrap with basic actions and evaluators.
+ * @type {Plugin}
+ * @property {string} name - The name of the plugin.
+ * @property {string} description - Description of the plugin.
+ * @property {Array<Function>} actions - Array of actions available in the plugin.
+ * @property {Array<Function>} evaluators - Array of evaluators available in the plugin.
+ * @property {Array<Function>} providers - Array of providers available in the plugin.
+ */
 export const bootstrapPlugin: Plugin = {
     name: "bootstrap",
     description: "Agent bootstrap with basic actions and evaluators",

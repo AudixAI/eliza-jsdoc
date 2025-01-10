@@ -14,6 +14,12 @@ import {
     composeContext,
 } from "@elizaos/core";
 
+/**
+ * Retrieves the on-chain actions available for the specified wallet client.
+ *
+ * @param {WalletClientBase} wallet - The wallet client to retrieve actions for
+ * @returns {Promise<Array<Action>>} - An array of on-chain actions with associated handlers
+ */
 export async function getOnChainActions(wallet: WalletClientBase) {
     const actionsWithoutHandler = [
         {
@@ -39,6 +45,14 @@ export async function getOnChainActions(wallet: WalletClientBase) {
     }));
 }
 
+/**
+ * Returns a handler function for a given action, which takes in the runtime, message, state, options, and callback parameters.
+ *
+ * @param {string} actionName - The name of the action.
+ * @param {string} actionDescription - The description of the action.
+ * @param {any} tools - The tools required for the action.
+ * @returns {Function} An async function that handles the action and returns a boolean indicating success or failure.
+ */
 function getActionHandler(
     actionName: string,
     actionDescription: string,
@@ -105,6 +119,14 @@ function getActionHandler(
     };
 }
 
+/**
+ * Composes an action context based on the given parameters.
+ * 
+ * @param {string} actionName - The name of the action.
+ * @param {string} actionDescription - The description of the action.
+ * @param {State} state - The current state of the application.
+ * @returns {string} - The composed action context template.
+ */
 function composeActionContext(
     actionName: string,
     actionDescription: string,
@@ -133,6 +155,13 @@ Based on the action chosen and the previous messages, execute the action and res
     return composeContext({ state, template: actionTemplate });
 }
 
+/**
+ * Composes a response context based on the result and state.
+ * 
+ * @param {unknown} result - The result to include in the response context.
+ * @param {State} state - The state of the context.
+ * @returns {string} The composed response context string.
+ */
 function composeResponseContext(result: unknown, state: State): string {
     const responseTemplate = `
     # Action Examples
@@ -165,6 +194,12 @@ Respond to the message knowing that the action was successful and these were the
     return composeContext({ state, template: responseTemplate });
 }
 
+/**
+ * Compose an error response context containing information about the error and the state of the application.
+ * @param {string} errorMessage - The error message to be displayed in the response.
+ * @param {State} state - The current state of the application.
+ * @returns {string} The error response context template.
+ */
 function composeErrorResponseContext(
     errorMessage: string,
     state: State
@@ -197,6 +232,13 @@ These were the previous messages:
     return composeContext({ state, template: errorResponseTemplate });
 }
 
+/**
+ * Asynchronously generates a response using the provided runtime and context.
+ *
+ * @param {IAgentRuntime} runtime - The runtime used to generate the response.
+ * @param {string} context - The context in which to generate the response.
+ * @returns {Promise<string>} The generated response as a string.
+ */
 async function generateResponse(
     runtime: IAgentRuntime,
     context: string

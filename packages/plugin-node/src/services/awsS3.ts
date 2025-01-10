@@ -14,16 +14,33 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import * as fs from "fs";
 import * as path from "path";
 
+/**
+ * Interface representing the result of an upload operation.
+ * @typedef {Object} UploadResult
+ * @property {boolean} success - A flag indicating if the upload was successful.
+ * @property {string} [url] - The URL of the uploaded file. Optional.
+ * @property {string} [error] - An error message in case the upload failed. Optional.
+ */
 interface UploadResult {
     success: boolean;
     url?: string;
     error?: string;
 }
 
+/**
+ * Interface representing a JSON upload result which extends UploadResult.
+ * @interface
+ * @property {string} key - Optional storage key to add to the result.
+ */
 interface JsonUploadResult extends UploadResult {
     key?: string; // Add storage key
 }
 
+/**
+ * Class representing an AWS S3 Service.
+ * @extends Service
+ * @implements IAwsS3Service
+ */
 export class AwsS3Service extends Service implements IAwsS3Service {
     static serviceType: ServiceType = ServiceType.AWS_S3;
 
@@ -32,12 +49,22 @@ export class AwsS3Service extends Service implements IAwsS3Service {
     private fileUploadPath: string = "";
     private runtime: IAgentRuntime | null = null;
 
+/**
+ * Initializes the AwsS3Service by setting the runtime and file upload path.
+ *
+ * @param {IAgentRuntime} runtime - The runtime object for the agent
+ * @returns {Promise<void>} A Promise that resolves once the service is initialized
+ */
     async initialize(runtime: IAgentRuntime): Promise<void> {
         elizaLogger.log("Initializing AwsS3Service");
         this.runtime = runtime;
         this.fileUploadPath = runtime.getSetting("AWS_S3_UPLOAD_PATH") ?? "";
     }
 
+/**
+ * Initializes the S3 client by retrieving AWS credentials from the runtime and setting up the S3 client object with the provided settings.
+ * @returns {Promise<boolean>} Returns a Promise that resolves to a boolean indicating whether the S3 client was successfully initialized.
+ */
     private async initializeS3Client(): Promise<boolean> {
         if (this.s3Client) return true;
         if (!this.runtime) return false;
@@ -69,6 +96,15 @@ export class AwsS3Service extends Service implements IAwsS3Service {
         return true;
     }
 
+/**
+ * Uploads a file to AWS S3 bucket with optional parameters for subdirectory,
+ * signed URL, and expiration time.
+ * @param filePath - The path to the file to upload.
+ * @param subDirectory - Optional subdirectory within the bucket to store the file.
+ * @param useSignedUrl - Set to true to generate a signed URL for accessing the file.
+ * @param expiresIn - Expiration time for the signed URL in seconds (default is 900 seconds).
+ * @returns A Promise that resolves to an UploadResult object with success status and URL or error message.
+ */
     async uploadFile(
         filePath: string,
         subDirectory: string = "",
@@ -147,6 +183,13 @@ export class AwsS3Service extends Service implements IAwsS3Service {
     /**
      * Generate signed URL for existing file
      */
+/**
+ * Generates a signed URL for the specified file in the S3 bucket. 
+ * @param {string} fileName - The name of the file in the S3 bucket.
+ * @param {number} expiresIn - The expiry time for the signed URL in seconds. Defaults to 900 seconds.
+ * @returns {Promise<string>} A promise that resolves with the signed URL for the specified file.
+ * @throws {Error} Throws an error if AWS S3 credentials are not configured.
+ */
     async generateSignedUrl(
         fileName: string,
         expiresIn: number = 900

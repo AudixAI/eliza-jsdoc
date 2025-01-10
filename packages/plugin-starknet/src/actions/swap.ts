@@ -19,12 +19,26 @@ import {
 import { getStarknetAccount } from "../utils/index.ts";
 import { validateStarknetConfig } from "../environment.ts";
 
+/**
+ * Interface representing information about swapping tokens.
+ * @typedef {object} SwapContent
+ * @property {string} sellTokenAddress - The address of the selling token.
+ * @property {string} buyTokenAddress - The address of the buying token.
+ * @property {string} sellAmount - The amount of the selling token.
+ */
 interface SwapContent {
     sellTokenAddress: string;
     buyTokenAddress: string;
     sellAmount: string;
 }
 
+/**
+ * Validates if the input object is of type SwapContent, 
+ * checking if the required properties are present and formatted correctly.
+ * 
+ * @param {SwapContent} content - The object to be validated
+ * @returns {boolean} - True if the content is of type SwapContent, false otherwise
+ */
 export function isSwapContent(content: SwapContent): content is SwapContent {
     // Validate types
     const validTypes =
@@ -45,6 +59,34 @@ export function isSwapContent(content: SwapContent): content is SwapContent {
     return validAddresses;
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * These are known addresses you will get asked to swap, use these addresses for sellTokenAddress and buyTokenAddress:
+ * - BROTHER/brother/$brother: 0x03b405a98c9e795d427fe82cdeeeed803f221b52471e3a757574a2b4180793ee
+ * - BTC/btc: 0x03fe2b97c1fd336e750087d68b9b867997fd64a2661ff3ca5a7c771641e8e7ac
+ * - ETH/eth: 0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
+ * - STRK/strk: 0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d
+ * - LORDS/lords: 0x0124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "sellTokenAddress": "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+ *     "buyTokenAddress": "0x124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49",
+ *     "sellAmount": "1000000000000000000"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Extract the following information about the requested token swap:
+ * - Sell token address
+ * - Buy token address
+ * - Amount to sell (in wei)
+ * 
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ */
 const swapTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 These are known addresses you will get asked to swap, use these addresses for sellTokenAddress and buyTokenAddress:
@@ -72,6 +114,17 @@ Extract the following information about the requested token swap:
 
 Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.`;
 
+/**
+ * Represents an action to execute a token swap on StarkNet.
+ * 
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - List of similar actions.
+ * @property {Function} validate - Async function to validate the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Async function to handle the action execution.
+ * @property {ActionExample[][]} examples - List of examples demonstrating the action.
+ */
 export const executeSwap: Action = {
     name: "EXECUTE_STARKNET_SWAP",
     similes: [

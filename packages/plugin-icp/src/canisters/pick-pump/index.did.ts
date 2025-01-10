@@ -1,4 +1,10 @@
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+/**
+ * Defines the IDL factory function for creating different data types and functions related to the Meme Token service.
+ * @param {Object} param - The parameter object containing IDL.
+ * @param {any} param.IDL - The IDL object used for defining data types.
+ * @returns {Object} - The IDL Service object containing various functions related to the Meme Token service.
+ */
 export const idlFactory = ({ IDL }: { IDL: any }) => {
     const Result = IDL.Variant({ Ok: IDL.Nat, Err: IDL.Text });
     const CreateMemeTokenArg = IDL.Record({

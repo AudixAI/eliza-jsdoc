@@ -11,6 +11,12 @@ If {{agentName}} is talking too much, you can choose [IGNORE]
 
 Your response must include one of the options.`;
 
+/**
+ * Parses the first line of text to determine the response action.
+ * 
+ * @param {string} text - The text to parse.
+ * @returns {"RESPOND" | "IGNORE" | "STOP" | null} The response action determined from the text.
+ */
 export const parseShouldRespondFromText = (
     text: string
 ): "RESPOND" | "IGNORE" | "STOP" | null => {
@@ -42,6 +48,12 @@ export const booleanFooter = `Respond with only a YES or a NO.`;
  *
  * @param {string} text - The input text to parse.
  * @returns {boolean|null} - Returns `true` for affirmative inputs, `false` for negative inputs, and `null` for unrecognized inputs or null/undefined.
+ */
+/**
+ * Parses a boolean value from the given text input.
+ * 
+ * @param {string} text - The text input to be parsed.
+ * @returns {boolean | null} - The boolean value parsed from the text input, or null if the input is unrecognized.
  */
 export const parseBooleanFromText = (text: string) => {
     if (!text) return null; // Handle null or undefined input

@@ -16,6 +16,25 @@ import { debugLog } from "../utils/debug";
 import { validateStargazeConfig } from "../environment";
 import { TokenSale, TokenSalesResponse } from "../types";
 
+/**
+ * Given the message, extract the collection address for fetching Stargaze sales data.
+ * 
+ * Format the response as a JSON object with these fields:
+ * - collectionAddr: the collection address or name (required)
+ * - limit: number of sales to fetch (default to 5)
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "collectionAddr": "ammelia",
+ *     "limit": 5
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Extract the collection information from the above messages and respond with the appropriate JSON.
+ */
 const getTokenSalesTemplate = `Given the message, extract the collection address for fetching Stargaze sales data.
 
 Format the response as a JSON object with these fields:
@@ -34,6 +53,13 @@ Example response:
 
 Extract the collection information from the above messages and respond with the appropriate JSON.`;
 
+/**
+ * A GraphQL query to retrieve token sales data based on provided parameters.
+ * @typedef {String} TOKEN_SALES_QUERY
+ * @param {String} $collectionAddr - The address of the collection to filter token sales by.
+ * @param {Number} $limit - The maximum number of token sales to retrieve.
+ * @returns {Object} - An object containing information about token sales, including token id, name, media URL, price, price in USD, date of sale, sale denomination symbol, sale type, buyer address, and seller address.
+ */
 export const TOKEN_SALES_QUERY = `
 query TokenSales($collectionAddr: String!, $limit: Int) {
     tokenSales(
@@ -65,6 +91,12 @@ query TokenSales($collectionAddr: String!, $limit: Int) {
     }
 }`;
 
+/**
+ * Interface for defining the content required to get token sales data.
+ * Extends the base Content interface.
+ * @property {string} collectionAddr - The address of the collection.
+ * @property {number} limit - The limit of token sales to retrieve.
+ */
 export interface GetTokenSalesContent extends Content {
     collectionAddr: string;
     limit: number;

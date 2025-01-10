@@ -15,6 +15,18 @@ import { NoteContent } from "../types";
 import { baseSummaryTemplate } from "../templates/summary";
 import { getObsidian }  from "../helper";
 
+/**
+ * Action for retrieving and displaying the content of the currently active note in Obsidian.
+ * @typedef {import('./types').Action} Action
+ * @typedef {import('./types').IAgentRuntime} IAgentRuntime
+ * @typedef {import('./types').NoteContent} NoteContent
+ * @typedef {import('./types').State} State
+ * @typedef {import('./types').Memory} Memory
+ * @typedef {import('./types').HandlerCallback} HandlerCallback
+ * @typedef {import('./Obsidian').Obsidian} Obsidian
+ * 
+ * @type {Action} getActiveNoteAction
+ */
 export const getActiveNoteAction: Action = {
     name: "GET_ACTIVE_NOTE",
     similes: [
@@ -109,6 +121,16 @@ export const getActiveNoteAction: Action = {
     ],
 };
 
+/**
+ * Action to generate a focused summary of the currently active note in Obsidian.
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Possible alternative names for the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the Obsidian connection.
+ * @property {Function} handler - Asynchronous function to handle the action of summarizing the active note.
+ * @property {Object[]} examples - Array of example objects demonstrating the usage of this action.
+ */
 export const summarizeActiveNoteAction: Action = {
     name: "SUMMARIZE_ACTIVE_NOTE",
     similes: [

@@ -2,8 +2,29 @@ import { IAgentRuntime } from "@elizaos/core";
 import { z } from "zod";
 
 // Add ENV variable at the top
+/**
+ * Variable to store the current environment mode.
+ */
 let ENV: string = "testnet";
 
+/**
+ * Schema for storing Near environment variables.
+ * 
+ * @property {z.string} NEAR_WALLET_SECRET_KEY - Wallet secret key is required
+ * @property {z.string} NEAR_WALLET_PUBLIC_KEY - Wallet public key is required
+ * @property {z.string} NEAR_ADDRESS - Near address is required
+ * @property {z.string} NEAR_SLIPPAGE - Slippage is required
+ * @property {z.string} NEAR_RPC_URL - RPC URL is required
+ * @property {z.string} networkId
+ * @property {z.string} nodeUrl
+ * @property {z.string} walletUrl
+ * @property {z.string} WRAP_NEAR_CONTRACT_ID
+ * @property {z.string} REF_FI_CONTRACT_ID
+ * @property {z.string} REF_TOKEN_ID
+ * @property {z.string} indexerUrl
+ * @property {z.string} explorerUrl
+ * @property {z.string} REF_DCL_SWAP_CONTRACT_ID
+ */
 export const nearEnvSchema = z.object({
     NEAR_WALLET_SECRET_KEY: z.string().min(1, "Wallet secret key is required"),
     NEAR_WALLET_PUBLIC_KEY: z.string().min(1, "Wallet public key is required"),
@@ -21,8 +42,16 @@ export const nearEnvSchema = z.object({
     REF_DCL_SWAP_CONTRACT_ID: z.string(),
 });
 
+/**
+ * Represents the configuration settings inferred from the nearEnvSchema.
+ */
 export type NearConfig = z.infer<typeof nearEnvSchema>;
 
+/**
+ * Retrieve the configuration based on the specified environment or default values.
+ * @param {string | undefined | null} env - The specified environment or default values if not provided.
+ * @returns {object} - The configuration object based on the specified environment.
+ */
 export function getConfig(
     env: string | undefined | null = ENV ||
         process.env.NEAR_ENV ||
@@ -69,6 +98,12 @@ export function getConfig(
     }
 }
 
+/**
+ * Asynchronously validates the NEAR configuration based on the runtime settings and environment variables.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime instance used to access settings.
+ * @returns {Promise<NearConfig>} - A Promise that resolves to a validated NearConfig object.
+ */
 export async function validateNearConfig(
     runtime: IAgentRuntime
 ): Promise<NearConfig> {

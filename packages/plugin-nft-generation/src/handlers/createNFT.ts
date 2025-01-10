@@ -18,6 +18,12 @@ import {
 import { PublicKey } from "@solana/web3.js";
 import WalletSolana from "../provider/wallet/walletSolana.ts";
 
+/**
+ * A template for generating a character post for a non-fungible token (NFT).
+ * Includes placeholders for areas of expertise, agent's name, Twitter username, bio, lore, topics, providers,
+ * character post examples, post directions, and a task instruction to generate an image of the agent's appearance
+ * with a character count limit of 280.
+ */
 const nftTemplate = `
 # Areas of Expertise
 {{knowledge}}
@@ -35,6 +41,17 @@ const nftTemplate = `
 # Task: Generate an image to Prompt the  {{agentName}}'s appearance, with the total character count MUST be less than 280.
 `;
 
+/**
+ * Creates NFT metadata based on the provided parameters.
+ * 
+ * @param {Object} params - The parameters for creating NFT metadata.
+ * @param {IAgentRuntime} params.runtime - The agent runtime to use.
+ * @param {string} params.collectionName - The name of the NFT collection.
+ * @param {string} params.collectionAdminPublicKey - The public key of the collection admin.
+ * @param {number} params.collectionFee - The fee for the collection.
+ * @param {number} params.tokenId - The ID of the NFT token.
+ * @returns {Object | null} The NFT metadata object or null if the image generation fails.
+ */
 export async function createNFTMetadata({
     runtime,
     collectionName,
@@ -134,6 +151,18 @@ export async function createNFTMetadata({
     return null;
 }
 
+/**
+ * Create a new NFT (Non-Fungible Token) by minting it on the Solana blockchain.
+ * 
+ * @param {Object} params - The parameters needed to create the NFT.
+ * @param {IAgentRuntime} params.runtime - The agent runtime interface.
+ * @param {string} params.collectionName - The name of the NFT collection.
+ * @param {string} params.collectionAddress - The address of the NFT collection.
+ * @param {string} params.collectionAdminPublicKey - The public key of the collection admin.
+ * @param {number} params.collectionFee - The fee for the collection.
+ * @param {number} params.tokenId - The unique identifier for the NFT.
+ * @returns {Object} Object containing the network, address, link, and NFT info if successful.
+ */
 export async function createNFT({
     runtime,
     collectionName,

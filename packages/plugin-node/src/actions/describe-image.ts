@@ -15,6 +15,17 @@ import {
 import { getFileLocationTemplate } from "../templates";
 import { FileLocationResultSchema, isFileLocationResult } from "../types";
 
+/**
+ * Action to describe an image.
+ * This action validates, handles, and provides examples for describing an image.
+ * @typedef {Action} describeImage
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Different ways to describe or explain an image.
+ * @property {Function} validate - Validates the runtime and message.
+ * @property {string} description - Brief description of the action.
+ * @property {Function} handler - Handles the action and describes the image.
+ * @property {ActionExample[][]} examples - Examples of interactions involving image description.
+ */
 export const describeImage: Action = {
     name: "DESCRIBE_IMAGE",
     similes: ["DESCRIBE_PICTURE", "EXPLAIN_PICTURE", "EXPLAIN_IMAGE"],

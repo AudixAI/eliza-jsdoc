@@ -27,6 +27,23 @@ import {
  *
  * @type {string}
  */
+/**
+ * Defines the template for determining whether the agent should start following a conversation.
+ *
+ * Based on the conversation so far:
+ *
+ * {{recentMessages}}
+ *
+ * Should {{agentName}} start following this room, eagerly participating without explicit mentions?
+ * Respond with YES if:
+ * - The user has directly asked {{agentName}} to follow the conversation or participate more actively
+ * - The conversation topic is highly engaging and {{agentName}}'s input would add significant value
+ * - {{agentName}} has unique insights to contribute and the users seem receptive
+ *
+ * Otherwise, respond with NO.
+ *
+ * @type {string}
+ */
 export const shouldFollowTemplate =
     `Based on the conversation so far:
 

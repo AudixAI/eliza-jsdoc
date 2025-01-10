@@ -8,6 +8,17 @@ import {
     State,
 } from "@elizaos/core";
 
+/**
+ * Asynchronously generates parameters with Lead Language Model (LLM).
+ * 
+ * @template T - the type of response data
+ * @param {IAgentRuntime} runtime - the runtime environment
+ * @param {Memory} message - the message object containing the user input
+ * @param {string} template - the template for composing context
+ * @param {State} state - optional state object, default is null
+ * @param {number} maxAttempts - maximum number of attempts, default is 5
+ * @returns {Promise<T | null>} - the generated parameters or null if unsuccessful
+ */
 export async function getParamsWithLLM<T>(
     runtime: IAgentRuntime,
     message: Memory,

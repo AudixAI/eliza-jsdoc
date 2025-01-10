@@ -30,6 +30,17 @@ Object.entries(slackConfig).forEach(([key, value]) => {
     }
 });
 
+/**
+ * Asynchronous function to run an example scenario:
+ * - Initialize Slack client
+ * - Validate Slack connection
+ * - Send a test message with an attachment
+ * - Upload a test file
+ * - Process the uploaded file
+ * - Cleanup after completion
+ * 
+ * @returns {Promise<void>}
+ */
 async function runExample() {
     try {
         elizaLogger.log("\nInitializing Slack client...");

@@ -11,8 +11,16 @@ export const obsidianEnvSchema = z
         message: "OBSIDIAN_API_TOKEN is required",
     });
 
+/**
+ * Represents the type definition for the Obsidian configuration based on the schema defined in obsidianEnvSchema.
+ */
 export type ObsidianConfig = z.infer<typeof obsidianEnvSchema>;
 
+/**
+ * Validates the Obsidian configuration based on the provided runtime settings and environment variables.
+ * @param {IAgentRuntime} runtime - The agent runtime configuration.
+ * @returns {Promise<ObsidianConfig>} The validated Obsidian configuration.
+ */
 export async function validateObsidianConfig(
     runtime: IAgentRuntime
 ): Promise<ObsidianConfig> {

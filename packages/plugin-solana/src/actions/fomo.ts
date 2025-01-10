@@ -24,12 +24,24 @@ import {
 
 import { walletProvider } from "../providers/wallet.ts";
 
+/**
+ * Interface for defining metadata needed to create a token.
+ * @typedef {Object} CreateTokenMetadata
+ * @property {string} name - The name of the token.
+ * @property {string} symbol - The symbol of the token.
+ * @property {string} uri - The URI for additional information about the token.
+ */
 interface CreateTokenMetadata {
     name: string;
     symbol: string;
     uri: string;
 }
 
+/**
+ * Interface representing the data required to create and buy content.
+ * @interface
+ * @extends Content
+ */
 export interface CreateAndBuyContent extends Content {
     tokenMetadata: {
         name: string;
@@ -41,6 +53,11 @@ export interface CreateAndBuyContent extends Content {
     requiredLiquidity: string | number;
 }
 
+/**
+ * Checks if the provided content is suitable for creating and buying fomo content.
+ * @param {any} content - The content to be checked.
+ * @returns {content is CreateAndBuyContent} - Returns true if the content meets the requirements for creating and buying fomo content.
+ */
 export function isCreateAndBuyContentForFomo(
     content: any
 ): content is CreateAndBuyContent {
@@ -57,6 +74,25 @@ export function isCreateAndBuyContentForFomo(
         typeof content.requiredLiquidity === "number"
     );
 }
+
+/**
+ * Creates and buys a token on the Fomo platform.
+ * 
+ * @param {Object} param0 - Object containing parameters for creating and buying the token.
+ * @param {Keypair} param0.deployer - The keypair of the deployer.
+ * @param {Keypair} param0.mint - The keypair of the token mint.
+ * @param {CreateTokenMetadata} param0.tokenMetadata - Metadata for the token to be created.
+ * @param {bigint} param0.buyAmountSol - The amount of SOL to buy the token.
+ * @param {number} param0.priorityFee - The priority fee.
+ * @param {number} param0.requiredLiquidity - The required liquidity (default: 85).
+ * @param {boolean} param0.allowOffCurve - Flag to allow off curve transactions.
+ * @param {string} [param0.commitment="finalized"] - The commitment level for the transaction.
+ * @param {Fomo} param0.fomo - The Fomo object for token creation.
+ * @param {Connection} param0.connection - The connection object for Solana network.
+ * @param {string} param0.slippage - The slippage value for the transaction.
+ * 
+ * @returns {Object} Object containing the success status, mint public key, creator public key, and error message if unsuccessful.
+ */
 
 export const createAndBuyToken = async ({
     deployer,
@@ -172,6 +208,23 @@ export const createAndBuyToken = async ({
     }
 };
 
+/**
+ * Function to buy a token.
+ * 
+ * @param {object} params - The parameters for buying a token.
+ * @param {Fomo} params.fomo - The Fomo instance.
+ * @param {Keypair} params.buyer - The Keypair of the buyer.
+ * @param {PublicKey} params.mint - The PublicKey of the token to buy.
+ * @param {number} params.amount - The amount of tokens to buy.
+ * @param {number} params.priorityFee - The priority fee for the transaction.
+ * @param {boolean} params.allowOffCurve - Flag to allow off curve behavior.
+ * @param {number} params.slippage - The slippage tolerance percentage.
+ * @param {Connection} params.connection - The connection object.
+ * @param {PurchaseCurrency} [params.currency="sol"] - The currency to use for the purchase.
+ * @param {string} [params.commitment="finalized"] - The commitment level for the transaction.
+ * 
+ * @returns {Promise<void>} A Promise that resolves when the purchase transaction is complete.
+ */
 export const buyToken = async ({
     fomo,
     buyer,
@@ -271,6 +324,21 @@ export const buyToken = async ({
     }
 };
 
+/**
+ * Sell a token using Fomo protocol.
+ * 
+ * @param {Object} param0 - Parameters for selling token.
+ * @param {Fomo} param0.fomo - Fomo protocol instance.
+ * @param {Keypair} param0.seller - Keypair of the token seller.
+ * @param {PublicKey} param0.mint - Public key of the token mint.
+ * @param {number} param0.amount - Amount of token to sell.
+ * @param {number} param0.priorityFee - Priority fee for the transaction.
+ * @param {boolean} param0.allowOffCurve - Flag to allow off curve.
+ * @param {number} param0.slippage - Slippage for the transaction.
+ * @param {Connection} param0.connection - Solana Connection instance.
+ * @param {PurchaseCurrency} param0.currency - Currency for the transaction (default is "token").
+ * @param {string} [param0.commitment="finalized"] - Commitment level for the transaction.
+ */
 export const sellToken = async ({
     fomo,
     seller,
@@ -374,6 +442,26 @@ const promptConfirmation = async (): Promise<boolean> => {
     return true;
 };
 
+/**
+ * Extracts information about the requested token creation from recent messages and responds with a JSON markdown block.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "tokenMetadata": {
+ *         "name": "Test Token",
+ *         "symbol": "TEST",
+ *         "description": "A test token",
+ *         "image_description": "create an image of a rabbit"
+ *     },
+ *     "buyAmountSol": "0.00069",
+ *     "requiredLiquidity": "85"
+ * }
+ * ```
+ * 
+ * @param {string} recentMessages - Recent messages containing information about the requested token creation.
+ * @returns {Object} JSON object containing extracted information about the token creation.
+ */
 const fomoTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:

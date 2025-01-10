@@ -13,6 +13,27 @@ import { fileSchema, isValidFile } from "../types";
 import { getObsidian } from "../helper";
 import { fileTemplate } from "../templates/file";
 
+/**
+ * Action to open a file in the Obsidian interface.
+ * - Name: OPEN_FILE
+ * - Similes: OPEN, LAUNCH_FILE, DISPLAY_FILE, SHOW_FILE, VIEW_FILE
+ * - Description: Open a file in the Obsidian interface. Use format: 'Open FOLDER/SUBFOLDER/filename'
+ * * @typedef { Object } Action
+ * @property { string } name - The name of the action
+ * @property {string[]} similes - The similar actions
+ * @property { string } description - The description of the action
+ * @property { Function } validate - Asynchronous function to validate the connection to Obsidian
+ * @param { IAgentRuntime } runtime - The agent runtime interface
+ * @returns {Promise<boolean>}
+ * @property { Function } handler - Asynchronous function to handle opening a file in Obsidian
+ * @param { IAgentRuntime } runtime - The agent runtime interface
+ * @param { Memory } message - The message object
+ * @param { State } state - The state object
+ * @param { any } options - Additional options
+ * @param { HandlerCallback } [callback] - Optional callback function
+ * @returns {Promise<boolean>}
+ * @property {Object[]} examples - Array of example input-output pairs
+ */
 export const openFileAction: Action = {
     name: "OPEN_FILE",
     similes: [

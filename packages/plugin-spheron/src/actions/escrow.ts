@@ -20,6 +20,12 @@ import {
 import { EscrowContent } from "../types/index.ts";
 import { SUPPORTED_TOKENS } from "../utils/constants.ts";
 
+/**
+ * Checks if the provided content is valid for an escrow operation.
+ * 
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} - True if the content is valid for an escrow operation, false otherwise.
+ */
 function isEscrowContent(content: any): content is EscrowContent {
     console.log("Content for escrow operation:", content);
     return (
@@ -33,6 +39,55 @@ function isEscrowContent(content: any): content is EscrowContent {
     );
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values
+ * - Use null for any values that cannot be determined.
+ * - Token must be one of the supported tokens.
+ * - Amount must be a positive number.
+ * 
+ * Example response for checking balance for <token-symbol>:
+ * ```json
+ * {
+ *     "token": "<token-symbol>", // can be USDT, USDC, DAI, WETH, CST
+ *     "operation": "check"
+ * }
+ * ```
+ * 
+ * Example response for depositing <amount> <token-symbol>:
+ * ```json
+ * {
+ *     "token": "<token-symbol>", // can be USDT, USDC, DAI, WETH, CST
+ *     "amount": <amount>, // must be a positive number
+ *     "operation": "deposit"
+ * }
+ * ```
+ * 
+ * Example response for withdrawing <amount> <token-symbol>:
+ * ```json
+ * {
+ *     "token": "<token-symbol>", // can be USDT, USDC, DAI, WETH, CST
+ *     "amount": <amount>, // must be a positive number
+ *     "operation": "withdraw" // must be one of the supported operations
+ * }
+ * ```
+ * 
+ * ## Supported Tokens
+ * - USDT
+ * - USDC
+ * - DAI
+ * - WETH
+ * - CST
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested escrow operation:
+ * - Token symbol (must be one of the supported tokens)
+ * - Amount to deposit/withdraw (must be a positive number)
+ * - Operation type (deposit or withdraw)
+ * - Don't mention multiple operations in the same json block
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const escrowTemplate = `Respond with a JSON markdown block containing only the extracted values
 - Use null for any values that cannot be determined.
 - Token must be one of the supported tokens.

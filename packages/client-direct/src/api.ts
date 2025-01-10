@@ -15,6 +15,11 @@ import { REST, Routes } from "discord.js";
 import { DirectClient } from ".";
 import { stringToUuid } from "@elizaos/core";
 
+/**
+ * Function to create an API router with specified agents and direct client.
+ * * @param {Map<string, AgentRuntime>} agents - Map containing agents with keys as agent IDs.
+ * @param { DirectClient } directClient - DirectClient instance for direct communication with agents.
+ */
 export function createApiRouter(
     agents: Map<string, AgentRuntime>,
     directClient: DirectClient

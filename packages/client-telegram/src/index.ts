@@ -3,6 +3,11 @@ import { Client, IAgentRuntime } from "@elizaos/core";
 import { TelegramClient } from "./telegramClient.ts";
 import { validateTelegramConfig } from "./environment.ts";
 
+/**
+ * Interface for a Telegram client that implements the Client interface.
+ *
+ * @type {Client}
+ */
 export const TelegramClientInterface: Client = {
     start: async (runtime: IAgentRuntime) => {
         await validateTelegramConfig(runtime);

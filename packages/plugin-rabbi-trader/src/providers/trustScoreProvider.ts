@@ -2,9 +2,18 @@ import { elizaLogger } from "@elizaos/core";
 import { TokenProvider } from "./token";
 import { ProcessedTokenData } from "../types/token";
 
+/**
+ * TrustScoreProvider class responsible for calculating trust scores and evaluating tokens.
+ */
+ 
 export class TrustScoreProvider {
     private tokenProviders: Map<string, TokenProvider> = new Map();
 
+/**
+ * Get the TokenProvider for the specified token address. If the TokenProvider does not exist for the address, it will be created and stored for future reference.
+ * @param {string} tokenAddress - The address of the token for which to get the TokenProvider
+ * @returns {TokenProvider} The TokenProvider instance for the specified token address
+ */
     getTokenProvider(tokenAddress: string): TokenProvider {
         if (!this.tokenProviders.has(tokenAddress)) {
             this.tokenProviders.set(tokenAddress, new TokenProvider(tokenAddress));
@@ -12,6 +21,11 @@ export class TrustScoreProvider {
         return this.tokenProviders.get(tokenAddress)!;
     }
 
+/**
+ * Calculates the trust score based on liquidity, volume, and market cap data of a token.
+ * @param {ProcessedTokenData} tokenData - The processed token data containing information needed for the calculation.
+ * @returns {Promise<number>} - The trust score calculated based on the weighted factors.
+ */
     async calculateTrustScore(tokenData: ProcessedTokenData): Promise<number> {
         const pair = tokenData.dexScreenerData.pairs[0];
         const {
@@ -33,6 +47,18 @@ export class TrustScoreProvider {
         return liquidityScore + volumeScore + mcapScore;
     }
 
+/**
+ * Asynchronously evaluates the trust score, risk level, trading advice, and reason for a given token address.
+ * 
+ * @param {string} tokenAddress - The address of the token to evaluate.
+ * @returns {Promise<{
+ *  trustScore: number;
+ *  riskLevel: "LOW" | "MEDIUM" | "HIGH";
+ *  tradingAdvice: "BUY" | "SELL" | "HOLD";
+ *  reason: string;
+ * }>} - Object containing trust score, risk level, trading advice, and reason.
+ * @throws {Error} If trust evaluation fails.
+ */
     async evaluateToken(tokenAddress: string): Promise<{
         trustScore: number;
         riskLevel: "LOW" | "MEDIUM" | "HIGH";

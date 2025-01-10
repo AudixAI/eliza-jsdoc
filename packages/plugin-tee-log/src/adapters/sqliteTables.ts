@@ -1,3 +1,8 @@
+/**
+ * SQLite tables script containing the `tee_logs` and `tee_agents` tables.
+ * 
+ * @type {string}
+ */
 export const sqliteTables = `
 BEGIN TRANSACTION;
 

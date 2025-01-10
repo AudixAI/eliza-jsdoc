@@ -1,5 +1,9 @@
 import type { IAgentRuntime, Memory, State, HandlerCallback } from "@elizaos/core";
 
+/**
+ * Represents a remote attestation action object.
+ * @type {{name: string, similes: string[], description: string, handler: function(*: IAgentRuntime, *: Memory, *: State, *: any, *: HandlerCallback): Promise<boolean>, validate: function(*: IAgentRuntime): Promise<boolean>, examples: [[{user: string, content: {text: string, action: string}}, {user: string, content: {text: string, action: string}}]]}}
+ */
 export const remoteAttestationAction = {
     name: "REMOTE_ATTESTATION",
     similes: ["REMOTE_ATTESTATION", "TEE_REMOTE_ATTESTATION", "TEE_ATTESTATION"],

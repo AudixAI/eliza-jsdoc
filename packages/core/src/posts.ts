@@ -1,6 +1,16 @@
 import { formatTimestamp } from "./messages.ts";
 import type { Actor, Memory } from "./types.ts";
 
+/**
+ * Formats the posts for a conversation into a readable format.
+ * 
+ * @param {Object} param0 - The parameters object.
+ * @param {Memory[]} param0.messages - The array of messages.
+ * @param {Actor[]} param0.actors - The array of actors.
+ * @param {boolean} [param0.conversationHeader=true] - Flag to include conversation header.
+ * 
+ * @returns {string} Formatted posts grouped by conversation room.
+ */
 export const formatPosts = ({
     messages,
     actors,

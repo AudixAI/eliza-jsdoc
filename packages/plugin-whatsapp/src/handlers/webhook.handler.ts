@@ -1,9 +1,25 @@
 import { WhatsAppClient } from "../client";
 import { WhatsAppWebhookEvent } from "../types";
 
+/**
+ * Class representing a webhook handler for WhatsApp events.
+ */
+
 export class WebhookHandler {
+/**
+ * Constructor for creating a new instance of the class.
+ * 
+ * @param {WhatsAppClient} client - The WhatsApp client object used in the constructor.
+ */
     constructor(private client: WhatsAppClient) {}
 
+/**
+ * Asynchronously handles a WhatsApp webhook event.
+ * Processes messages and status updates in the event.
+ * 
+ * @param event The WhatsAppWebhookEvent to handle
+ * @returns Promise that resolves when the handling is completed
+ */
     async handle(event: WhatsAppWebhookEvent): Promise<void> {
         try {
             // Process messages
@@ -31,12 +47,26 @@ export class WebhookHandler {
         }
     }
 
+/**
+ * Handles incoming messages asynchronously.
+ * This method implements the logic for message handling.
+ * It could emit events or trigger callbacks based on the framework's needs.
+ * 
+ * @param message - The message to be handled
+ * @returns A Promise that resolves when the message handling is complete
+ */
     private async handleMessage(message: any): Promise<void> {
         // Implement message handling logic
         // This could emit events or trigger callbacks based on your framework's needs
         console.log("Received message:", message);
     }
 
+/**
+ * Handle the status update asynchronously.
+ * 
+ * @param status - The status update to be handled
+ * @returns A promise that resolves when the status is handled
+ */
     private async handleStatus(status: any): Promise<void> {
         // Implement status update handling logic
         // This could emit events or trigger callbacks based on your framework's needs
