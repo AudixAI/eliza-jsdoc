@@ -12,6 +12,11 @@ import {
 } from "@elizaos/core";
 import { BinanceService } from "../services";
 
+/**
+ * Function to extract the trading symbol from the last response message in a conversation regarding cryptocurrency price check.
+ * 
+ * @returns {string} The trading symbol extracted from the last response message.
+ */
 const priceCheckTemplate = `Look at ONLY your LAST RESPONSE message in this conversation, where you just said which cryptocurrency price you would check.
 Based on ONLY that last message, provide the trading symbol.
 
@@ -30,6 +35,65 @@ For example:
 Last part of conversation:
 {{recentMessages}}`;
 
+/**
+ * Action for getting current price information for a cryptocurrency pair.
+ * 
+ * @name GET_PRICE
+ * @description Get current price information for a cryptocurrency pair
+ * @public
+ * 
+ * @param {IAgentRuntime} runtime - The runtime of the agent
+ * @param {Memory} message - The message memory
+ * @param {State} state - The current state of the conversation
+ * @param {Record<string, unknown>} _options - Additional options (not used)
+ * @param {HandlerCallback} callback - Optional callback function
+ * 
+ * @returns {Promise<boolean>} Returns true if the action is successful, false otherwise
+ * 
+ * @example
+ * [[
+ *      {
+ *          user: "{{user1}}",
+ *          content: {
+ *              text: "What's the current price of Bitcoin?",
+ *          },
+ *      },
+ *      {
+ *          user: "{{agent}}",
+ *          content: {
+ *              text: "I'll check the current Bitcoin price for you right away.",
+ *              action: "GET_PRICE",
+ *          },
+ *      },
+ *      {
+ *          user: "{{agent}}",
+ *          content: {
+ *              text: "The current BTC price is 42,150.25 USDT",
+ *          },
+ *      },
+ *  ],
+ *  [
+ *      {
+ *          user: "{{user1}}",
+ *          content: {
+ *              text: "Can you check ETH price in EUR?",
+ *          },
+ *      },
+ *      {
+ *          user: "{{agent}}",
+ *          content: {
+ *              text: "I'll fetch the current Ethereum price in euros for you.",
+ *              action: "GET_PRICE",
+ *          },
+ *      },
+ *      {
+ *          user: "{{agent}}",
+ *          content: {
+ *              text: "The current ETH price is 2,245.80 EUR",
+ *          },
+ *      },
+ *  ]]
+ */ 
 export const priceCheck: Action = {
     name: "GET_PRICE",
     similes: [
