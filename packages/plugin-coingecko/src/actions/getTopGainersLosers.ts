@@ -16,6 +16,24 @@ import { z } from "zod";
 import { getApiConfig, validateCoingeckoConfig } from "../environment";
 import { getTopGainersLosersTemplate } from "../templates/gainersLosers";
 
+/**
+ * Represents an item containing information about the top gainer or top loser in the market.
+ * @typedef {Object} TopGainerLoserItem
+ * @property {string} id - The unique identifier of the item.
+ * @property {string} symbol - The symbol of the item.
+ * @property {string} name - The name of the item.
+ * @property {string} image - The URL of the image representing the item.
+ * @property {number} market_cap_rank - The rank of the item based on market capitalization.
+ * @property {number} usd - The price of the item in USD.
+ * @property {number} usd_24h_vol - The 24-hour trading volume of the item in USD.
+ * @property {number} [usd_1h_change] - The 1-hour percentage change in USD value (optional).
+ * @property {number} [usd_24h_change] - The 24-hour percentage change in USD value (optional).
+ * @property {number} [usd_7d_change] - The 7-day percentage change in USD value (optional).
+ * @property {number} [usd_14d_change] - The 14-day percentage change in USD value (optional).
+ * @property {number} [usd_30d_change] - The 30-day percentage change in USD value (optional).
+ * @property {number} [usd_60d_change] - The 60-day percentage change in USD value (optional).
+ * @property {number} [usd_1y_change] - The 1-year percentage change in USD value (optional).
+ */
 interface TopGainerLoserItem {
     id: string;
     symbol: string;
@@ -33,12 +51,20 @@ interface TopGainerLoserItem {
     usd_1y_change?: number;
 }
 
+/**
+ * Interface representing the response for fetching top gainers and losers.
+ * @property {TopGainerLoserItem[]} top_gainers - An array of the top gainer items.
+ * @property {TopGainerLoserItem[]} top_losers - An array of the top loser items.
+ */
 interface TopGainersLosersResponse {
     top_gainers: TopGainerLoserItem[];
     top_losers: TopGainerLoserItem[];
 }
 
 const DurationEnum = z.enum(["1h", "24h", "7d", "14d", "30d", "60d", "1y"]);
+/**
+ * Type alias for the inferred type of the DurationEnum constant.
+ */
 type Duration = z.infer<typeof DurationEnum>;
 
 export const GetTopGainersLosersSchema = z.object({
@@ -47,6 +73,9 @@ export const GetTopGainersLosersSchema = z.object({
     top_coins: z.string().default("1000")
 });
 
+/**
+ * Type definition for GetTopGainersLosersContent which is an inferred type of GetTopGainersLosersSchema combined with Content.
+ */
 export type GetTopGainersLosersContent = z.infer<typeof GetTopGainersLosersSchema> & Content;
 
 export const isGetTopGainersLosersContent = (obj: any): obj is GetTopGainersLosersContent => {
