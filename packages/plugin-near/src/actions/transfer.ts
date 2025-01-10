@@ -16,12 +16,25 @@ import { KeyPairString } from "near-api-js/lib/utils";
 import { utils as nearUtils } from "near-api-js";
 // import BigNumber from "bignumber.js";
 
+/**
+ * Interface representing the structure of transferring content.
+ * Extends the Content interface.
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string | number} amount - The amount being transferred.
+ * @property {string} [tokenAddress] - Optional token address for native NEAR transfers.
+ */
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
     tokenAddress?: string; // Optional for native NEAR transfers
 }
 
+/**
+ * Check if the provided content is a TransferContent object.
+ * @param {IAgentRuntime} runtime - The Agent Runtime object.
+ * @param {any} content - The content to check.
+ * @returns {boolean} True if the content is a TransferContent object, false otherwise.
+ */
 function isTransferContent(
     runtime: IAgentRuntime,
     content: any
@@ -33,6 +46,30 @@ function isTransferContent(
     );
 }
 
+/**
+ * Template for responding with a JSON markdown block containing only the extracted values of a requested token transfer.
+ * Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * {
+ *     "recipient": "bob.near",
+ *     "amount": "1.5",
+ *     "tokenAddress": null
+ * }
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages and wallet information below:
+ * 
+ * {{walletInfo}}
+ * 
+ * Extract the following information about the requested token transfer:
+ * - Recipient address (NEAR account)
+ * - Amount to transfer
+ * - Token contract address (null for native NEAR transfers)
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
@@ -57,6 +94,15 @@ Extract the following information about the requested token transfer:
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
+/**
+ * Transfer NEAR tokens from the current account to a recipient.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {string} recipient - The NEAR account ID of the recipient.
+ * @param {string} amount - The amount of NEAR tokens to transfer (in NEAR token format).
+ * @returns {Promise<string>} - A Promise that resolves to the transaction hash of the transfer.
+ * @throws {Error} - If NEAR wallet credentials are not configured.
+ */
 async function transferNEAR(
     runtime: IAgentRuntime,
     recipient: string,
@@ -97,6 +143,17 @@ async function transferNEAR(
     return result.transaction.hash;
 }
 
+/**
+ * Action to transfer NEAR tokens to another account.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action ("SEND_NEAR").
+ * @property {string[]} similes - Array of similar actions.
+ * @property {Function} validate - Validation function.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - The function to handle the action.
+ * @property {ActionExample[][]} examples - Array of examples demonstrating the action.
+ */
 export const executeTransfer: Action = {
     name: "SEND_NEAR",
     similes: ["TRANSFER_NEAR", "SEND_TOKENS", "TRANSFER_TOKENS", "PAY_NEAR"],
