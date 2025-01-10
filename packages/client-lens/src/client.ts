@@ -14,6 +14,18 @@ import { Profile, BroadcastResult } from "./types";
 import { PrivateKeyAccount } from "viem";
 import { getProfilePictureUri, handleBroadcastResult, omit } from "./utils";
 
+/**
+ * LensClient class represents a client for interacting with the Lens platform.
+ *
+ * @property {IAgentRuntime} runtime - The runtime environment for the client.
+ * @property {PrivateKeyAccount} account - The account associated with the client.
+ * @property {Map<string, any>} cache - The cache for storing data associated with the client.
+ * @property {Date} lastInteractionTimestamp - The timestamp of the last interaction with the client.
+ * @property {`0x${string}`} profileId - The profile ID of the client.
+ * 
+ * @property {boolean} authenticated - Flag indicating if the client is authenticated.
+ * @property {ProfileFragment | null} authenticatedProfile - The authenticated profile of the client, if available.
+ */
 export class LensClient {
     runtime: IAgentRuntime;
     account: PrivateKeyAccount;
@@ -25,6 +37,14 @@ export class LensClient {
     private authenticatedProfile: ProfileFragment | null;
     private core: LensClientCore;
 
+/**
+ * Create a new LensClient instance.
+ * @param {Object} opts - The options for the LensClient.
+ * @param {IAgentRuntime} opts.runtime - The runtime object.
+ * @param {Map<string, any>} opts.cache - The cache object.
+ * @param {PrivateKeyAccount} opts.account - The account object.
+ * @param {`0x${string}`} opts.profileId - The profile ID.
+ */
     constructor(opts: {
         runtime: IAgentRuntime;
         cache: Map<string, any>;
@@ -43,6 +63,13 @@ export class LensClient {
         this.authenticatedProfile = null;
     }
 
+/**
+ * Asynchronously authenticates the user by generating a challenge, signing the message,
+ * and authenticating the challenge with the signature. Updates the authenticated profile
+ * and sets the authenticated flag to true upon successful authentication.
+ * 
+ * @returns {Promise<void>} A promise that resolves once the authentication process is complete
+ */
     async authenticate(): Promise<void> {
         try {
             const { id, text } =
@@ -67,6 +94,16 @@ export class LensClient {
         }
     }
 
+/**
+ * Asynchronously creates a publication with the given content URI.
+ * If the `onchain` flag is set to true, the publication is created on the blockchain.
+ * If a `commentOn` string is provided, the publication is a comment on another publication identified by `commentOn`.
+ * 
+ * @param contentURI The content URI for the publication.
+ * @param onchain Boolean indicating whether the publication should be created on the blockchain.
+ * @param commentOn Optional string identifying the publication to comment on.
+ * @returns A Promise that resolves to an AnyPublicationFragment object, null, or undefined.
+ */
     async createPublication(
         contentURI: string,
         onchain: boolean = false,
@@ -112,6 +149,12 @@ export class LensClient {
         }
     }
 
+/**
+ * Asynchronously fetches a publication based on the provided publication ID.
+ *
+ * @param {string} pubId - The ID of the publication to fetch.
+ * @returns {Promise<AnyPublicationFragment | null>} The fetched publication or null if not found.
+ */
     async getPublication(
         pubId: string
     ): Promise<AnyPublicationFragment | null> {
@@ -127,6 +170,13 @@ export class LensClient {
         return publication;
     }
 
+/**
+ * Retrieve publications for a given profile ID with an optional limit.
+ * 
+ * @param {string} profileId - The unique identifier of the profile to retrieve publications for.
+ * @param {number} [limit=50] - The maximum number of publications to return. Default is 50.
+ * @returns {Promise<AnyPublicationFragment[]>} An array of publication fragments matching the criteria.
+ */
     async getPublicationsFor(
         profileId: string,
         limit: number = 50
@@ -159,6 +209,12 @@ export class LensClient {
         return timeline;
     }
 
+/**
+ * Asynchronously retrieves mentions from the notifications API.
+ * If the user is not authenticated, it first calls the authenticate method.
+ * 
+ * @returns A Promise that resolves to an object with the mentions array and an optional next function.
+ */
     async getMentions(): Promise<{
         mentions: AnyPublicationFragment[];
         next?: () => {};
@@ -192,6 +248,16 @@ export class LensClient {
         return { mentions, next };
     }
 
+/**
+ * Retrieves profile information for a given profileId.
+ * If the information is already cached, it returns the cached value.
+ * If not cached, it makes a fetch request to retrieve the profile information from the core service.
+ * If the fetch is successful, it constructs a Profile object and caches it for future use.
+ *
+ * @param {string} profileId - The ID of the profile to retrieve.
+ * @returns {Promise<Profile>} A promise that resolves to the Profile object.
+ * @throws Throws an error if the fetch request fails.
+ */
     async getProfile(profileId: string): Promise<Profile> {
         if (this.cache.has(`lens/profile/${profileId}`)) {
             return this.cache.get(`lens/profile/${profileId}`) as Profile;
@@ -224,6 +290,14 @@ export class LensClient {
         return profile;
     }
 
+/**
+ * Retrieve timeline of publications for a given profile ID.
+ * 
+ * @param {string} profileId - The ID of the profile to fetch the timeline for.
+ * @param {number} [limit=10] - The maximum number of publications to fetch.
+ * @returns {Promise<AnyPublicationFragment[]>} - A promise that resolves to an array of AnyPublicationFragment objects.
+ * @throws {Error} - If an error occurs while fetching the timeline.
+ */
     async getTimeline(
         profileId: string,
         limit: number = 10
@@ -268,6 +342,13 @@ export class LensClient {
         }
     }
 
+/**
+ * Creates a post on the blockchain with the given content URI.
+ * If the authenticated profile has 'signless' enabled, the post is created gasless and signless.
+ * If 'signless' is not enabled, the post is created gasless with signed type data.
+ * @param {string} contentURI - The URI of the content to be posted onchain
+ * @returns {Promise<BroadcastResult | undefined>} A Promise that resolves with the broadcast result of the post or undefined if an error occurs
+ */
     private async createPostOnchain(
         contentURI: string
     ): Promise<BroadcastResult | undefined> {
@@ -302,6 +383,12 @@ export class LensClient {
         return handleBroadcastResult(broadcastResult);
     }
 
+/**
+ * Create a new post on Momoka using the specified contentURI.
+ * 
+ * @param {string} contentURI The URI of the content to post.
+ * @returns {Promise<BroadcastResult | undefined>} A promise that resolves with the broadcast result or undefined.
+ */
     private async createPostMomoka(
         contentURI: string
     ): Promise<BroadcastResult | undefined> {
@@ -336,6 +423,15 @@ export class LensClient {
         return handleBroadcastResult(broadcastResult);
     }
 
+/**
+ * 
+ * Creates a comment on the blockchain.
+ * 
+ * @param {string} contentURI - The URI of the content being commented on.
+ * @param {string} commentOn - The content ID being commented on.
+ * @returns {Promise<BroadcastResult | undefined>} The result of broadcasting the comment on the blockchain.
+ * 
+ */
     private async createCommentOnchain(
         contentURI: string,
         commentOn: string
@@ -372,6 +468,12 @@ export class LensClient {
         return handleBroadcastResult(broadcastResult);
     }
 
+/**
+ * Create a comment on a Momoka item.
+ * @param {string} contentURI - The URI of the content to comment on.
+ * @param {string} commentOn - The item to comment on.
+ * @returns {Promise<BroadcastResult | undefined>} The result of the broadcast operation, if successful.
+ */
     private async createCommentMomoka(
         contentURI: string,
         commentOn: string
