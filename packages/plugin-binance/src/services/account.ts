@@ -5,6 +5,9 @@ import { BaseService } from "./base";
 /**
  * Service for handling account-related operations
  */
+/**
+ * Service class for handling account related operations such as retrieving balances, checking trading status, and balance verification.
+ */
 export class AccountService extends BaseService {
     /**
      * Get account balance for all assets or a specific asset
