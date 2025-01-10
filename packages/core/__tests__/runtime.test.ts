@@ -10,6 +10,11 @@ import {
 import { defaultCharacter } from "../src/defaultCharacter";
 
 // Mock dependencies with minimal implementations
+/**
+ * Mock database adapter for testing purposes.
+ * * The adapter contains mock implementations for various database operations such as initializing the database, getting, creating, updating, and deleting accounts, memories, goals, rooms, participants, relationships, and user states.
+ * Each function is mocked to return a resolved Promise with an expected value for easier testing.
+ */
 const mockDatabaseAdapter: IDatabaseAdapter = {
     db: {},
     init: vi.fn().mockResolvedValue(undefined),
