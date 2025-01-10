@@ -18,6 +18,25 @@ import {
 } from "agent-twitter-client";
 import { SttTtsPlugin } from "./plugins/SttTtsSpacesPlugin.ts";
 
+/**
+ * Interface representing options for making decisions related to a space.
+ * @typedef {Object} SpaceDecisionOptions
+ * @property {number} [maxSpeakers] - Maximum number of speakers allowed in the space.
+ * @property {string[]} [topics] - List of topics related to the space.
+ * @property {number} [typicalDurationMinutes] - Typical duration of the space in minutes.
+ * @property {number} [idleKickTimeoutMs] - Timeout in milliseconds before kicking idle users.
+ * @property {number} [minIntervalBetweenSpacesMinutes] - Minimum interval between spaces in minutes.
+ * @property {boolean} [businessHoursOnly] - Flag to indicate if the space is only available during business hours.
+ * @property {number} [randomChance] - Random chance value for certain decisions.
+ * @property {boolean} [enableIdleMonitor] - Flag to enable idle monitor in the space.
+ * @property {boolean} [enableSttTts] - Flag to enable speech-to-text and text-to-speech functionality.
+ * @property {boolean} [enableRecording] - Flag to enable recording in the space.
+ * @property {string} [voiceId] - Id of the voice used for TTS.
+ * @property {string} [sttLanguage] - Language used for speech-to-text.
+ * @property {string} [gptModel] - Model used for GPT (Generative Pre-trained Transformer) language model.
+ * @property {string} [systemPrompt] - Prompt used by the system in the space.
+ * @property {number} [speakerMaxDurationMs] - Maximum duration allowed for a speaker in milliseconds.
+ */
 interface SpaceDecisionOptions {
     maxSpeakers?: number;
     topics?: string[];
@@ -36,6 +55,14 @@ interface SpaceDecisionOptions {
     speakerMaxDurationMs?: number;
 }
 
+/**
+ * Represents the current state of the speaker including user ID, session UUID, username, and start time.
+ * @typedef {Object} CurrentSpeakerState
+ * @property {string} userId - The unique identifier of the user.
+ * @property {string} sessionUUID - The unique identifier of the session.
+ * @property {string} username - The username of the speaker.
+ * @property {number} startTime - The timestamp when the speaker started speaking.
+ */
 interface CurrentSpeakerState {
     userId: string;
     sessionUUID: string;
@@ -46,6 +73,13 @@ interface CurrentSpeakerState {
 /**
  * Generate short filler text via GPT
  */
+/**
+ * Asynchronously generates a filler message for a Twitter Space based on the provided filler type.
+ * 
+ * @param {IAgentRuntime} runtime The runtime object for the agent
+ * @param {string} fillerType The type of filler message to generate
+ * @returns {Promise<string>} A Promise that resolves with the generated filler message
+ */ 
 async function generateFiller(
     runtime: IAgentRuntime,
     fillerType: string
