@@ -16,6 +16,14 @@ const API_VERSION = "v2";
 export const API_URL = `${API_BASE_URL}/${API_VERSION}`;
 export const API_KEY = process.env.STORY_API_KEY || "";
 
+/**
+ * Fetches a specific resource from the API based on the provided resource name and ID.
+ *
+ * @param {ResourceType} resourceName - The type of resource to fetch.
+ * @param {string} resourceId - The ID of the resource to fetch.
+ * @param {QueryOptions} [options] - Optional query options.
+ * @returns {Promise<any>} - A promise that resolves with the fetched resource data.
+ */
 export async function getResource(
     resourceName: ResourceType,
     resourceId: string,
@@ -46,6 +54,12 @@ export async function getResource(
     }
 }
 
+/**
+ * Fetches a list of a specified resource from the Story API.
+ * @param {ResourceType} resourceName - The name of the resource to fetch.
+ * @param {QueryOptions} [options] - Additional options for the query (e.g. pagination, ordering).
+ * @returns {Promise} A Promise that resolves to the fetched resource data.
+ */
 export async function listResource(
     resourceName: ResourceType,
     options?: QueryOptions
@@ -90,6 +104,11 @@ export async function listResource(
     }
 }
 
+/**
+ * Fetches details for a list of license terms asynchronously.
+ * @param {IPLicenseTerms[]} data - An array of license terms objects.
+ * @returns {Promise<any>} - A promise that resolves with an array of license term details objects.
+ */
 export async function fetchLicenseTermsDetails(data: IPLicenseTerms[]) {
     const requests = data.map((item) =>
         getResource(RESOURCE_TYPE.LICENSE_TERMS, item.licenseTermsId)
@@ -108,8 +127,16 @@ export async function fetchLicenseTermsDetails(data: IPLicenseTerms[]) {
         });
 }
 
+/**
+ * Represents a type that contains partial license terms based on the PILTerms interface.
+ */
 type LicenseTerms = Partial<PILTerms>;
 
+/**
+ * Converts an array of Trait objects into a LicenseTerms object.
+ * @param {Trait[]} licenseTerms - The array of Trait objects to be converted.
+ * @returns {LicenseTerms} - The LicenseTerms object converted from the array of Trait objects.
+ */
 export function convertLicenseTermObject(licenseTerms: Trait[]): LicenseTerms {
     return licenseTerms.reduce((acc, option: Trait): LicenseTerms => {
         const key = camelize(option.trait_type) as keyof PILTerms;
