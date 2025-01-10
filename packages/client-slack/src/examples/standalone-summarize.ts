@@ -9,6 +9,22 @@ const envPath = resolve(__dirname, "../../../../.env");
 elizaLogger.log("Loading environment from:", envPath);
 config({ path: envPath });
 
+/**
+ * Validates that all required environment variables are present in the process environment.
+ * Required environment variables include:
+ * - SLACK_APP_ID
+ * - SLACK_CLIENT_ID
+ * - SLACK_CLIENT_SECRET
+ * - SLACK_SIGNING_SECRET
+ * - SLACK_VERIFICATION_TOKEN
+ * - SLACK_BOT_TOKEN
+ * - SLACK_CHANNEL_ID
+ * 
+ * If any of the required environment variables are missing, an error message is logged and the function returns false.
+ * Otherwise, a success message is logged and the function returns true.
+ * 
+ * @returns {boolean} Returns true if all required environment variables are present, otherwise returns false.
+ */
 function validateEnvironment() {
     const requiredEnvVars = [
         "SLACK_APP_ID",
@@ -30,6 +46,11 @@ function validateEnvironment() {
     return true;
 }
 
+/**
+ * Async function that demonstrates summarizing a conversation in a Slack channel.
+ * 
+ * @returns {Promise<void>} A Promise that resolves when the example completes successfully
+ */
 async function main() {
     elizaLogger.log("\n=== Starting Summarize Conversation Example ===\n");
 
