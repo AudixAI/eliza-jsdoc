@@ -13,6 +13,17 @@ import { fileSchema, isValidFile } from "../types";
 import { getObsidian } from "../helper";
 import { fileTemplate } from "../templates/file";
 
+/**
+ * Represents an action to update an existing file in the Obsidian vault.
+ * 
+ * @type {Action}
+ * @property {string} name - The name of the action ("UPDATE_FILE").
+ * @property {string[]} similes - Array of similar actions ("PATCH_FILE", "MODIFY_FILE", "UPDATE", "PATCH", "EDIT_FILE", "CHANGE_FILE").
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the Obsidian connection.
+ * @property {Function} handler - Asynchronous function to handle the update file action.
+ * @property {Array<Array<Object>>} examples - Array of example usage scenarios.
+ */
 export const updateFileAction: Action = {
     name: "UPDATE_FILE",
     similes: [
