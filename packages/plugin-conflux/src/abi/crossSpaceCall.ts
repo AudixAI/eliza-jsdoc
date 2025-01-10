@@ -1,3 +1,7 @@
+/**
+ * Abi definition for CrossSpaceCall contract.
+ * Contains events and functions related to CrossSpaceCall contract.
+ */
 const CrossSpaceCallAbi = [
     {
         anonymous: false,
