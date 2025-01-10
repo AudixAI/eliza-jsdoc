@@ -18,6 +18,11 @@ export const LEASE_STATES = {
 
 export const DEFAULT_PAGE_SIZE = 10;
 
+/**
+ * Array containing the available GPU models.
+ * 
+ * @type {string[]}
+ */
 export const AVAILABLE_GPU_MODELS = [
     "rtx4090",
     "h100",
