@@ -18,9 +18,17 @@ import { parseEther } from "viem";
 
 export { bridgeTemplate };
 
+/**
+ * Class representing a BridgeAction that facilitates bridging assets between different chains.
+ * @class
+ */
 export class BridgeAction {
     private config;
 
+/**
+ * Constructor for initializing a new configuration with integrator "eliza" based on the provided WalletProvider.
+ * * @param { WalletProvider } walletProvider - The WalletProvider instance used to access chain information.
+ */
     constructor(private walletProvider: WalletProvider) {
         this.config = createConfig({
             integrator: "eliza",
@@ -49,6 +57,11 @@ export class BridgeAction {
         });
     }
 
+/**
+ * Executes a bridging transaction between two chains.
+ * @param {BridgeParams} params - The parameters for the bridging transaction.
+ * @returns {Promise<Transaction>} - The bridging transaction details.
+ */
     async bridge(params: BridgeParams): Promise<Transaction> {
         const walletClient = this.walletProvider.getWalletClient(
             params.fromChain
@@ -86,6 +99,17 @@ export class BridgeAction {
     }
 }
 
+/**
+ * Object representing a bridge action that bridges tokens between different chains.
+ * @typedef {Object} BridgeAction
+ * @property {string} name - The name of the action
+ * @property {string} description - A description of the action
+ * @property {Function} handler - The async function that handles the bridge action
+ * @property {Object} template - The template for the bridge action
+ * @property {Function} validate - The async function that validates the bridge action
+ * @property {Array<Object>} examples - An array of example bridge actions
+ * @property {Array<string>} similes - An array of related terms or actions
+ */
 export const bridgeAction = {
     name: "bridge",
     description: "Bridge tokens between different chains",
