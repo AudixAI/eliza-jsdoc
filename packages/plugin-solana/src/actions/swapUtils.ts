@@ -18,6 +18,14 @@ const connection = new Connection(
 );
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Executes a given method after a delay of 150 milliseconds.
+ * 
+ * @template T
+ * @param {(...args: any[]) => Promise<T>} method - The method to be executed after the delay
+ * @param {...any} args - The arguments to be passed to the method
+ * @returns {Promise<T>} A promise that resolves with the result of the method execution
+ */
 export async function delayedCall<T>(
     method: (...args: any[]) => Promise<T>,
     ...args: any[]
@@ -26,6 +34,14 @@ export async function delayedCall<T>(
     return method(...args);
 }
 
+/**
+ * Retrieves the decimal value of a token based on its mint address.
+ * 
+ * @param {Connection} connection - The connection object used to interact with the Solana blockchain
+ * @param {string} mintAddress - The address of the token's mint
+ * @returns {Promise<number>} - The decimal value of the token
+ * @throws {Error} - If unable to fetch token decimals
+ */
 export async function getTokenDecimals(
     connection: Connection,
     mintAddress: string
@@ -49,6 +65,15 @@ export async function getTokenDecimals(
     throw new Error("Unable to fetch token decimals");
 }
 
+/**
+ * Get a swap quote from the Jup.ag API based on the specified parameters.
+ * 
+ * @param {Connection} connection - The Solana blockchain connection.
+ * @param {string} baseToken - The input token's mint address.
+ * @param {string} outputToken - The output token's mint address.
+ * @param {number} amount - The amount of input token to swap (in base units).
+ * @returns {Promise<any>} - A promise that resolves to the swap transaction as a Uint8Array.
+ */
 export async function getQuote(
     connection: Connection,
     baseToken: string,
@@ -66,6 +91,12 @@ export async function getQuote(
     return new Uint8Array(swapTransactionBuf);
 }
 
+/**
+ * Executes a swap transaction depending on the specified type ("buy" or "sell").
+ * @param {VersionedTransaction} transaction - The transaction to be executed.
+ * @param {"buy" | "sell"} type - The type of transaction ("buy" or "sell").
+ * @returns {Promise<string>} The signature of the executed transaction.
+ */
 export const executeSwap = async (
     transaction: VersionedTransaction,
     type: "buy" | "sell"
@@ -106,6 +137,13 @@ export const executeSwap = async (
     }
 };
 
+/**
+ * Sell function to perform a token swap transaction.
+ * 
+ * @param {PublicKey} baseMint - The public key of the base token.
+ * @param {Keypair} wallet - The key pair representing the wallet performing the transaction.
+ * @returns {Promise<SimulatedTransactionResponse | null>} - The result of the transaction simulation or null if unsuccessful.
+ */
 export const Sell = async (baseMint: PublicKey, wallet: Keypair) => {
     try {
         const tokenAta = await delayedCall(
@@ -160,6 +198,13 @@ export const Sell = async (baseMint: PublicKey, wallet: Keypair) => {
     }
 };
 
+/**
+ * Buy function to execute a swap transaction to buy an asset.
+ * 
+ * @param {PublicKey} baseMint - The public key of the base mint.
+ * @param {Keypair} wallet - The wallet keypair used for the transaction.
+ * @returns {Promise<null|TransactionSignature>} Returns null if transaction fails or the transaction signature if successful.
+ */
 export const Buy = async (baseMint: PublicKey, wallet: Keypair) => {
     try {
         const tokenAta = await delayedCall(
@@ -214,6 +259,15 @@ export const Buy = async (baseMint: PublicKey, wallet: Keypair) => {
     }
 };
 
+/**
+ * Retrieves a swap transaction with Jupiter based on the specified parameters.
+ * 
+ * @param {Keypair} wallet - The wallet keypair used for the transaction.
+ * @param {PublicKey} baseMint - The public key of the base mint for the transaction.
+ * @param {string} amount - The amount to be swapped.
+ * @param {"buy" | "sell"} type - The type of swap transaction, either "buy" or "sell".
+ * @returns {Promise<Transaction>} The swap transaction based on the specified parameters.
+ */
 export const getSwapTxWithWithJupiter = async (
     wallet: Keypair,
     baseMint: PublicKey,
@@ -234,6 +288,14 @@ export const getSwapTxWithWithJupiter = async (
     }
 };
 
+/**
+ * Fetches a buy transaction for a given wallet, base mint, and amount.
+ *
+ * @param {Keypair} wallet - The wallet keypair used for the transaction.
+ * @param {PublicKey} baseMint - The base mint Public Key.
+ * @param {string} amount - The amount for the transaction.
+ * @returns {Transaction | null} The buy transaction if successful, otherwise null.
+ */
 export const fetchBuyTransaction = async (
     wallet: Keypair,
     baseMint: PublicKey,
@@ -279,6 +341,14 @@ export const fetchBuyTransaction = async (
     }
 };
 
+/**
+ * Fetches the sell transaction for a specified amount using the provided wallet keypair, base mint, and slippage.
+ * 
+ * @param {Keypair} wallet - The wallet keypair used to sign the transaction.
+ * @param {PublicKey} baseMint - The base mint for the transaction.
+ * @param {string} amount - The amount to be sold.
+ * @returns {Promise<VersionedTransaction | null>} - The signed sell transaction or null if an error occurs.
+ */
 export const fetchSellTransaction = async (
     wallet: Keypair,
     baseMint: PublicKey,
