@@ -45,6 +45,11 @@ const mockAuthTest = jest
         user_id: "U123456",
     });
 
+/**
+ * Mock function for postMessage using Jest.
+ *
+ * @returns {Promise<ChatPostMessageResponse>} A promise that resolves to a ChatPostMessageResponse object with the specified properties.
+ */
 const mockPostMessage = jest
     .fn<() => Promise<ChatPostMessageResponse>>()
     .mockResolvedValue({
@@ -70,6 +75,10 @@ const mockConversationsInfo = jest
         },
     });
 
+/**
+ * Mock function for uploading files. Returns a promise that resolves to a FilesUploadResponse object.
+ * @returns {Promise<FilesUploadResponse>} A promise that resolves to a FilesUploadResponse object.
+ */
 const mockFilesUpload = jest
     .fn<() => Promise<FilesUploadResponse>>()
     .mockResolvedValue({
@@ -104,6 +113,11 @@ const mockFilesUpload = jest
         },
     });
 
+/**
+ * Mock function for uploading files using jest.
+ * Returns a Promise that resolves to a FilesUploadResponse object with specific properties.
+ * @returns {Promise<FilesUploadResponse>} A Promise that resolves to a FilesUploadResponse object
+ */
 const mockFilesUploadV2 = jest
     .fn<() => Promise<FilesUploadResponse>>()
     .mockResolvedValue({
@@ -139,6 +153,9 @@ const mockFilesUploadV2 = jest
     });
 
 // Create mock WebClient
+/**
+ * Mocked WebClient for testing purposes.
+ */
 const mockWebClient = {
     slackApiUrl: "https://slack.com/api/",
     token: "test-token",
@@ -164,11 +181,21 @@ jest.mock("@slack/web-api", () => ({
 }));
 
 // Helper function to get mock WebClient
+/**
+ * A function that returns a mocked WebClient instance.
+ * @returns {Mocked<WebClient>} The mocked WebClient instance.
+ */
 export function getMockWebClient(): Mocked<WebClient> {
     return mockWebClient;
 }
 
 // Helper function to create mock Slack API responses
+/**
+ * Function to create a mock Slack response object.
+ * @param {boolean} ok - Flag indicating if the response is successful.
+ * @param {object} data - Additional data to include in the response (default is an empty object).
+ * @returns {object} - The mock Slack response object.
+ */
 export function createMockSlackResponse(ok: boolean, data: any = {}) {
     return {
         ok,
@@ -177,6 +204,11 @@ export function createMockSlackResponse(ok: boolean, data: any = {}) {
 }
 
 // Helper function to simulate rate limiting
+/**
+ * Simulates a rate limit error during a Web Client chat post message operation.
+ * 
+ * @param {Mocked<WebClient>} client - The mocked Web Client object.
+ */
 export function simulateRateLimit(client: Mocked<WebClient>) {
     const mockPostMessage = client.chat.postMessage as Mocked<
         typeof client.chat.postMessage
@@ -185,6 +217,12 @@ export function simulateRateLimit(client: Mocked<WebClient>) {
 }
 
 // Helper function to simulate network errors
+/**
+ * Simulates a network error for the given client.
+ * 
+ * @param {Mocked<WebClient>} client - The mocked client to simulate the network error for.
+ */ 
+
 export function simulateNetworkError(client: Mocked<WebClient>) {
     const mockPostMessage = client.chat.postMessage as Mocked<
         typeof client.chat.postMessage
