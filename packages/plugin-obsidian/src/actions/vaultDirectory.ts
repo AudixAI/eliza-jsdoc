@@ -8,6 +8,16 @@ import {
 } from "@elizaos/core";
 import { getObsidian }  from "../helper";
 
+/**
+ * Represents an action to list all files in a specific directory of the Obsidian vault.
+ * @type {Action}
+ * @property {string} name - The name of the action ("LIST_DIRECTORY").
+ * @property {string[]} similes - Related similes for the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the connection with Obsidian.
+ * @property {Function} handler - Asynchronous function to handle the action of listing directory files.
+ * @property {Array<Array<{user: string, content: {text: string}}>} examples - Examples demonstrating usage of the action.
+ */
 export const listDirectoryAction: Action = {
     name: "LIST_DIRECTORY",
     similes: [
