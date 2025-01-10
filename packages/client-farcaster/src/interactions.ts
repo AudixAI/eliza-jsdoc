@@ -23,8 +23,23 @@ import {
 import { castUuid } from "./utils";
 import { sendCast } from "./actions";
 
+/**
+ * Class representing an interaction manager for Farcaster.
+ *
+ * @param {FarcasterClient} client - The Farcaster client.
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {string} signerUuid - The signer UUID.
+ * @param {Map<string, any>} cache - The cache for storing interaction data.
+ */
 export class FarcasterInteractionManager {
     private timeout: NodeJS.Timeout | undefined;
+/**
+ * Constructor for creating a new instance of a class.
+ * @param {FarcasterClient} client - The Farcaster client instance.
+ * @param {IAgentRuntime} runtime - The Agent runtime instance.
+ * @param {string} signerUuid - The UUID of the signer.
+ * @param {Map<string, any>} cache - The cache to store data.
+ */
     constructor(
         public client: FarcasterClient,
         public runtime: IAgentRuntime,
@@ -32,6 +47,9 @@ export class FarcasterInteractionManager {
         public cache: Map<string, any>
     ) {}
 
+/**
+ * Asynchronously starts the interaction handling process by calling handleInteractions method in a loop based on a specified poll interval.
+ */
     public async start() {
         const handleInteractionsLoop = async () => {
             try {
@@ -52,10 +70,17 @@ export class FarcasterInteractionManager {
         handleInteractionsLoop();
     }
 
+/**
+ * Stop the operation by clearing the timeout if it exists.
+ */
     public async stop() {
         if (this.timeout) clearTimeout(this.timeout);
     }
 
+/**
+ * Handles interactions by fetching mentions, processing them, and creating memories.
+ * @returns {Promise<void>} A Promise that resolves when all interactions are handled.
+ */
     private async handleInteractions() {
         const agentFid = Number(this.runtime.getSetting("FARCASTER_FID"));
 
@@ -115,6 +140,15 @@ export class FarcasterInteractionManager {
         this.client.lastInteractionTimestamp = new Date();
     }
 
+/**
+ * Handles a cast received by the agent.
+ * @param {Object} params - The parameters object.
+ * @param {Profile} params.agent - The agent's profile.
+ * @param {Cast} params.cast - The received cast.
+ * @param {Memory} params.memory - The current memory state.
+ * @param {Cast[]} params.thread - The conversation thread.
+ * @returns {Promise<void>}
+ */
     private async handleCast({
         agent,
         cast,
