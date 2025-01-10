@@ -10,6 +10,26 @@ export const TwitterConfigSchema = z.object({
   apiKey: z.string().optional(),
 });
 
+/**
+ * Interface representing a trade alert object.
+ * @typedef {Object} TradeAlert
+ * @property {string} token - The token symbol.
+ * @property {number} amount - The amount of tokens to trade.
+ * @property {number} trustScore - The trust score of the trade.
+ * @property {"LOW" | "MEDIUM" | "HIGH"} riskLevel - The risk level of the trade.
+ * @property {Object} marketData - The market data related to the trade.
+ * @property {number} marketData.priceChange24h - The price change in the last 24 hours.
+ * @property {number} marketData.volume24h - The trading volume in the last 24 hours.
+ * @property {Object} marketData.liquidity - The liquidity information.
+ * @property {number} marketData.liquidity.usd - The liquidity in USD.
+ * @property {number} timestamp - The timestamp of the trade alert.
+ * @property {string} [signature] - Optional signature for verification.
+ * @property {"BUY" | "SELL" | "WAIT" | "SKIP"} [action] - The recommended action for the trade.
+ * @property {string} [reason] - The reason for the trade alert.
+ * @property {number} [price] - The current price of the token.
+ * @property {string} [profitPercent] - The profit percentage if trade is executed.
+ * @property {string} [profitUsd] - The profit in USD if trade is executed.
+ */
 export interface TradeAlert {
   token: string;
   amount: number;
@@ -31,6 +51,25 @@ export interface TradeAlert {
   profitUsd?: string;
 }
 
+/**
+ * Interface representing a trade buy alert.
+ * @typedef {Object} TradeBuyAlert
+ * @property {string} token - The token symbol.
+ * @property {string} tokenAddress - The token contract address.
+ * @property {number} amount - The amount of tokens.
+ * @property {number} trustScore - The trust score of the trade.
+ * @property {"LOW" | "MEDIUM" | "HIGH"} riskLevel - The risk level of the trade.
+ * @property {MarketData} marketData - The market data related to the trade.
+ * @property {number} timestamp - The timestamp of the trade alert.
+ * @property {string} [signature] - The signature of the trade alert.
+ * @property {string} [hash] - The hash of the trade alert.
+ * @property {string} [explorerUrl] - The URL to explore more details about the trade.
+ * @property {"BUY" | "SELL" | "WAIT" | "SKIP"} [action] - The action suggested for the trade.
+ * @property {string} [reason] - The reason for the trade alert.
+ * @property {number} [price] - The price of the token.
+ * @property {string} [profitPercent] - The percentage of profit expected from the trade.
+ * @property {string} [profitUsd] - The profit in USD expected from the trade.
+ */
 export interface TradeBuyAlert {
   token: string;
   tokenAddress: string;
@@ -62,6 +101,11 @@ export const tweetTrade = async (
   }
 };
 
+/**
+ * Check if a tweet can be sent based on the tweet type and rate limiting.
+ * @param { "trade" | "market_search" | "shabbat" | "holiday" } tweetType - The type of tweet to check.
+ * @returns {boolean} - True if the tweet can be sent, false if the rate limit has been reached.
+ */
 export function canTweet(tweetType: "trade" | "market_search" | "shabbat" | "holiday"): boolean {
   const now = Date.now();
   const hourKey = `tweets_${tweetType}_${Math.floor(now / 3600000)}`;
@@ -79,25 +123,50 @@ export function canTweet(tweetType: "trade" | "market_search" | "shabbat" | "hol
   return true;
 }
 
+/**
+ * Interface for specifying options when creating a new tweet.
+ * @typedef {Object} TweetOptions
+ * @property {boolean} skipRateLimit - Flag to indicate whether to skip rate limit when posting the tweet.
+ * @property {'trade' | 'market_search' | 'shabbat' | 'holiday'} type - Type of tweet (trade, market_search, shabbat, holiday).
+ */
 interface TweetOptions {
   skipRateLimit?: boolean;
   type?: 'trade' | 'market_search' | 'shabbat' | 'holiday';
 }
+
+/**
+ * Class representing a Twitter service for posting trade alerts.
+ */
 
 export class TwitterService {
   private client: any;
   private config: z.infer<typeof TwitterConfigSchema>;
 
   // Add public getter for config
+/**
+   * Get the configuration object.
+   * @returns {object} The configuration object.
+   */
   public getConfig() {
     return this.config;
   }
 
+/**
+ * Constructor for creating a new instance of a Twitter client.
+ * 
+ * @param {any} client The client used to make requests to the Twitter API.
+ * @param {z.infer<typeof TwitterConfigSchema>} config The configuration settings for the Twitter client.
+ */
   constructor(client: any, config: z.infer<typeof TwitterConfigSchema>) {
     this.client = client;
     this.config = config;
   }
 
+/**
+ * Function to post a trade alert to Twitter.
+ * @param {TradeBuyAlert} alert - The trade buy alert to post.
+ * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating if the tweet was successfully posted or not.
+ */
   async postTradeAlert(alert: TradeBuyAlert): Promise<boolean> {
     try {
       const tweetContent = this.formatBuyAlert(alert);
@@ -131,6 +200,12 @@ export class TwitterService {
     }
   }
 
+/**
+   * Formats a TradeBuyAlert object into a string message based on the alert action (BUY or SELL).
+   *
+   * @param {TradeBuyAlert} alert - The TradeBuyAlert object to format.
+   * @returns {string} The formatted message string.
+   */
   private formatBuyAlert(alert: TradeBuyAlert): string {
     const priceChangePrefix = alert.marketData.priceChange24h >= 0 ? "+" : "";
     const trustScoreEmoji =
