@@ -15,6 +15,23 @@ import {
 import { denominateAmount } from "../utils/amount";
 
 // Network configuration object for different environments (mainnet, devnet, testnet)
+/**
+ * Configuration object for MVX network settings.
+ * @constant
+ * @type {Object}
+ * @property {Object} mainnet - Mainnet configuration settings
+ * @property {string} mainnet.chainID - Mainnet chain ID
+ * @property {string} mainnet.apiURL - Mainnet API URL
+ * @property {string} mainnet.explorerURL - Mainnet explorer URL
+ * @property {Object} devnet - Devnet configuration settings
+ * @property {string} devnet.chainID - Devnet chain ID
+ * @property {string} devnet.apiURL - Devnet API URL
+ * @property {string} devnet.explorerURL - Devnet explorer URL
+ * @property {Object} testnet - Testnet configuration settings
+ * @property {string} testnet.chainID - Testnet chain ID
+ * @property {string} testnet.apiURL - Testnet API URL
+ * @property {string} testnet.explorerURL - Testnet explorer URL
+ */
 const MVX_NETWORK_CONFIG = {
     mainnet: {
         chainID: "1", // Mainnet chain ID
@@ -34,6 +51,10 @@ const MVX_NETWORK_CONFIG = {
 };
 
 // WalletProvider class handles wallet-related operations, such as signing transactions, retrieving balance, and sending tokens
+/**
+ * Constructor to initialize WalletProvider with a private key and network configuration
+ * @param privateKey - User's private key for signing transactions
+ */
 export class WalletProvider {
     private signer: UserSigner; // Handles cryptographic signing
     private apiNetworkProvider: ApiNetworkProvider; // Interacts with the MultiversX network
@@ -45,6 +66,12 @@ export class WalletProvider {
      * @param privateKey - User's private key for signing transactions
      * @param network - Target network (mainnet, devnet, or testnet)
      */
+/**
+ * Constructor for initializing a new instance of the class.
+ * @param {string} privateKey - The private key of the user.
+ * @param {string} network - The network to be used.
+ * @throws {Error} - If the network provided is not supported.
+ */
     constructor(privateKey: string, network: string) {
         if (!MVX_NETWORK_CONFIG[network]) {
             throw new Error(`Unsupported network: ${network}`); // Validate network
