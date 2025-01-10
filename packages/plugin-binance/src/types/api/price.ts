@@ -1,6 +1,11 @@
 /**
  * Binance API response for ticker price endpoint
  */
+/**
+ * Interface representing the response object from Binance ticker API.
+ * @property {string} symbol - The symbol of the asset.
+ * @property {string} price - The current price of the asset.
+ */
 export interface BinanceTickerResponse {
     symbol: string;
     price: string;
