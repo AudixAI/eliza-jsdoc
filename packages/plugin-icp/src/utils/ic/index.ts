@@ -28,6 +28,13 @@ export const principal2SubAccount = (principal: string): Uint8Array => {
 };
 
 // Calculate account from Principal
+/**
+ * Converts a principal and optional subaccount into an array of numbers representing the account ID.
+ *
+ * @param {string} principal - The principal to be converted into an account ID.
+ * @param {number | Uint8Array | number[]} [subaccount] - An optional subaccount to be included in the account ID.
+ * @returns {number[]} - An array of numbers representing the generated account ID.
+ */
 export const principal2account_array = (
     principal: string,
     subaccount?: number | Uint8Array | number[]
