@@ -14,6 +14,16 @@ import { getCurrentWeatherTemplate } from "../templates";
 import { getCurrentWeatherExamples } from "../examples";
 import { createWeatherService } from "../services";
 
+/**
+ * Action to get the current weather for a given location.
+ * @type {Action}
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Similes related to the action
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Function to validate the action
+ * @property {Function} handler - Function to handle the action
+ * @property {ActionExample[][]} examples - Examples of using the action
+ */
 export const getCurrentWeatherAction: Action = {
     name: "GET_CURRENT_WEATHER",
     similes: [
