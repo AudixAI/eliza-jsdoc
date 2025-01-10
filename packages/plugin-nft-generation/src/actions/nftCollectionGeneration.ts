@@ -29,6 +29,12 @@ const _SupportedChainList = Object.keys(viemChains) as Array<
     keyof typeof viemChains
 >;
 
+/**
+ * Represents an action to generate a collection of NFTs.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {Array<string>} similes - An array of similar terms for the action.
+ */
 const nftCollectionGeneration: Action = {
     name: "GENERATE_COLLECTION",
     similes: [
