@@ -2,6 +2,10 @@ import { formatPosts } from "../src/posts.ts";
 import { Actor, Memory } from "../src/types.ts";
 
 // Mocked data with consistent conversation IDs
+/**
+ * Array of mock actors with their respective information.
+ * @type {Actor[]}
+ */
 const mockActors: Actor[] = [
     {
         id: "f9c8b107-953b-473d-8c87-2894c6e3fe25",
@@ -35,6 +39,10 @@ const mockActors: Actor[] = [
     },
 ];
 
+/**
+ * An array of Memory objects representing mock messages.
+ * @type {Memory[]}
+ */
 const mockMessages: Memory[] = [
     {
         id: "0db429f4-9ad9-44db-b2c6-0cf6d6cb2dfe",
