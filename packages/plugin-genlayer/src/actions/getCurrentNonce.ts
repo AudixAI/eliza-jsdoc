@@ -7,6 +7,16 @@ import {
 } from "@elizaos/core";
 import { ClientProvider } from "../providers/client";
 
+/**
+ * Action to get the current nonce for an address from the GenLayer protocol.
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - An array of similes associated with the action.
+ * @property {string} description - A description of the action.
+ * @property {function} validate - Asynchronous function to validate the action.
+ * @property {function} handler - Asynchronous function to handle the action.
+ * @property {array} examples - Array of examples demonstrating the usage of the action.
+ */
 export const getCurrentNonceAction: Action = {
     name: "GET_CURRENT_NONCE",
     similes: ["GET_CURRENT_NONCE"],
