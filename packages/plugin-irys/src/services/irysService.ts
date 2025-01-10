@@ -17,17 +17,37 @@ import { BaseEth } from "@irys/upload-ethereum";
 import { GraphQLClient, gql } from 'graphql-request';
 import crypto from 'crypto';
 
+/**
+ * Interface representing a NodeGQL object.
+ * @property {string} id - The unique identifier of the NodeGQL object.
+ * @property {string} address - The address associated with the NodeGQL object.
+ */
 interface NodeGQL {
     id: string;
     address: string;
 }
 
+/**
+ * Interface representing a response object containing transaction IDs and addresses.
+ * @typedef TransactionsIdAddress
+ * @property {boolean} success - Indicates if the request was successful.
+ * @property {NodeGQL[]} data - An array of NodeGQL objects containing transaction IDs and addresses.
+ * @property {string} [error] - Optional. A message indicating an error if the request was unsuccessful.
+ */
 interface TransactionsIdAddress {
     success: boolean;
     data: NodeGQL[];
     error?: string;
 }
 
+/**
+ * Interface representing a GraphQL transaction object.
+ * @typedef {object} TransactionGQL
+ * @property {object[]} transactions List of transactions
+ * @property {object[]} edges List of edges containing node information
+ * @property {string} edges.node.id The ID of the transaction node
+ * @property {string} edges.node.address The address of the transaction node
+ */
 interface TransactionGQL {
     transactions: {
         edges: {
@@ -39,6 +59,12 @@ interface TransactionGQL {
     }
 }
 
+/**
+ * IrysService class that extends Service and implements IIrysService interface.
+ * Contains static serviceType, runtime, irysUploader, and endpoints for transactions and data.
+ * 
+ * @class
+ */
 export class IrysService extends Service implements IIrysService {
     static serviceType: ServiceType = ServiceType.IRYS;
 
@@ -47,11 +73,25 @@ export class IrysService extends Service implements IIrysService {
     private endpointForTransactionId: string = "https://uploader.irys.xyz/graphql";
     private endpointForData: string = "https://gateway.irys.xyz";
 
+/**
+ * Asynchronously initializes the IrysService with the given runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime to be set for the IrysService.
+ * @returns {Promise<void>} A promise that resolves when the initialization is complete.
+ */
     async initialize(runtime: IAgentRuntime): Promise<void> {
         console.log("Initializing IrysService");
         this.runtime = runtime;
     }
 
+/**
+ * Asynchronously fetches the transaction IDs and addresses from the GraphQL endpoint.
+ * 
+ * @param owners Array of strings representing the owners of the transactions (default: null)
+ * @param tags Array of GraphQLTag objects representing tags associated with the transactions (default: null)
+ * @param timestamp IrysTimestamp object representing the timestamp filter for the transactions (default: null)
+ * @returns Promise<TransactionsIdAddress> Promise that resolves to an object containing success status and array of transaction node objects
+ */
     private async getTransactionId(owners: string[] = null, tags: GraphQLTag[] = null, timestamp: IrysTimestamp = null): Promise<TransactionsIdAddress> {
         const graphQLClient = new GraphQLClient(this.endpointForTransactionId);
         const QUERY = gql`
@@ -82,6 +122,10 @@ export class IrysService extends Service implements IIrysService {
         }
     }
 
+/**
+ * Initializes the Irys uploader with the provided EVM wallet private key.
+ * @returns {Promise<boolean>} A Promise that resolves to true if the initialization is successful, and false otherwise.
+ */
     private async initializeIrysUploader(): Promise<boolean> {
         if (this.irysUploader) return true;
         if (!this.runtime) return false;
@@ -99,6 +143,11 @@ export class IrysService extends Service implements IIrysService {
         }
     }
 
+/**
+ * Fetches data from a transaction ID using GraphQL endpoint.
+ * @param {string} transactionId - The transaction ID to fetch data from.
+ * @returns {Promise<DataIrysFetchedFromGQL>} The data fetched from the transaction ID.
+ */
     private async fetchDataFromTransactionId(transactionId: string): Promise<DataIrysFetchedFromGQL> {
         console.log(`Fetching data from transaction ID: ${transactionId}`);
         const response = await fetch(`${this.endpointForData}/${transactionId}`);
@@ -108,6 +157,13 @@ export class IrysService extends Service implements IIrysService {
             data: response,
         };
     }
+/**
+ * Converts the input value into an array of values. If the input value is already an array,
+ * it is returned as is. Otherwise, it is wrapped in an array before being returned.
+ * 
+ * @param {any} value - The input value to be converted
+ * @returns {any[]} - An array of values
+ */
     private converToValues(value: any): any[] {
         if (Array.isArray(value)) {
             return value;
@@ -115,6 +171,13 @@ export class IrysService extends Service implements IIrysService {
         return [value];
     }
 
+/**
+ * Orchestrates a request based on the input parameters.
+ * @param {string} requestMessage - The message for the request.
+ * @param {GraphQLTag[]} tags - The tags associated with the request.
+ * @param {IrysTimestamp} [timestamp=null] - The optional timestamp for the request.
+ * @returns {Promise<DataIrysFetchedFromGQL>} A promise that resolves to the fetched data from the GraphQL query.
+ */
     private async orchestrateRequest(requestMessage: string, tags: GraphQLTag[], timestamp: IrysTimestamp = null): Promise<DataIrysFetchedFromGQL> {
         let serviceCategory = tags.find((tag) => tag.name == "Service-Category")?.values;
         let protocol = tags.find((tag) => tag.name == "Protocol")?.values;
@@ -185,6 +248,15 @@ export class IrysService extends Service implements IIrysService {
     }
 
     // Orchestrator
+/**
+ * Uploads data to Irys platform with specified tags, message type, and optional timestamp.
+ * 
+ * @param data The data to be uploaded to Irys
+ * @param tags An array of GraphQL tags to be associated with the data
+ * @param messageType The type of message being sent to Irys
+ * @param timestamp Optional timestamp for the data upload
+ * @returns A promise that resolves to an UploadIrysResult object indicating success or failure of the upload
+ */
     private async uploadDataOnIrys(data: any, tags: GraphQLTag[], messageType: IrysMessageType, timestamp: IrysTimestamp = null): Promise<UploadIrysResult> {
         if (!(await this.initializeIrysUploader())) {
             return {
@@ -227,6 +299,13 @@ export class IrysService extends Service implements IIrysService {
         }
     }
 
+/**
+ * Uploads a file or image on Irys with the provided data and tags.
+ * 
+ * @param {string} data - The data to be uploaded on Irys.
+ * @param {GraphQLTag[]} tags - An array of GraphQLTag objects containing the tags for the uploaded file.
+ * @returns {Promise<UploadIrysResult>} - A promise that resolves to an object containing the upload result (success or failure) and the URL of the uploaded file on Irys.
+ */
     private async uploadFileOrImageOnIrys(data: string, tags: GraphQLTag[]): Promise<UploadIrysResult> {
         if (!(await this.initializeIrysUploader())) {
             return {
@@ -248,12 +327,26 @@ export class IrysService extends Service implements IIrysService {
         }
     }
 
+/**
+ * Normalizes the values in an array by ensuring each value is within a specified range.
+ * @param {number[]} arr - The array of numbers to normalize.
+ * @param {number} min - The minimum value that each element in the array should be.
+ * @param {number} [max] - The maximum value that each element in the array should be (optional).
+ * @returns {void}
+ */
     private normalizeArrayValues(arr: number[], min: number, max?: number): void {
         for (let i = 0; i < arr.length; i++) {
             arr[i] = Math.max(min, max !== undefined ? Math.min(arr[i], max) : arr[i]);
         }
     }
 
+/**
+ * Function to normalize the size of an array.
+ * If the input array has only one element, it returns that element.
+ * If the input array has multiple elements, it returns the array as is.
+ * @param {any[]} arr - The input array to normalize.
+ * @returns {any} The normalized array size - either a single element or the original array.
+ */
     private normalizeArraySize(arr: any[]): any {
         if (arr.length == 1) {
             return arr[0];
@@ -261,6 +354,21 @@ export class IrysService extends Service implements IIrysService {
         return arr;
     }
 
+/**
+ * Asynchronously uploads data to Irys platform.
+ * 
+ * @param {any} data - Data to be uploaded.
+ * @param {IrysDataType} dataType - Type of data being uploaded (FILE, IMAGE, etc.).
+ * @param {IrysMessageType} messageType - Type of message (REQUEST, RESPONSE, etc.).
+ * @param {string[]} serviceCategory - Category of service for the data.
+ * @param {string[]} protocol - Protocol used for uploading the data.
+ * @param {number[]} validationThreshold - Array of validation thresholds (optional).
+ * @param {number[]} minimumProviders - Array of minimum provider values (optional).
+ * @param {boolean[]} testProvider - Array of boolean values for test providers (optional).
+ * @param {number[]} reputation - Array of reputation values for providers (optional).
+ * @returns {Promise<UploadIrysResult>} Result of the upload operation.
+ */
+       
     async workerUploadDataOnIrys(data: any, dataType: IrysDataType, messageType: IrysMessageType, serviceCategory: string[], protocol: string[], validationThreshold: number[] = [], minimumProviders: number[] = [], testProvider: boolean[] = [], reputation: number[] = []): Promise<UploadIrysResult> {
         this.normalizeArrayValues(validationThreshold, 0, 1);
         this.normalizeArrayValues(minimumProviders, 0);
@@ -293,6 +401,15 @@ export class IrysService extends Service implements IIrysService {
         return await this.uploadDataOnIrys(data, tags, messageType);
     }
 
+/**
+ * Uploads data on Irys platform with specified tags.
+ * 
+ * @param {any} data - The data to be uploaded.
+ * @param {IrysDataType} dataType - The type of data being uploaded.
+ * @param {string[]} serviceCategory - The service category tags.
+ * @param {string[]} protocol - The protocol tags.
+ * @returns {Promise<UploadIrysResult>} The result of the upload operation.
+ */
     async providerUploadDataOnIrys(data: any, dataType: IrysDataType, serviceCategory: string[], protocol: string[]): Promise<UploadIrysResult> {
         const tags = [
             { name: "Message-Type", values: [IrysMessageType.DATA_STORAGE] },
@@ -307,6 +424,14 @@ export class IrysService extends Service implements IIrysService {
         return await this.uploadDataOnIrys(data, tags, IrysMessageType.DATA_STORAGE);
     }
 
+/**
+ * Asynchronously fetches data from an agent using their wallet public keys, tags, and timestamp.
+ * 
+ * @param {string[]} agentsWalletPublicKeys - The wallet public keys of the agent to fetch data from.
+ * @param {GraphQLTag[]} tags - The tags associated with the data to fetch.
+ * @param {IrysTimestamp} timestamp - The timestamp to specify the data to fetch.
+ * @returns {Promise<DataIrysFetchedFromGQL>} A promise that resolves to an object containing the fetched data.
+ */
     async getDataFromAnAgent(agentsWalletPublicKeys: string[] = null, tags: GraphQLTag[] = null, timestamp: IrysTimestamp = null): Promise<DataIrysFetchedFromGQL> {
         try {
             const transactionIdsResponse = await this.getTransactionId(agentsWalletPublicKeys, tags, timestamp);
