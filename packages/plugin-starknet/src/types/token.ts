@@ -1,3 +1,18 @@
+/**
+ * Represents a request for a quote to execute a swap.
+ * 
+ * @typedef {Object} QuoteRequest
+ * @property {string} sellTokenAddress - The address of the token to sell.
+ * @property {string} buyTokenAddress - The address of the token to buy.
+ * @property {bigint} [sellAmount] - The amount of tokens to sell.
+ * @property {bigint} [buyAmount] - The amount of tokens to buy.
+ * @property {string} [takerAddress] - The address that will fill the quote.
+ * @property {number} [size] - The maximum number of returned quotes.
+ * @property {string[]} [excludeSources] - The sources to exclude from the quote.
+ * @property {bigint} [integratorFees] - The fee amount in basis points (bps).
+ * @property {string} [integratorFeeRecipient] - The address of the fee collector when integratorFees is defined.
+ * @property {string} [integratorName] - The name of the application making the request.
+ */
 interface QuoteRequest {
     sellTokenAddress: string;
     buyTokenAddress: string;
@@ -17,6 +32,33 @@ interface QuoteRequest {
     integratorName?: string; // AVNU Portal
 }
 
+/**
+ * Represents a quote for a token swap
+ * @typedef {Object} Quote
+ * @property {string} quoteId - The unique id of the quote
+ * @property {string} sellTokenAddress - The address of the token being sold
+ * @property {bigint} sellAmount - The amount of tokens being sold
+ * @property {number} sellAmountInUsd - The value of the sell amount in USD
+ * @property {string} buyTokenAddress - The address of the token being bought
+ * @property {bigint} buyAmount - The amount of tokens being bought
+ * @property {number} buyAmountInUsd - The value of the buy amount in USD
+ * @property {number} [blockNumber] - The block number of the transaction
+ * @property {string} chainId - The chain ID
+ * @property {number} [expiry] - The timestamp when the quote expires in seconds
+ * @property {Route[]} routes - The routes for the token swap
+ * @property {bigint} gasFees - The estimated gas fees in ETH
+ * @property {number} gasFeesInUsd - The estimated gas fees in USD
+ * @property {bigint} avnuFees - The fees taken by AVNU
+ * @property {number} avnuFeesInUsd - The fees taken by AVNU in USD
+ * @property {bigint} avnuFeesBps - The fees taken by AVNU in bps
+ * @property {bigint} integratorFees - The fees taken by the integrator
+ * @property {number} integratorFeesInUsd - The fees taken by the integrator in USD
+ * @property {bigint} integratorFeesBps - The fees taken by the integrator in bps
+ * @property {number} priceRatioUsd - The price ratio in USD
+ * @property {number} [sellTokenPriceInUsd] - The sell token price in USD
+ * @property {number} [buyTokenPriceInUsd] - The buy token price in USD
+ * @property {Gasless} gasless - Details about gasless operation
+ */
 interface Quote {
     // The unique id of the quote
     quoteId: string;
@@ -56,6 +98,16 @@ interface Quote {
     gasless: Gasless;
 }
 
+/**
+ * Interface representing a route for swapping tokens.
+ * @typedef {Object} Route
+ * @property {string} name - The name of the source.
+ * @property {string} address - The address of the source.
+ * @property {number} percent - The percentage distribution of sellToken. 1 is 100%.
+ * @property {string} sellTokenAddress - The address of the token being sold.
+ * @property {string} buyTokenAddress - The address of the token being bought.
+ * @property {Route[]} routes - An array of nested routes for further swapping.
+ */
 interface Route {
     // The name of the source
     name: string; // 10kSwap
@@ -68,6 +120,15 @@ interface Route {
     routes: Route[];
 }
 
+/**
+ * Interface representing gasless transaction information.
+ * @interface Gasless
+ * @property {boolean} active - Specifies if gasless transactions are active.
+ * @property {Array} gasTokenPrices - Array of gas token prices.
+ * @property {string} gasTokenPrices.tokenAddress - The address of the gas token.
+ * @property {number} gasTokenPrices.gasFeesInUsd - The gas fees in USD.
+ * @property {bigint} gasTokenPrices.gasFeesInGasToken - The gas fees in gas token.
+ */
 export interface Gasless {
     active: boolean;
     gasTokenPrices: {
@@ -77,6 +138,32 @@ export interface Gasless {
     }[];
 }
 
+/**
+ * Interface for representing token information.
+ * @typedef {Object} TokenInfo
+ * @property {string} name - The name of the token.
+ * @property {string} symbol - The symbol of the token.
+ * @property {string} address - The address of the token.
+ * @property {string} logoUri - The URI to the logo of the token.
+ * @property {string} coingeckoId - The CoinGecko ID of the token.
+ * @property {boolean} verified - Indicates if the token is verified.
+ * @property {Object} market - Contains various market-related information for the token.
+ * @property {number} market.currentPrice - The current price of the token.
+ * @property {number} market.marketCap - The market capitalization of the token.
+ * @property {number} market.fullyDilutedValuation - The fully diluted valuation of the token.
+ * @property {number} market.starknetTvl - The StarkNet total value locked (TVL) for the token.
+ * @property {number} market.priceChange1h - The price change in the last 1 hour.
+ * @property {number} market.priceChangePercentage1h - The percentage price change in the last 1 hour.
+ * @property {number} market.priceChange24h - The price change in the last 24 hours.
+ * @property {number} market.priceChangePercentage24h - The percentage price change in the last 24 hours.
+ * @property {number} market.priceChange7d - The price change in the last 7 days.
+ * @property {number} market.priceChangePercentage7d - The percentage price change in the last 7 days.
+ * @property {number} market.marketCapChange24h - The market capitalization change in the last 24 hours.
+ * @property {number} market.marketCapChangePercentage24h - The percentage market capitalization change in the last 24 hours.
+ * @property {number} market.starknetVolume24 - The StarkNet volume in the last 24 hours.
+ * @property {number} market.starknetTradingVolume24h - The StarkNet trading volume in the last 24 hours.
+ * @property {string[]} tags - An array of tags associated with the token.
+ */
 export interface TokenInfo {
     name: string;
     symbol: string;
