@@ -7,6 +7,10 @@ export const mockDepinscanMetrics = [
     },
 ];
 
+/**
+ * Array of mock Depinscan projects.
+ * @type {Array<Object>}
+ */
 export const mockDepinscanProjects = [
     {
         project_name: "Solana",
@@ -52,6 +56,12 @@ export const mockDepinscanProjects = [
     },
 ];
 
+/**
+ * Array of arrays containing sample data for projects.
+ * Each inner array represents a project and its properties.
+ * 
+ * @type {Array<Array<string>>}
+ */
 export const parsedProjectsSample = [
     [
         "project_name",
