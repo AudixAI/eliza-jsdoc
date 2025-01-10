@@ -6,6 +6,12 @@ import { privateKeyToAccount } from "viem/accounts";
 
 import { Account } from "viem";
 
+/**
+ * Instantiates a new client with the given account and RPC URL.
+ * @param {Account} [account] - The account to use for the client.
+ * @param {string} [rpcUrl] - The RPC URL to use. Defaults to "https://studio.genlayer.com:8443/api".
+ * @returns {Client} A new client instance.
+ */
 function instantiateClient(account?: Account, rpcUrl?: string) {
     const rpcUrlToUse = rpcUrl ?? "https://studio.genlayer.com:8443/api";
     return createClient({
@@ -21,10 +27,19 @@ function instantiateClient(account?: Account, rpcUrl?: string) {
     });
 }
 
+/**
+ * Represents a Client Provider that allows for interacting with a GenLayerClient.
+ */
 export class ClientProvider {
     readonly client: GenLayerClient<SimulatorChain>;
     readonly account: Account;
 
+/**
+ * Constructor for creating a new instance of a class.
+ * 
+ * @param {IAgentRuntime} runtime The runtime context for the agent
+ * @throws {Error} If GENLAYER_PRIVATE_KEY is not configured
+ */
     constructor(runtime: IAgentRuntime) {
         const privateKey = runtime.getSetting(
             "GENLAYER_PRIVATE_KEY"
@@ -38,6 +53,14 @@ export class ClientProvider {
     }
 }
 
+/**
+ * Function to fetch a string containing the account address from the ClientProvider
+ *
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent
+ * @param {Memory} _message - The memory object containing the message for processing
+ * @param {State} [_state] - Optional state object for storing and retrieving agent state
+ * @returns {Promise<string | null>} A string containing the account address, or null if an error occurs
+ */
 export const clientProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,
