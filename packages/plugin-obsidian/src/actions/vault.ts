@@ -8,6 +8,17 @@ import {
 } from "@elizaos/core";
 import { getObsidian }  from "../helper";
 
+/**
+ * Action to list all files in the entire Obsidian vault.
+ * 
+ * @type {Action}
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Similar actions to the main action
+ * @property {string} description - Description of what the action does
+ * @property {Function} validate - Asynchronous function to validate Obsidian connection
+ * @property {Function} handler - Asynchronous function to handle the action logic
+ * @property {object[][]} examples - Examples of how to use the action with user input and expected responses
+ */
 export const listAllFilesAction: Action = {
     name: "LIST_ALL",
     similes: [
