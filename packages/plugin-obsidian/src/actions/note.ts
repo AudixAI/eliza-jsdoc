@@ -13,6 +13,20 @@ import { NoteContent, noteSchema, isValidNote } from "../types";
 import { getObsidian }  from "../helper";
 import { noteTemplate } from "../templates/note";
 
+/**
+ * Action for getting a specific note from an Obsidian vault by path. 
+ *
+ * This action retrieves and displays the content of a specific note from the Obsidian vault by path. 
+ * The action allows for multiple similes for accessing the note content. 
+ *
+ * @typedef {Action} getNoteAction
+ * @property {string} name - The name of the action, set to "GET_NOTE".
+ * @property {Array<string>} similes - An array of similes for the action, such as "DISPLAY_NOTE", "GRAB_NOTE", etc.
+ * @property {string} description - Description of the action's functionality and usage.
+ * @property {Function} validate - Asynchronous function to validate the Obsidian connection.
+ * @property {Function} handler - Asynchronous function that handles the retrieval of the note content.
+ * @property {Array<Array<Object>>} examples - Array of example interactions for the action with user input and expected agent response.
+ */
 export const getNoteAction: Action = {
     name: "GET_NOTE",
     similes: [
