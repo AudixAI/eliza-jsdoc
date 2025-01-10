@@ -6,8 +6,16 @@ export const binanceEnvSchema = z.object({
     BINANCE_SECRET_KEY: z.string().min(1, "Binance secret key is required"),
 });
 
+/**
+ * Type definition for BinanceConfig inferred from binanceEnvSchema.
+ */
 export type BinanceConfig = z.infer<typeof binanceEnvSchema>;
 
+/**
+ * Validates the Binance configuration provided in the runtime settings
+ * @param {IAgentRuntime} runtime - The runtime object containing settings
+ * @returns {Promise<BinanceConfig>} Promise that resolves with the validated Binance configuration
+ */
 export async function validateBinanceConfig(
     runtime: IAgentRuntime
 ): Promise<BinanceConfig> {
