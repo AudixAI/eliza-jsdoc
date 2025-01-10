@@ -113,6 +113,13 @@ const logFetch = async (url: string, options: any) => {
     return fetch(url, options);
 };
 
+/**
+* Parses the command line arguments using yargs library.
+* @returns {{
+*      character?: string;
+*      characters?: string;
+* }}
+*/
 export function parseArguments(): {
     character?: string;
     characters?: string;
@@ -135,6 +142,12 @@ export function parseArguments(): {
     }
 }
 
+/**
+ * Tries to load a file from the given file path.
+ * 
+ * @param {string} filePath - The path to the file to be loaded.
+ * @returns {string | null} The content of the file as a string if successful, otherwise null.
+ */
 function tryLoadFile(filePath: string): string | null {
     try {
         return fs.readFileSync(filePath, "utf8");
@@ -143,6 +156,11 @@ function tryLoadFile(filePath: string): string | null {
     }
 }
 
+/**
+ * Asynchronously loads the characters specified by the given character paths.
+ * @param {string} charactersArg - A comma-separated string of character file paths to load
+ * @returns {Promise<Character[]>} A promise that resolves with an array of loaded characters
+ */
 export async function loadCharacters(
     charactersArg: string
 ): Promise<Character[]> {
@@ -253,6 +271,11 @@ export async function loadCharacters(
     return loadedCharacters;
 }
 
+/**
+ * Handles importing plugins asynchronously.
+ * @param {string[]} plugins - Array of plugin names to be imported
+ * @returns {Promise<Function[]>} - Promise that resolves with an array of imported plugin functions
+ */
 async function handlePluginImporting(plugins: string[]) {
     if (plugins.length > 0) {
         elizaLogger.info("Plugins are: ", plugins);
@@ -283,6 +306,13 @@ async function handlePluginImporting(plugins: string[]) {
     }
 }
 
+/**
+ * Retrieve the API token for the specified model provider.
+ * 
+ * @param {ModelProviderName} provider - The name of the model provider.
+ * @param {Character} character - The character object containing the settings and secrets.
+ * @returns {string | undefined} The API token for the specified model provider, or undefined if not found.
+ */
 export function getTokenForProvider(
     provider: ModelProviderName,
     character: Character
@@ -414,6 +444,14 @@ export function getTokenForProvider(
     }
 }
 
+/**
+ * Initializes the database based on the environment variables set.
+ * If the `POSTGRES_URL` environment variable is set, it initializes a connection to a PostgreSQL database.
+ * If the `PGLITE_DATA_DIR` environment variable is set, it initializes a PgLite adapter.
+ * If neither variables are set, it initializes a SQLite database using a file path specified in `SQLITE_FILE` or a default path based on `dataDir`.
+ * @param {string} dataDir - The directory path where the SQLite file will be stored if SQLite is used.
+ * @returns {PostgresDatabaseAdapter | PGLiteDatabaseAdapter | SqliteDatabaseAdapter} The database adapter instance based on the environment variables.
+ */
 function initializeDatabase(dataDir: string) {
     if (process.env.POSTGRES_URL) {
         elizaLogger.info("Initializing PostgreSQL connection...");
@@ -451,6 +489,15 @@ function initializeDatabase(dataDir: string) {
 }
 
 // also adds plugins from character file into the runtime
+/**
+ * Initializes various clients for a given character with the provided runtime.
+ * Each client can only register once and supports multiple types of clients including Auto, Discord, Telegram, Twitter, Farcaster, Lens, and Slack.
+ * Additional client types can be supported by adding them to the 'clients' object.
+ * 
+ * @param {Character} character - The character for which clients are being initialized.
+ * @param {IAgentRuntime} runtime - The runtime environment for the clients.
+ * @returns {Record<string, any>} An object containing the initialized clients based on configuration.
+ */
 export async function initializeClients(
     character: Character,
     runtime: IAgentRuntime
@@ -543,12 +590,33 @@ export async function initializeClients(
     return clients;
 }
 
+/**
+ * Get the secret value for a given character.
+ * If the secret is stored in the character's settings, it will return that value.
+ * Otherwise, it will fallback to the value from the environment variables.
+ * 
+ * @param {Character} character - The character object for which the secret is retrieved.
+ * @param {string} secret - The name of the secret.
+ * @returns {string} The value of the secret.
+ */
 function getSecret(character: Character, secret: string) {
     return character.settings?.secrets?.[secret] || process.env[secret];
 }
 
+/**
+ * Declaration of a variable `nodePlugin` that can be of type `any` or `undefined`.
+ */
 let nodePlugin: any | undefined;
 
+/**
+ * Asynchronously creates an AgentRuntime for a specified character.
+ * 
+ * @param {Character} character - The character for which to create the AgentRuntime.
+ * @param {IDatabaseAdapter} db - The database adapter to use.
+ * @param {ICacheManager} cache - The cache manager to use.
+ * @param {string} token - The token associated with the AgentRuntime.
+ * @returns {Promise<AgentRuntime>} A promise that resolves to the created AgentRuntime.
+ */
 export async function createAgent(
     character: Character,
     db: IDatabaseAdapter,
@@ -764,6 +832,14 @@ export async function createAgent(
     });
 }
 
+/**
+ * Initializes a file system cache for a specific character.
+ * 
+ * @param {string} baseDir - The base directory where the cache will be stored.
+ * @param {Character} character - The character for which the cache is being initialized.
+ * @throws {Error} Throws an error if the character's id is not set.
+ * @returns {CacheManager} Returns an instance of CacheManager with the file system cache adapter set up.
+ */
 function initializeFsCache(baseDir: string, character: Character) {
     if (!character?.id) {
         throw new Error(
@@ -776,6 +852,13 @@ function initializeFsCache(baseDir: string, character: Character) {
     return cache;
 }
 
+/**
+ * Initializes a database cache for the given character using the provided database cache adapter.
+ * @param {Character} character - The character for which the cache is initialized.
+ * @param {IDatabaseCacheAdapter} db - The database cache adapter to be used.
+ * @returns {CacheManager} The initialized cache manager.
+ * @throws {Error} If the character's id is not set in the definition.
+ */
 function initializeDbCache(character: Character, db: IDatabaseCacheAdapter) {
     if (!character?.id) {
         throw new Error(
@@ -786,6 +869,16 @@ function initializeDbCache(character: Character, db: IDatabaseCacheAdapter) {
     return cache;
 }
 
+/**
+ * Initializes the cache based on the specified cache store type.
+ * 
+ * @param {string} cacheStore - The type of cache store to initialize (e.g. REDIS, DATABASE, FILESYSTEM).
+ * @param {Character} character - The character object associated with the cache.
+ * @param {string} [baseDir] - The base directory path for FILESYSTEM cache store.
+ * @param {IDatabaseCacheAdapter} [db] - The database cache adapter for DATABASE cache store.
+ * @returns {CacheManager | Promise<void>} The initialized cache manager object or a promise when using database cache.
+ * @throws {Error} Throws an error if the configuration is invalid or certain values are missing.
+ */
 function initializeCache(
     cacheStore: string,
     character: Character,
@@ -835,6 +928,14 @@ function initializeCache(
     }
 }
 
+/**
+ * Starts an agent with the given character and direct client.
+ * 
+ * @async
+ * @param {Character} character - The character for the agent.
+ * @param {DirectClient} directClient - The direct client for communication.
+ * @returns {Promise<AgentRuntime>} The agent runtime for the started agent.
+ */
 async function startAgent(
     character: Character,
     directClient: DirectClient
@@ -895,6 +996,13 @@ async function startAgent(
     }
 }
 
+/**
+ * Checks if a specified port is available for use.
+ * 
+ * @param {number} port - The port number to check for availability.
+ * @returns {Promise<boolean>} A promise that resolves with a boolean indicating
+ * whether the port is available (true) or in use (false).
+ */
 const checkPortAvailable = (port: number): Promise<boolean> => {
     return new Promise((resolve) => {
         const server = net.createServer();
@@ -914,6 +1022,11 @@ const checkPortAvailable = (port: number): Promise<boolean> => {
     });
 };
 
+/**
+ * Function to start agents based on the provided characters argument.
+ * @async
+ * @returns {void}
+ */
 const startAgents = async () => {
     const directClient = new DirectClient();
     let serverPort = parseInt(settings.SERVER_PORT || "3000");
