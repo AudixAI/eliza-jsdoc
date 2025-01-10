@@ -12,6 +12,45 @@ import {
     Evaluator,
 } from "@elizaos/core";
 
+/**
+ * Template for updating goals based on the conversation analysis.
+ * 
+ * TASK: Update Goal
+ * Analyze the conversation and update the status of the goals based on the new information provided.
+ * 
+ * # INSTRUCTIONS
+ * - Review the conversation and identify any progress towards the objectives of the current goals.
+ * - Update the objectives if they have been completed or if there is new information about them.
+ * - Update the status of the goal to 'DONE' if all objectives are completed.
+ * - If no progress is made, do not change the status of the goal.
+ * 
+ * # START OF ACTUAL TASK INFORMATION
+ * {{goals}}
+ * {{recentMessages}}
+ * 
+ * TASK: Analyze the conversation and update the status of the goals based on the new information provided. 
+ * Respond with a JSON array of goals to update.
+ * - Each item must include the goal ID, as well as the fields in the goal to update.
+ * - For updating objectives, include the entire objectives array including unchanged fields.
+ * - Only include goals which need to be updated.
+ * - Goal status options are 'IN_PROGRESS', 'DONE' and 'FAILED'. If the goal is active it should always be 'IN_PROGRESS'.
+ * - If the goal has been successfully completed, set status to DONE. If the goal cannot be completed, set status to FAILED.
+ * - If those goal is still in progress, do not include the status field.
+ * 
+ * Response format should be:
+ * ```json
+ * [
+ *   {
+ *     "id": <goal uuid>, // required
+ *     "status": "IN_PROGRESS" | "DONE" | "FAILED", // optional
+ *     "objectives": [ // optional
+ *       { "description": "Objective description", "completed": true | false },
+ *       { "description": "Objective description", "completed": true | false }
+ *     ] // NOTE: If updating objectives, include the entire objectives array including unchanged fields.
+ *   }
+ * ]
+ * ```
+ */
 const goalsTemplate = `TASK: Update Goal
 Analyze the conversation and update the status of the goals based on the new information provided.
 
@@ -49,6 +88,15 @@ Response format should be:
 ]
 \`\`\``;
 
+/**
+ * Asynchronous function to handle goal updates based on conversation analysis.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {Memory} message - The message from the conversation.
+ * @param {State} state - The current state of the conversation.
+ * @param {Object} options - Additional options for handling goals (default: { onlyInProgress: true }).
+ * @returns {Promise<Goal[]>} - A promise that resolves to an array of updated goals.
+ */
 async function handler(
     runtime: IAgentRuntime,
     message: Memory,
@@ -124,6 +172,16 @@ async function handler(
     return updatedGoals; // Return updated goals for further processing or logging
 }
 
+/**
+ * A goal evaluator object that analyzes the conversation and updates the status of goals based on new information provided.
+ * @typedef {Object} Evaluator
+ * @property {string} name - The name of the evaluator ("UPDATE_GOAL").
+ * @property {string[]} similes - An array of related similes to the evaluator.
+ * @property {Function} validate - Asynchronous function that checks if there are active goals that can be updated.
+ * @property {string} description - Description of the evaluator's purpose.
+ * @property {Function} handler - The handler function for the evaluator.
+ * @property {Object[]} examples - An array of example scenarios for the evaluator.
+ */
 export const goalEvaluator: Evaluator = {
     name: "UPDATE_GOAL",
     similes: [
