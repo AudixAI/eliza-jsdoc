@@ -38,6 +38,12 @@ const baseDir = path.resolve(__dirname, "../../plugin-coinbase/src/plugins");
 const contractsCsvFilePath = path.join(baseDir, "contracts.csv");
 
 // Add this helper at the top level
+/**
+ * Serialize BigInt values to string representation recursively.
+ *
+ * @param {any} value - The value to serialize, can be a number, array, or object.
+ * @returns {any} - The serialized value with BigInt values transformed into strings.
+ */
 const serializeBigInt = (value: any): any => {
     if (typeof value === "bigint") {
         return value.toString();
@@ -53,6 +59,17 @@ const serializeBigInt = (value: any): any => {
     return value;
 };
 
+/**
+ * Action to deploy an ERC20, ERC721, or ERC1155 token contract using the Coinbase SDK.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string} description - The description of the action.
+ * @property {Function} validate - Asynchronous function to validate runtime for DEPLOY_TOKEN_CONTRACT.
+ * @property {Function} handler - Asynchronous function to handle the deployment of the token contract.
+ * @property {Array.<Array.<Object>>} examples - Examples of interacting with the action.
+ * @property {Array.<string>} similes - Similar actions related to token contract deployment.
+ */
 export const deployTokenContractAction: Action = {
     name: "DEPLOY_TOKEN_CONTRACT",
     description:
@@ -282,6 +299,22 @@ Contract deployment has been logged to the CSV file.`,
 };
 
 // Add to tokenContract.ts
+/**
+ * Represents an action to invoke a method on a deployed smart contract using the Coinbase SDK.
+ * This action requires the runtime to have valid Coinbase API key and private key.
+ * The handler function configures the Coinbase SDK, generates contract invocation details,
+ * invokes the contract method, waits for the transaction to be mined, and logs the invocation to a CSV file.
+ * If successful, a success message is returned with details of the invocation.
+ * If there is an error, an error message is returned.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action ("INVOKE_CONTRACT").
+ * @property {string} description - A brief description of the action.
+ * @property {Function} validate - Asynchronous function to validate the runtime before handling the action.
+ * @property {Function} handler - Asynchronous function to handle the action by invoking the smart contract method.
+ * @property {Array<Array<Object>>} examples - Examples demonstrating how this action can be used.
+ * @property {Array<string>} similes - Other actions similar to this one.
+ */
 export const invokeContractAction: Action = {
     name: "INVOKE_CONTRACT",
     description:
@@ -449,6 +482,17 @@ Contract invocation has been logged to the CSV file.`,
     similes: ["CALL_CONTRACT", "EXECUTE_CONTRACT", "INTERACT_WITH_CONTRACT"],
 };
 
+/**
+ * Action to read data from a deployed smart contract using the Coinbase SDK.
+ * @typedef {Object} readContractAction
+ *
+ * @property {string} name - The name of the action ("READ_CONTRACT").
+ * @property {string} description - A description of the action.
+ * @property {Function} validate - An async function to validate the runtime for READ_CONTRACT.
+ * @property {Function} handler - An async function to handle the READ_CONTRACT action.
+ * @property {Array<Array<Object>>} examples - Examples demonstrating the usage of the READ_CONTRACT action.
+ * @property {Array<string>} similes - Similes related to the READ_CONTRACT action.
+ */
 export const readContractAction: Action = {
     name: "READ_CONTRACT",
     description:
