@@ -28,6 +28,12 @@ const __dirname = path.dirname(__filename);
 const baseDir = path.resolve(__dirname, "../../plugin-coinbase/src/plugins");
 const tradeCsvFilePath = path.join(baseDir, "trades.csv");
 
+/**
+ * Function to retrieve trade data from a CSV file and return relevant information.
+ * @param {IAgentRuntime} runtime The agent runtime context.
+ * @param {Memory} _message The message object (not used).
+ * @returns {Promise<{ currentTrades: { network: string | undefined, amount: number | undefined, sourceAsset: string | undefined, toAmount: number | undefined, targetAsset: string | undefined, status: string | undefined, transactionUrl: string }[], balances: any, transactions: any }>} The trade data including current trades, balances, and transactions.
+ */
 export const tradeProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.debug("Starting tradeProvider.get function");
@@ -92,6 +98,42 @@ export const tradeProvider: Provider = {
     },
 };
 
+/**
+ * Action for executing a trade between two assets using the Coinbase SDK and logging the result.
+ * @type {Action}
+ * @name EXECUTE_TRADE
+ * @description Execute a trade between two assets using the Coinbase SDK and log the result.
+ * @param {IAgentRuntime} runtime - The runtime context for the agent.
+ * @param {Memory} _message - The message memory.
+ * @returns {boolean} Indicates if the runtime is valid for executing the trade.
+ * @param {IAgentRuntime} runtime - The runtime context for the agent.
+ * @param {Memory} _message - The message memory.
+ * @param {State} state - The current state of the agent.
+ * @param {any} _options - Additional options for the handler.
+ * @param {HandlerCallback} callback - The callback function to handle the output.
+ * @returns {Promise<void>} Promise that resolves after executing the trade action.
+ * @example
+ * [{
+ *    user: "{{user1}}",
+ *    content: {
+ *        text: "Swap 1 ETH for USDC on base network",
+ *    },
+ * }, {
+ *    user: "{{agentName}}",
+ *    content: {
+ *        text: "Trade executed successfully:\n- Swapped 1 ETH for USDC on base network\n- Transaction URL: https://basescan.io/tx/...\n- Status: Completed",
+ *    },
+ * }]
+ * @similes [
+ *    "EXECUTE_TRADE", // Primary action name
+ *    "SWAP_TOKENS", // For token swaps
+ *    "CONVERT_CURRENCY", // For currency conversion
+ *    "EXCHANGE_ASSETS", // For asset exchange
+ *    "MARKET_BUY", // For buying assets
+ *    "MARKET_SELL", // For selling assets
+ *    "TRADE_CRYPTO", // Generic crypto trading
+ * ]
+ */
 export const executeTradeAction: Action = {
     name: "EXECUTE_TRADE",
     description:
