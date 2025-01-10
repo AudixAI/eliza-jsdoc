@@ -3,6 +3,11 @@ import { ApiResponse, PriceData } from "./types";
 
 const BASE_URL = "https://pro-api.coinmarketcap.com/v1";
 
+/**
+ * Creates a price service that interacts with a cryptocurrency price API.
+ * @param {string} apiKey - The API key required to access the API.
+ * @returns {Object} An object containing the getPrice method.
+ */
 export const createPriceService = (apiKey: string) => {
     const client = axios.create({
         baseURL: BASE_URL,
