@@ -25,6 +25,11 @@ import {
  * 
  * Otherwise, respond with NO.
  */
+/**
+ * A template for determining whether a previously muted room should be unmuted based on the conversation so far.
+ * 
+ * @type {string}
+ */
 export const shouldUnmuteTemplate =
     `Based on the conversation so far:
 
