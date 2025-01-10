@@ -1,6 +1,21 @@
 /**
  * Binance API account information response
  */
+/**
+ * Interface representing the account information for a Binance account.
+ * * @typedef { Object } BinanceAccountInfo
+ * @property { number } makerCommission The maker commission percentage.
+ * @property { number } takerCommission The taker commission percentage.
+ * @property { number } buyerCommission The buyer commission percentage.
+ * @property { number } sellerCommission The seller commission percentage.
+ * @property { boolean } canTrade Flag indicating if trading is allowed.
+ * @property { boolean } canWithdraw Flag indicating if withdrawals are allowed.
+ * @property { boolean } canDeposit Flag indicating if deposits are allowed.
+ * @property { number } updateTime The time when the account information was last updated.
+ * @property { string } accountType The type of account.
+ * @property {BinanceBalance[]} balances An array of balances for different assets.
+ * @property {string[]} permissions An array of permissions granted for the account.
+ */
 export interface BinanceAccountInfo {
     makerCommission: number;
     takerCommission: number;
