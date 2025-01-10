@@ -14,6 +14,11 @@ import {
 
 const maxContinuesInARow = 3;
 
+/**
+ * Template for generating a message handler with specific placeholders for {{goals}}, {{actionExamples}}, {{agentName}}, {{bio}}, {{lore}}, {{knowledge}}, {{providers}}, {{attachments}}, {{messageDirections}}, {{recentMessages}}, {{actions}}, and {{messageCompletionFooter}}.
+ *
+ * @type {string}
+ */
 export const messageHandlerTemplate =
     // {{goals}}
     `# Action Examples
@@ -53,6 +58,15 @@ Based on the following conversation, should {{agentName}} continue? YES or NO
 
 Should {{agentName}} continue? ` + booleanFooter;
 
+/**
+ * Represents a continue action for a conversation.
+ *
+ * @type {Action}
+ * @property {string} name - The name of the action ("CONTINUE").
+ * @property {string[]} similes - The similes related to this action ("ELABORATE", "KEEP_TALKING").
+ * @property {string} description - Describes when to use this action and under what circumstances.
+ * @property {Function} validate - Asynchronous function to validate the action based on runtime and message data.
+ */
 export const continueAction: Action = {
     name: "CONTINUE",
     similes: ["ELABORATE", "KEEP_TALKING"],
