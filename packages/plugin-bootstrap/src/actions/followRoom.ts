@@ -10,6 +10,24 @@ import {
     State,
 } from "@elizaos/core";
 
+/**
+ * Represents a template for deciding whether an agent should follow a conversation room.
+ * 
+ * Based on the conversation so far:
+ * 
+ * {{recentMessages}}
+ * 
+ * Should {{agentName}} start following this room, eagerly participating without explicit mentions?
+ * Respond with YES if:
+ * - The user has directly asked {{agentName}} to follow the conversation or participate more actively
+ * - The conversation topic is highly engaging and {{agentName}}'s input would add significant value
+ * - {{agentName}} has unique insights to contribute and the users seem receptive
+ * 
+ * Otherwise, respond with NO.
+ * 
+ * @type {string}
+ */
+
 export const shouldFollowTemplate =
     `Based on the conversation so far:
 
@@ -24,6 +42,14 @@ Respond with YES if:
 Otherwise, respond with NO.
 ` + booleanFooter;
 
+/**
+ * Action object for following a room.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action ("FOLLOW_ROOM").
+ * @property {string[]} similes - An array of related actions ("FOLLOW_CHAT", "FOLLOW_CHANNEL", "FOLLOW_CONVERSATION", "FOLLOW_THREAD").
+ * @property {string} description - The description of the action.
+ */
 export const followRoomAction: Action = {
     name: "FOLLOW_ROOM",
     similes: [
