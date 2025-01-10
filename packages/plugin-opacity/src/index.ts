@@ -8,6 +8,15 @@ import {
     elizaLogger,
 } from "@elizaos/core";
 import { verifyProof } from "./utils/api";
+/**
+ * Interface representing the options for setting opacity of an element.
+ * @typedef {Object} OpacityOptions
+ * @property {ModelProviderName} [modelProvider] - The model provider name.
+ * @property {string} [token] - The authentication token.
+ * @property {string} [teamId] - The team ID.
+ * @property {string} [teamName] - The team name.
+ * @property {string} opacityProverUrl - The URL for the opacity prover.
+ */
 interface OpacityOptions {
     modelProvider?: ModelProviderName;
     token?: string;
@@ -16,13 +25,29 @@ interface OpacityOptions {
     opacityProverUrl: string;
 }
 
+/**
+ * Class representing an OpacityAdapter for generating text with verifiable inference.
+ * @implements { IVerifiableInferenceAdapter }
+ */
 export class OpacityAdapter implements IVerifiableInferenceAdapter {
     public options: OpacityOptions;
 
+/**
+ * Constructor of the class.
+ * @param {OpacityOptions} options - The options for configuring opacity.
+ */
     constructor(options: OpacityOptions) {
         this.options = options;
     }
 
+/**
+ * Generates text using a specified model and context for verifiable inference.
+ * 
+ * @param {string} context - The context for text generation.
+ * @param {string} modelClass - The class of the model to be used for text generation.
+ * @param {VerifiableInferenceOptions} [options] - Optional parameters for text generation.
+ * @returns {Promise<VerifiableInferenceResult>} The result of the verifiable text generation process.
+ */
     async generateText(
         context: string,
         modelClass: string,
@@ -155,6 +180,13 @@ export class OpacityAdapter implements IVerifiableInferenceAdapter {
         }
     }
 
+/**
+ * Asynchronously generates a proof for a log ID by fetching the proof data from the provided base URL.
+ * 
+ * @param {string} baseUrl - The base URL for the API endpoint.
+ * @param {string} logId - The ID of the log for which the proof is to be generated.
+ * @returns {Promise<object>} A promise that resolves with the proof data in JSON format.
+ */
     async generateProof(baseUrl: string, logId: string) {
         const response = await fetch(`${baseUrl}/api/logs/${logId}`);
         elizaLogger.debug("Fetching proof for log ID:", logId);
@@ -164,6 +196,11 @@ export class OpacityAdapter implements IVerifiableInferenceAdapter {
         return await response.json();
     }
 
+/**
+ * Asynchronously verifies the proof of a given verifiable inference result.
+ * @param {VerifiableInferenceResult} result - The verifiable inference result to verify.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the proof is valid or not.
+ */
     async verifyProof(result: VerifiableInferenceResult): Promise<boolean> {
         const isValid = await verifyProof(
             `${this.options.opacityProverUrl}`,
