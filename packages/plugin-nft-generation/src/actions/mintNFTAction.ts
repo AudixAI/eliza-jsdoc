@@ -24,10 +24,22 @@ const _SupportedChainList = Object.keys(viemChains) as Array<
     keyof typeof viemChains
 >;
 
+/**
+ * Checks if the given content object is of type MintNFTContent.
+ * @param {any} content - The content object to be checked.
+ * @returns {boolean} - True if the content object is of type MintNFTContent, false otherwise.
+ */
 function isMintNFTContent(content: any): content is MintNFTContent {
     return typeof content.collectionAddress === "string" && typeof content.collectionAddress === "string";
 }
 
+/**
+ * Defines the action of minting an NFT.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - The list of similar actions or terms related to minting an NFT.
+ */
 const mintNFTAction: Action = {
     name: "MINT_NFT",
     similes: [
