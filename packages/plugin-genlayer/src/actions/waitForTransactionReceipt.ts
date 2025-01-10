@@ -8,6 +8,16 @@ import {
 import { TransactionHash } from "genlayer-js/types";
 import { ClientProvider } from "../providers/client";
 
+/**
+ * Action to wait for a transaction receipt from the GenLayer protocol.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Similes associated with the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the action.
+ * @property {Function} handler - Asynchronous function to handle the action.
+ * @property {Object[]} examples - Array of example objects demonstrating the action.
+ */
 export const waitForTransactionReceiptAction: Action = {
     name: "WAIT_FOR_TRANSACTION_RECEIPT",
     similes: ["WAIT_FOR_TRANSACTION_RECEIPT"],
