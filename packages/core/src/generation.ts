@@ -52,7 +52,13 @@ import {
 import { fal } from "@fal-ai/client";
 import { tavily } from "@tavily/core";
 
+/**
+* Represents a type alias for a Tool object with any type of core functionality.
+*/
 type Tool = CoreTool<any, any>;
+/**
+ * Define a type alias StepResult as AIStepResult of any type.
+ */
 type StepResult = AIStepResult<any>;
 
 /**
@@ -75,6 +81,14 @@ type StepResult = AIStepResult<any>;
  * @example
  * const trimmedText = await trimTokens("This is an example text", 50, runtime);
  * console.log(trimmedText); // Output will be a truncated version of the input text.
+ */
+/**
+ * Trims the provided context based on the specified maxTokens count and tokenizer settings.
+ * 
+ * @param {string} context The input context to be trimmed.
+ * @param {number} maxTokens The maximum number of tokens to be kept.
+ * @param {IAgentRuntime} runtime The runtime object for accessing settings.
+ * @returns {Promise<string>} The trimmed context based on the tokenizer settings.
  */
 export async function trimTokens(
     context: string,
