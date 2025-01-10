@@ -8,6 +8,18 @@ import {
 } from "@elizaos/core";
 import { getObsidian }  from "../helper";
 
+/**
+ * Represents an action to create knowledge by scanning all markdown notes hierarchically in the Obsidian vault
+ * and building a memory knowledge base. Use format: 'Create knowledge' or 'Build knowledge base'.
+ *
+ * @type {Action}
+ * @property {string} name - The name of the action
+ * @property {Array<string>} similes - Alternative names or similar actions
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Async function to validate the Obsidian connection
+ * @property {Function} handler - Async function to handle the creation of knowledge base from notes
+ * @property {Array<Array<Object>>} examples - Examples of user queries and expected responses
+ */
 export const createKnowledgeAction: Action = {
     name: "CREATE_KNOWLEDGE",
     similes: [
