@@ -6,6 +6,17 @@ import { TradeService } from "./trade";
 /**
  * Main service facade that coordinates between specialized services
  */
+/**
+ * A service class for interacting with the Binance API.
+ * @constructor
+ * @param {BinanceConfig} [config] - Optional configuration object for Binance API access.
+ * @method getPrice
+ * @method formatPrice
+ * @method executeTrade
+ * @method getBalance
+ * @method getTradingStatus
+ * @method checkBalance
+ */
 export class BinanceService {
     private priceService: PriceService;
     private tradeService: TradeService;
