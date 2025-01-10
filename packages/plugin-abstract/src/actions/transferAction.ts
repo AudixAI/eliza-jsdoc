@@ -41,12 +41,45 @@ const TransferSchema = z.object({
     amount: z.string(),
 });
 
+/**
+ * Interface representing a transfer of content.
+ * Extends the Content interface.
+ * @property {string} tokenAddress - The address of the token being transferred.
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string | number} amount - The amount of the transfer, can be a string or number.
+ */
+
 export interface TransferContent extends Content {
     tokenAddress: string;
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Here are several frequently used addresses. Use these for the corresponding tokens:
+ * - ETH/eth: 0x000000000000000000000000000000000000800A
+ * - USDC/usdc: 0xe4c7fbb0a626ed208021ccaba6be1566905e2dfc
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "tokenAddress": "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E",
+ *     "recipient": "0xCCa8009f5e09F8C5dB63cb0031052F9CB635Af62",
+ *     "amount": "1000"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Token contract address
+ * - Recipient wallet address
+ * - Amount to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Here are several frequently used addresses. Use these for the corresponding tokens:
@@ -71,6 +104,12 @@ Given the recent messages, extract the following information about the requested
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
+/**
+ * Represents an action to transfer tokens.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Array of similes for the action
+ */
 export const transferAction: Action = {
     name: "SEND_TOKEN",
     similes: [
