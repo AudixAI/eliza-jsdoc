@@ -14,8 +14,15 @@ import {
     VideoService,
 } from "./services/index.ts";
 
+/**
+ * Represents a Node Plugin which is the return type of the createNodePlugin function.
+ */
 export type NodePlugin = ReturnType<typeof createNodePlugin>;
 
+/**
+ * Function to create a node plugin.
+ * @returns {Plugin} The created node plugin with default settings and services.
+ */
 export function createNodePlugin() {
     return {
         name: "default",
