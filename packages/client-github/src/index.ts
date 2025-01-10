@@ -15,6 +15,15 @@ import {
 } from "@elizaos/core";
 import { validateGithubConfig } from "./environment";
 
+/**
+ * Interface for configuring GitHub settings.
+ * 
+ * @param {string} owner - The owner of the GitHub repository.
+ * @param {string} repo - The name of the GitHub repository.
+ * @param {string} [branch] - The branch of the repository (optional).
+ * @param {string} [path] - The path within the repository (optional).
+ * @param {string} token - The authentication token for accessing the repository.
+ */
 export interface GitHubConfig {
     owner: string;
     repo: string;
@@ -23,6 +32,10 @@ export interface GitHubConfig {
     token: string;
 }
 
+/**
+ * GitHubClient class for interacting with GitHub repositories.
+ * @class
+ */
 export class GitHubClient {
     private octokit: Octokit;
     private git: SimpleGit;
@@ -30,6 +43,10 @@ export class GitHubClient {
     private runtime: AgentRuntime;
     private repoPath: string;
 
+/**
+ * Constructor for the GitHubService class.
+ * @param {AgentRuntime} runtime - The agent runtime object.
+ */
     constructor(runtime: AgentRuntime) {
         this.runtime = runtime;
         this.config = {
@@ -49,6 +66,10 @@ export class GitHubClient {
         );
     }
 
+/**
+ * Asynchronously initializes the repository by creating the repos directory if it doesn't exist,
+ * cloning or pulling the repository based on its existence, and checking out the specified branch if provided.
+ */
     async initialize() {
         // Create repos directory if it doesn't exist
         await fs.mkdir(path.join(process.cwd(), ".repos", this.config.owner), {
@@ -70,6 +91,12 @@ export class GitHubClient {
         }
     }
 
+/**
+ * Asynchronously clones the repository from the specified owner and repository name on GitHub.
+ * 
+ * @returns {Promise<void>} A promise that resolves when the repository is successfully cloned.
+ * @throws {Error} If the cloning process fails after the maximum number of retries.
+ */
     private async cloneRepository() {
         const repositoryUrl = `https://github.com/${this.config.owner}/${this.config.repo}.git`;
         const maxRetries = 3;
@@ -96,6 +123,11 @@ export class GitHubClient {
         }
     }
 
+/**
+ * Asynchronously creates memories based on files found in the given directory path. 
+ * 
+ * @returns {Promise<void>} - A Promise that resolves once all memories are created.
+ */
     async createMemoriesFromFiles() {
         console.log("Create memories");
         const searchPath = this.config.path
@@ -148,6 +180,14 @@ export class GitHubClient {
         }
     }
 
+/**
+* Creates a new pull request with the specified title, branch, files, and optional description.
+* @param {string} title - The title of the pull request.
+* @param {string} branch - The name of the new branch to be created.
+* @param {Array<{ path: string, content: string }>} files - The array of file objects containing the path and content of each file.
+* @param {string} [description] - Optional description for the pull request. If not provided, the title will be used.
+* @returns {Promise<Object>} - A promise that resolves with the data of the created pull request.
+*/
     async createPullRequest(
         title: string,
         branch: string,
@@ -183,6 +223,12 @@ export class GitHubClient {
         return pr.data;
     }
 
+/**
+ * Creates a new commit in the git repository with the given message and files.
+ * @param {string} message - The message to associate with the commit.
+ * @param {Array<{ path: string; content: string }>} files - Array of objects containing the path and content of files to add to the commit.
+ * @returns {Promise<void>} - Promise that resolves once the commit has been created and pushed.
+ */
     async createCommit(
         message: string,
         files: Array<{ path: string; content: string }>
@@ -203,6 +249,16 @@ export class GitHubClient {
     }
 }
 
+/**
+ * Interface for interacting with GitHub as a client.
+ * 
+ * @type {Client}
+ * @property {Function} start - Asynchronous function to start the client, validates GitHub config, initializes the client, creates memories from files, and returns the client.
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @returns {Promise<Client>} - A Promise resolving to the initialized GitHub client.
+ * @property {Function} stop - Asynchronous function to stop the client and log the action.
+ * @param {IAgentRuntime} _runtime - The runtime environment for the agent (not used in this function).
+ */
 export const GitHubClientInterface: Client = {
     start: async (runtime: IAgentRuntime) => {
         await validateGithubConfig(runtime);
