@@ -17,6 +17,11 @@ export const transcriptionTemplate = `# Transcription of media file
 
 # Instructions: Return only the full transcript of the media file without any additional context or commentary.`;
 
+/**
+ * Template for generating instructions to transcribe media attachment ID.
+ *
+ * @type {string}
+ */
 export const mediaAttachmentIdTemplate = `# Messages we are transcribing
 {{recentMessages}}
 
@@ -31,6 +36,13 @@ Your response must be formatted as a JSON block with this structure:
 \`\`\`
 `;
 
+/**
+ * Retrieves the media attachment ID from the response generated after composing the state and context.
+ * @param {IAgentRuntime} runtime - The agent runtime interface.
+ * @param {Memory} message - The memory message object.
+ * @param {State} state - The state object that will be updated after composing the state from the message.
+ * @returns {Promise<string | null>} The media attachment ID or null if it could not be retrieved after 5 attempts.
+ */
 const getMediaAttachmentId = async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -62,6 +74,16 @@ const getMediaAttachmentId = async (
     return null;
 };
 
+/**
+ * Action to transcribe the full text of an audio or video file that the user has attached.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action ("TRANSCRIBE_MEDIA").
+ * @property {string[]} similes - Array of related simile actions.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the message content.
+ * @property {Function} handler - Asynchronous function to handle the transcribing process.
+ * @property {ActionExample[][]} examples - Array of example interactions for the action.
+ */
 const transcribeMediaAction = {
     name: "TRANSCRIBE_MEDIA",
     similes: [
