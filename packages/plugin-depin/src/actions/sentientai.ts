@@ -6,6 +6,17 @@ import {
     State
 } from "@elizaos/core";
 
+/**
+ * Action configuration for SENTIENT_AI providing realtime information for Weather and News.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Array of similes associated with the action
+ * @property {string} description - Description of the action
+ * @property {Array.<Array.<{ user: string, content: { text: string, action?: string }}>} examples - Array of examples demonstrating the action
+ * @property {Function} validate - Asynchronous function to validate the runtime and message
+ * @property {Function} handler - Asynchronous function to handle the action's logic
+ */
 export const sentientAI: Action = {
     name: "SENTIENT_AI",
     similes: [
