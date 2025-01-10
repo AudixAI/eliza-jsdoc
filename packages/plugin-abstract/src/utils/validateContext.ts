@@ -1,7 +1,18 @@
 import { TransferContent } from "../actions";
 import { isAddress } from "viem";
 
+/**
+ * Validates the transfer action content.
+ * @param {TransferContent} content - The transfer action content to validate.
+ * @returns {boolean} Returns true if the content is valid, false otherwise.
+ */
 export class ValidateContext {
+/**
+ * Checks if the provided TransferContent object is valid.
+ *
+ * @param {TransferContent} content - The TransferContent object to validate.
+ * @returns {boolean} Returns true if the content is valid, otherwise false.
+ */
     static transferAction(
         content: TransferContent
     ): content is TransferContent {
