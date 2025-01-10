@@ -6,6 +6,13 @@
  * @property {string} [phone] - The user's phone number (optional).
  * @property {string} [role] - The user's role (optional).
  */
+/**
+ * Interface representing a User.
+ * @property {string} id - The unique identifier for the user.
+ * @property {string} [email] - The email of the user (optional).
+ * @property {string} [phone] - The phone number of the user (optional).
+ * @property {string} [role] - The role of the user (optional).
+ */
 export interface User {
     id: string;
     email?: string;
