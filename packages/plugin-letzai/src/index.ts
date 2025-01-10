@@ -17,6 +17,15 @@ else
 }
 */
 
+/**
+ * Poll the status of an image processing task on LetzAI platform
+ * @param {string} id - The ID of the image processing task
+ * @param {string} letzAiApiKey - The API key for accessing LetzAI services
+ * @param {function} callback - The callback function to handle status updates
+ * @param {number} maxPolls - The maximum number of polls to check the status (default is 40)
+ * @param {number} pollIntervalMs - The interval in milliseconds between each poll (default is 3000 ms)
+ * @returns {void}
+ */
 async function pollLetzAiImageStatus(
     id: string,
     letzAiApiKey: string,
@@ -98,6 +107,10 @@ async function pollLetzAiImageStatus(
     }
 }
 
+/**
+ * Represents a module for generating an image via the LetzAI API with polling.
+ * @module letzAiImageGeneration
+ */
 export const letzAiImageGeneration = {
     name: "GENERATE_IMAGE",
     similes: ["IMAGE_GENERATION", "IMAGE_GEN"],
