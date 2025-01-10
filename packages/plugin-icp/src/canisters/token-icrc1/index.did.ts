@@ -1,4 +1,10 @@
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+/**
+ * Generates the interface description language (IDL) for the given data structures.
+ * @param {Object} param0 - The object containing the IDL library.
+ * @param {Object} param0.IDL - The IDL library object.
+ * @returns {Function} The IDL factory function.
+ */
 export const idlFactory = ({ IDL }: { IDL: any }) => {
     const Account = IDL.Record({
         owner: IDL.Principal,
@@ -295,6 +301,12 @@ export const idlFactory = ({ IDL }: { IDL: any }) => {
     });
 };
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+/**
+ * Initializes the Ledger Canister with the specified configuration.
+ * @param { Object } options - The options object.
+ * @param { Object } options.IDL - The IDL object.
+ * @returns { Array } An array containing the Ledger Canister Payload.
+ */
 export const init = ({ IDL }: { IDL: any }) => {
     const Account = IDL.Record({
         owner: IDL.Principal,
