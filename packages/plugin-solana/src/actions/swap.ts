@@ -17,6 +17,16 @@ import { getWalletKey } from "../keypairUtils.ts";
 import { walletProvider, WalletProvider } from "../providers/wallet.ts";
 import { getTokenDecimals } from "./swapUtils.ts";
 
+/**
+ * Function to swap tokens via Jupitert API
+ * 
+ * @param {Connection} connection - Connection object for the Solana network
+ * @param {PublicKey} walletPublicKey - Public key of the wallet making the swap
+ * @param {string} inputTokenCA - Address of the input token
+ * @param {string} outputTokenCA - Address of the output token
+ * @param {number} amount - Amount of tokens to swap
+ * @returns {Promise<any>} - Promise that resolves with the swap data or rejects with an error
+ */
 async function swapToken(
     connection: Connection,
     walletPublicKey: PublicKey,
@@ -99,6 +109,46 @@ async function swapToken(
     }
 }
 
+/**
+ * Swap template function to extract information about a requested token swap.
+ * 
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "inputTokenSymbol": "SOL",
+ *     "outputTokenSymbol": "USDC",
+ *     "inputTokenCA": "So11111111111111111111111111111111111111112",
+ *     "outputTokenCA": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+ *     "amount": 1.5
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages and wallet information below:
+ * 
+ * {{walletInfo}}
+ * 
+ * Extract the following information about the requested token swap:
+ * - Input token symbol (the token being sold)
+ * - Output token symbol (the token being bought)
+ * - Input token contract address if provided
+ * - Output token contract address if provided
+ * - Amount to swap
+ * 
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined. The result should be a valid JSON object with the following schema:
+ * ```json
+ * {
+ *     "inputTokenSymbol": string | null,
+ *     "outputTokenSymbol": string | null,
+ *     "inputTokenCA": string | null,
+ *     "outputTokenCA": string | null,
+ *     "amount": number | string | null
+ * }
+ * ```
+ */
 const swapTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
@@ -139,6 +189,12 @@ Respond with a JSON markdown block containing only the extracted values. Use nul
 // if we get the token symbol but not the CA, check walet for matching token, and if we have, get the CA for it
 
 // get all the tokens in the wallet using the wallet provider
+/**
+ * Asynchronously retrieves the tokens in the user's wallet using the provided IAgentRuntime.
+ * 
+ * @param {IAgentRuntime} runtime - The IAgentRuntime object to interact with the runtime environment.
+ * @returns {Array<Object>} - An array of token items present in the user's wallet.
+ */
 async function getTokensInWallet(runtime: IAgentRuntime) {
     const { publicKey } = await getWalletKey(runtime, false);
     const walletProvider = new WalletProvider(
@@ -152,6 +208,13 @@ async function getTokensInWallet(runtime: IAgentRuntime) {
 }
 
 // check if the token symbol is in the wallet
+/**
+ * Retrieves the token address from the wallet based on the token symbol.
+ *
+ * @param {IAgentRuntime} runtime - The runtime object.
+ * @param {string} tokenSymbol - The symbol of the token to retrieve.
+ * @returns {string|null} The address of the token, or null if not found.
+ */
 async function getTokenFromWallet(runtime: IAgentRuntime, tokenSymbol: string) {
     try {
         const items = await getTokensInWallet(runtime);
@@ -170,6 +233,15 @@ async function getTokenFromWallet(runtime: IAgentRuntime, tokenSymbol: string) {
 
 // swapToken should took CA, not symbol
 
+/**
+ * Action to execute a token swap.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - An array of similar actions.
+ * @property {Function} validate - Asynchronous function to validate the parameters.
+ * @property {string} description - A description of the action.
+ */
 export const executeSwap: Action = {
     name: "EXECUTE_SWAP",
     similes: ["SWAP_TOKENS", "TOKEN_SWAP", "TRADE_TOKENS", "EXCHANGE_TOKENS"],
