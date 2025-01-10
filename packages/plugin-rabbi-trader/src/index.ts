@@ -37,11 +37,50 @@ import { ProcessedTokenData } from "./types";
 import { analyzeTradeAction } from "./actions/analyzeTrade";
 
 // Update Balance interface to include formatted
+/**
+ * Interface representing an extended balance object, 
+ * which includes a 'formatted' property of type string.
+ * Extends the Balance interface.
+ */
 interface ExtendedBalance extends Balance {
     formatted: string;
 }
 
 // Extended WalletProvider interface to ensure proper typing
+/**
+ * Interface representing an extended balance object, 
+ * which includes a 'formatted' property of type string.
+ * Extends the Balance interface.
+ */
+interface ExtendedBalance extends Balance {
+    formatted: string;
+}
+
+/**
+ * Interface representing an extended wallet provider that extends the WalletClient interface.
+ * Contains additional methods and properties for interacting with a blockchain wallet.
+ * @interface ExtendedWalletProvider
+ * @extends {WalletClient}
+ * @property {Connection} connection - The connection object to interact with the blockchain network.
+ * @method {Promise<Signature>} signMessage - Method to sign a message and return a Promise of a Signature.
+ * @method {Promise<string>} getFormattedPortfolio - Method to get a formatted portfolio based on the provided IAgentRuntime and return a Promise of a string.
+ * @method {Promise<ExtendedBalance>} balanceOf - Method to get the balance of a token based on the provided tokenAddress and return a Promise of an ExtendedBalance.
+ * @method {Promise<number>} getMaxBuyAmount - Method to get the maximum buy amount for a token based on the provided tokenAddress and return a Promise of a number.
+ * @method {Promise<any>} executeTrade - Method to execute a trade with the provided parameters and return a Promise of any result.
+ */
+interface ExtendedWalletProvider extends WalletClient {
+    connection: Connection;
+    signMessage(message: string): Promise<Signature>;
+    getFormattedPortfolio: (runtime: IAgentRuntime) => Promise<string>;
+    balanceOf: (tokenAddress: string) => Promise<ExtendedBalance>;
+    getMaxBuyAmount: (tokenAddress: string) => Promise<number>;
+    executeTrade: (params: {
+        tokenIn: string;
+        tokenOut: string;
+        amountIn: number;
+        slippage: number;
+    }) => Promise<any>;
+}
 interface ExtendedWalletProvider extends WalletClient {
     connection: Connection;
     signMessage(message: string): Promise<Signature>;
@@ -63,6 +102,19 @@ const REQUIRED_SETTINGS = {
 } as const;
 
 // Add near the top imports
+/**
+ * Interface representing an extended plugin.
+ * @interface
+ * @extends {Plugin}
+ * @property {string} name - The name of the plugin.
+ * @property {string} description - The description of the plugin.
+ * @property {any[]} evaluators - The evaluators associated with the plugin.
+ * @property {any[]} providers - The providers associated with the plugin.
+ * @property {any[]} actions - The actions associated with the plugin.
+ * @property {any[]} services - The services associated with the plugin.
+ * @property {boolean} [autoStart] - Flag indicating if the plugin should auto start.
+ */
+
 interface ExtendedPlugin extends Plugin {
     name: string;
     description: string;
@@ -74,6 +126,11 @@ interface ExtendedPlugin extends Plugin {
 }
 
 // Add this helper function
+/**
+ * Validate a Solana address.
+ * @param {string | undefined} address - The Solana address to validate
+ * @returns {boolean} - True if the address is valid, false otherwise
+ */
 function validateSolanaAddress(address: string | undefined): boolean {
     if (!address) return false;
     try {
@@ -97,6 +154,10 @@ function validateSolanaAddress(address: string | undefined): boolean {
 }
 
 // Add function to load token addresses
+/**
+ * Loads token addresses from a JSON file and returns an array of valid Solana addresses.
+ * @returns {string[]} An array of valid Solana addresses
+ */
 export function loadTokenAddresses(): string[] {
     try {
         const filePath = path.resolve(
@@ -127,6 +188,14 @@ export function loadTokenAddresses(): string[] {
 }
 
 // Add cache configuration after other interfaces
+/**
+ * A data structure representing an entry in the cache.
+ * @typedef {Object} CacheEntry
+ * @property {number} lastAnalysis - The timestamp of the last analysis performed on the cached data.
+ * @property {any} tokenData - The data associated with the token.
+ * @property {number} trustScore - The trust score calculated for the cached data.
+ * @property {any} analysisResult - The result of the analysis performed on the cached data.
+ */
 interface CacheEntry {
     lastAnalysis: number;
     tokenData: any;
@@ -141,6 +210,12 @@ const tokenCache = new NodeCache({
 });
 
 // Add near the top with other interfaces
+/**
+ * Interface representing a cache for storing information about skipping or waiting for a tweet.
+ * @typedef {Object} SkipWaitCache
+ * @property {number} lastTweet - The timestamp of the last tweet.
+ * @property {"WAIT" | "SKIP"} action - The action to take for the next tweet, either "WAIT" or "SKIP".
+ */
 interface SkipWaitCache {
     lastTweet: number;
     action: "WAIT" | "SKIP";
@@ -153,6 +228,12 @@ const skipWaitCache = new NodeCache({
 });
 
 // Add near other interfaces
+/**
+ * Interface for tracking rate limit of tweeting.
+ * @interface
+ * @property {number} lastTweet - Timestamp of the last tweet.
+ * @property {number} count - Number of tweets in the time window.
+ */
 interface TweetRateLimit {
     lastTweet: number;
     count: number; // Track number of tweets in the time window
@@ -165,6 +246,11 @@ const tweetRateCache = new NodeCache({
 });
 
 // Add helper function
+/**
+ * Checks if a tweet can be sent based on the tweet type and rate limit constraints.
+ * @param {("trade" | "market_search")} tweetType - The type of tweet, either "trade" or "market_search".
+ * @returns {boolean} Returns true if a tweet can be sent, false if the rate limit has been reached.
+ */
 function canTweet(tweetType: "trade" | "market_search"): boolean {
     const now = Date.now();
     const hourKey = `tweets_${tweetType}_${Math.floor(now / 3600000)}`; // Key by hour and type
@@ -196,6 +282,29 @@ function canTweet(tweetType: "trade" | "market_search"): boolean {
 }
 
 // Add new interfaces near the top with other interfaces
+/**
+ * Interface representing the trade performance data.
+ * @typedef {Object} TradePerformance
+ * @property {string} token_address - The address of the token traded.
+ * @property {string} recommender_id - The ID of the recommender.
+ * @property {number} buy_price - The buying price of the token.
+ * @property {number} sell_price - The selling price of the token.
+ * @property {string} buy_timeStamp - The timestamp of the buy action.
+ * @property {string} sell_timeStamp - The timestamp of the sell action.
+ * @property {number} buy_amount - The amount bought.
+ * @property {number} sell_amount - The amount sold.
+ * @property {number} buy_value_usd - The value of the buy in USD.
+ * @property {number} sell_value_usd - The value of the sell in USD.
+ * @property {number} buy_market_cap - The market cap at the time of buying.
+ * @property {number} sell_market_cap - The market cap at the time of selling.
+ * @property {number} buy_liquidity - The liquidity at the time of buying.
+ * @property {number} sell_liquidity - The liquidity at the time of selling.
+ * @property {number} profit_usd - The profit in USD.
+ * @property {number} profit_percent - The profit percentage.
+ * @property {number} market_cap_change - The change in market cap.
+ * @property {number} liquidity_change - The change in liquidity.
+ * @property {boolean} rapidDump - Indicates if it was a rapid dump trade.
+ */
 interface TradePerformance {
     token_address: string;
     recommender_id: string;
@@ -218,6 +327,19 @@ interface TradePerformance {
     rapidDump: boolean;
 }
 
+/**
+ * Interface representing a trade position.
+ * @typedef {Object} TradePosition
+ * @property {string} token_address - The address of the token being traded.
+ * @property {number} entry_price - The entry price for the trade.
+ * @property {number} size - The size of the trade.
+ * @property {number} stop_loss - The stop loss price for the trade.
+ * @property {number} take_profit - The take profit price for the trade.
+ * @property {string} open_timeStamp - The timestamp when the trade was opened.
+ * @property {string} [close_timeStamp] - The timestamp when the trade was closed (optional).
+ * @property {"OPEN" | "CLOSED"} [status] - The status of the trade (optional).
+ */
+
 interface TradePosition {
     token_address: string;
     entry_price: number;
@@ -230,6 +352,22 @@ interface TradePosition {
 }
 
 // Update the analysisParams interface
+/**
+ * Interface for specifying analysis parameters.
+ * @interface
+ * @property {number} walletBalance - The user's wallet balance.
+ * @property {string} tokenAddress - The address of the token being analyzed.
+ * @property {number} price - The current price of the token.
+ * @property {number} volume - The trading volume of the token.
+ * @property {number} marketCap - The market capitalization of the token.
+ * @property {number} liquidity - The liquidity of the token.
+ * @property {string} holderDistribution - The distribution of token holders.
+ * @property {number} trustScore - The trust score of the token.
+ * @property {any} dexscreener - Additional information from Dexscreener.
+ * @property {TradePosition} [position] - The position of the trade.
+ * @property {TradePerformance[]} [tradeHistory] - The trade history of the token.
+ */
+      
 interface AnalysisParams extends Record<string, any> {
     walletBalance: number;
     tokenAddress: string;
@@ -245,6 +383,24 @@ interface AnalysisParams extends Record<string, any> {
 }
 
 // Update the interface to match the SQL parameter order
+/**
+ * Interface representing the data structure for sell details.
+ *
+ * @typedef SellDetailsData
+ * @property {number} sell_price - The price at which the asset was sold.
+ * @property {string} sell_timeStamp - The timestamp at which the asset was sold.
+ * @property {number} sell_amount - The amount of the asset sold.
+ * @property {number} received_sol - The amount of SOL received from the sale.
+ * @property {number} sell_value_usd - The value of the sale in USD.
+ * @property {number} profit_usd - The profit from the sale in USD.
+ * @property {number} profit_percent - The profit percentage from the sale.
+ * @property {number} sell_market_cap - The market capitalization at the time of sale.
+ * @property {number} market_cap_change - The change in market capitalization from previous state.
+ * @property {number} sell_liquidity - The liquidity at the time of sale.
+ * @property {number} liquidity_change - The change in liquidity from previous state.
+ * @property {boolean} rapidDump - Indicates if the sale was a rapid dump.
+ * @property {string|null} sell_recommender_id - The ID of the recommender for the sale, if any.
+ */
 interface SellDetailsData {
     // SET clause parameters in order
     sell_price: number;
@@ -262,6 +418,17 @@ interface SellDetailsData {
     sell_recommender_id: string | null;
 }
 
+/**
+ * Updates the sell details for a specific token and recommender in the TrustScore database.
+ *
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {string} tokenAddress - The address of the token.
+ * @param {string} recommenderId - The ID of the recommender.
+ * @param {number} tradeAmount - The amount of the trade.
+ * @param {any} latestTrade - The latest trade data.
+ * @param {any} tokenData - Data related to the token.
+ * @returns {Promise<{ sellDetails: SellDetailsData, currentPrice: number, profitDetails: { profitUsd: number, profitPercent: number, sellValueUsd: number } }>} A Promise that resolves to an object containing sell details, current price, and profit details.
+ */
 async function updateSellDetails(
     runtime: IAgentRuntime,
     tokenAddress: string,
@@ -419,6 +586,14 @@ declare module "@elizaos/plugin-trustdb" {
     }
 }
 
+/**
+ * Asynchronously retrieves the balance of a specific token for a given wallet address on a Solana blockchain network.
+ * 
+ * @param {Connection} connection - The Solana blockchain connection object.
+ * @param {PublicKey} walletAddress - The public key of the wallet for which the balance needs to be retrieved.
+ * @param {string} tokenAddress - The public key of the token for which the balance needs to be retrieved.
+ * @returns {Promise<number>} - The balance of the specified token for the given wallet address.
+ */
 async function getChainBalance(
     connection: Connection,
     walletAddress: PublicKey,
@@ -432,6 +607,13 @@ async function getChainBalance(
     );
 }
 
+/**
+ * Creates a RabbiTraderPlugin with the given settings and runtime.
+ *
+ * @param {function} getSetting - Function to retrieve settings by key
+ * @param {IAgentRuntime} [runtime] - Optional runtime parameter
+ * @returns {Promise<Plugin>} - Promise resolving to a Plugin object
+ */
 async function createRabbiTraderPlugin(
     getSetting: (key: string) => string | undefined,
     runtime?: IAgentRuntime
@@ -651,6 +833,15 @@ async function createRabbiTraderPlugin(
     }
 }
 
+/**
+ * Analyzes a token by fetching data, evaluating trust score, analyzing trade, and updating cache.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Connection} connection - The connection object for interacting with Solana blockchain.
+ * @param {TwitterService} twitterService - The service for interacting with Twitter API.
+ * @param {string} tokenAddress - The address of the token to be analyzed.
+ * @returns {Promise<void>} - A promise that resolves once the token analysis is completed.
+ */
 async function analyzeToken(
     runtime: IAgentRuntime,
     connection: Connection,
@@ -858,6 +1049,19 @@ async function analyzeToken(
     }
 }
 
+/**
+ * Async function to handle the buying process of a token.
+ * 
+ * @param {Object} options - The options object containing the necessary parameters.
+ * @param {Object} options.runtime - The runtime environment.
+ * @param {string} options.tokenAddress - The address of the token being bought.
+ * @param {Object} options.state - The current state of the application.
+ * @param {Object} options.tokenData - The data of the token being bought.
+ * @param {Object} options.result - The result of the buying process.
+ * @param {Object} options.twitterService - The Twitter service used for additional functionality.
+ * @param {number} options.trustScore - The trust score for the operation.
+ * @returns {Promise} - A promise that resolves once the buying process is completed.
+ */
 async function buy({
     runtime,
     tokenAddress,
@@ -1092,6 +1296,23 @@ async function buy({
         );
     }
 }
+
+/**
+ * Function to sell a token based on the latest trade data.
+ * 
+ * @param {Object} param0 - Object containing the input parameters
+ * @param {State} param0.state - The state object containing user and room IDs
+ * @param {IAgentRuntime} param0.runtime - The agent runtime object
+ * @param {string} param0.tokenAddress - The address of the token to sell
+ * @param {TokenProvider} param0.tokenProvider - The token provider object
+ * @param {TwitterService} param0.twitterService - The Twitter service object for posting trade updates
+ * @param {TrustScoreDatabase} param0.trustScoreDb - The database for storing trust scores
+ * @param {TradePerformance} param0.latestTrade - The latest trade performance data
+ * @param {any} param0.result - The result of the trade execution
+ * @param {number} param0.trustScore - The trust score of the token
+ * 
+ * @returns {Promise<void>} - A promise that resolves once the trade is executed or fails
+ */
 
 async function sell({
     state,
