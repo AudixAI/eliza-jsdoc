@@ -16,12 +16,26 @@ import { Address } from "viem";
 import { validateAvalancheConfig } from "../environment";
 import { STRATEGY_ADDRESSES, TOKEN_ADDRESSES } from "../utils/constants";
 
+/**
+ * Interface representing the content of a strategy.
+ * @extends Content
+ * @property {string} depositTokenAddress - The address of the token used for deposit in the strategy.
+ * @property {string} strategyAddress - The address of the strategy.
+ * @property {string | number} amount - The amount of tokens involved in the strategy.
+ */
 export interface StrategyContent extends Content {
     depositTokenAddress: string;
     strategyAddress: string;
     amount: string | number;
 }
 
+/**
+ * Checks if the provided content is of type StrategyContent.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} Returns true if the content is of type StrategyContent, otherwise false.
+ */
 function isStrategyContent(
     runtime: IAgentRuntime,
     content: any
@@ -35,6 +49,45 @@ function isStrategyContent(
     );
 }
 
+/**
+ * The strategyTemplate provides instructions and examples for responding with a JSON markdown block containing extracted values.
+ * - Use null for any values that cannot be determined.
+ * - Use address zero for native AVAX.
+ * 
+ * Example response for a 100 USDC deposit into a strategy:
+ * ```json
+ * {
+ *     "depositTokenAddress": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+ *     "strategyAddress": "0xFB692D03BBEA21D8665035779dd3082c2B1622d0",
+ *     "amount": "100"
+ * }
+ * ```
+ * 
+ * Example response for a 10 WAVAX deposit into a strategy:
+ * ```json
+ * {
+ *     "depositTokenAddress": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+ *     "strategyAddress": "0x8B414448de8B609e96bd63Dcf2A8aDbd5ddf7fdd",
+ *     "amount": "10"
+ * }
+ * ```
+ * 
+ * ## Token Addresses
+ * - ${key}: ${value}
+ * 
+ * ## Strategy Addresses
+ * - ${key}: ${value}
+ * 
+ * ## Recent Messages
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested strategy management:
+ * - Deposit token address (the token to deposit)
+ * - Strategy address (the strategy to deposit into)
+ * - Amount to deposit
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const strategyTemplate = `Respond with a JSON markdown block containing only the extracted values
 - Use null for any values that cannot be determined.
 - Use address zero for native AVAX.
