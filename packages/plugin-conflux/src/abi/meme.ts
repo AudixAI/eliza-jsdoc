@@ -1,3 +1,6 @@
+/**
+ * Array containing the ABI definition for a meme contract.
+ */
 const MEMEABI = [
     {
         inputs: [
