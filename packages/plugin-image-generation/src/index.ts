@@ -13,6 +13,14 @@ import fs from "fs";
 import path from "path";
 import { validateImageGenConfig } from "./environment";
 
+/**
+ * Saves a base64 encoded image as a PNG file to the generatedImages directory.
+ * If the directory doesn't exist, it will be created.
+ * 
+ * @param {string} base64Data - The base64 encoded image data.
+ * @param {string} filename - The name of the file to save (without extension).
+ * @returns {string} The full file path where the image was saved.
+ */
 export function saveBase64Image(base64Data: string, filename: string): string {
     // Create generatedImages directory if it doesn't exist
     const imageDir = path.join(process.cwd(), "generatedImages");
@@ -35,6 +43,13 @@ export function saveBase64Image(base64Data: string, filename: string): string {
     return filepath;
 }
 
+/**
+ * Saves an image from a given URL to the local file system.
+ * 
+ * @param {string} imageUrl - The URL from which to fetch the image.
+ * @param {string} filename - The name of the file to save the image as (without extension).
+ * @returns {Promise<string>} A Promise that resolves with the full file path of the saved image.
+ */
 export async function saveHeuristImage(
     imageUrl: string,
     filename: string
@@ -62,6 +77,13 @@ export async function saveHeuristImage(
     return filepath;
 }
 
+/**
+ * Represents an action for generating an image.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Array of similes for generating an image.
+ */
 const imageGeneration: Action = {
     name: "GENERATE_IMAGE",
     similes: [
