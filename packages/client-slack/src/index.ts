@@ -11,10 +11,25 @@ import summarize_conversation from "./actions/summarize_conversation";
 import { channelStateProvider } from "./providers/channelState";
 import { SlackService } from "./services/slack.service";
 
+/**
+ * Interface representing a Slack request that extends the standard Request interface.
+ * @property {Buffer} rawBody - Optional property for storing the raw body of the request as a Buffer.
+ */
 interface SlackRequest extends Request {
     rawBody?: Buffer;
 }
 
+/**
+ * A class representing a Slack client that extends the EventEmitter class.
+ * @extends EventEmitter
+ * @property {WebClient} client - The Slack WebClient used for API interactions.
+ * @property {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @property {express.Application} server - The Express application used for handling requests.
+ * @property {MessageManager} messageManager - The message manager for handling Slack messages.
+ * @property {string} botUserId - The ID of the Slack bot user associated with this client.
+ * @property {Character} character - The character associated with the Slack client.
+ * @property {string} signingSecret - The signing secret used for verifying requests from Slack.
+ */
 export class SlackClient extends EventEmitter {
     private client: WebClient;
     private runtime: IAgentRuntime;
@@ -24,6 +39,10 @@ export class SlackClient extends EventEmitter {
     private character: Character;
     private signingSecret: string;
 
+/**
+ * Constructor for initializing SlackClient.
+ * @param {IAgentRuntime} runtime - The runtime object to initialize the Slack Client.
+ */
     constructor(runtime: IAgentRuntime) {
         super();
         elizaLogger.log("🚀 Initializing SlackClient...");
@@ -57,6 +76,12 @@ export class SlackClient extends EventEmitter {
         });
     }
 
+/**
+ * Handles a given event by logging information about the event and passing it to the message manager to process if it is a message or app_mention type.
+ * 
+ * @param {any} event - The event to be handled
+ * @returns {Promise<void>} - A promise that resolves once the event has been handled
+ */
     private async handleEvent(event: any) {
         elizaLogger.debug("🎯 [EVENT] Processing event:", {
             type: event.type,
@@ -74,6 +99,12 @@ export class SlackClient extends EventEmitter {
         }
     }
 
+/**
+ * Verifies bot permissions by testing channel list access with all types,
+ * sending a test message to self, and logging the results.
+ * 
+ * @throws {Error} If any permission verification step fails
+ */
     private async verifyPermissions() {
         elizaLogger.debug("🔒 [PERMISSIONS] Verifying bot permissions...");
 
@@ -130,6 +161,18 @@ export class SlackClient extends EventEmitter {
         }
     }
 
+/**
+ * Asynchronously starts the Slack client, initializing the bot with the provided runtime configuration.
+ * Validates the Slack configuration, registers the Slack service, obtains detailed bot information,
+ * verifies bot user details, permissions, and initializes the message manager. Additionally,
+ * registers actions and providers, adds request logging middleware, sets up event handling and
+ * interactions endpoints, and starts the server on the specified port. Handles incoming Slack events
+ * and interactions, acknowledging them and logging relevant information. Outputs success messages
+ * upon successful initialization and provides instructions on how to interact with the bot.
+ * 
+ * @returns {Promise<void>} A Promise that resolves when the Slack client has successfully started.
+ * @throws {Error} If there is an issue starting the Slack client.
+ */
     async start() {
         try {
             elizaLogger.log("Starting Slack client...");
@@ -318,6 +361,10 @@ export class SlackClient extends EventEmitter {
         }
     }
 
+/**
+ * Asynchronously stops the Slack client.
+ * If a server is running, it will close the server and log a message when it is stopped.
+ */
     async stop() {
         elizaLogger.log("Stopping Slack client...");
         if (this.server) {
