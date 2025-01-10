@@ -19,6 +19,15 @@ import { getTokenBalance, getTokenBalances } from "./providers/tokenUtils.ts";
 
 export { TokenProvider, WalletProvider, getTokenBalance, getTokenBalances };
 
+/**
+ * Represents the Solana Plugin for Eliza.
+ * @type {Plugin}
+ * @property {string} name - The name of the plugin ("solana").
+ * @property {string} description - The description of the plugin ("Solana Plugin for Eliza").
+ * @property {Array<Function>} actions - Array of actions supported by the plugin.
+ * @property {Array<Function>} evaluators - Array of evaluators used by the plugin.
+ * @property {Array<Function>} providers - Array of providers used by the plugin.
+ */
 export const solanaPlugin: Plugin = {
     name: "solana",
     description: "Solana Plugin for Eliza",
