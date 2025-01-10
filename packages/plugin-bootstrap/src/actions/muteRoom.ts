@@ -10,6 +10,16 @@ import {
     State,
 } from "@elizaos/core";
 
+/**
+ * Template string that provides guidance on whether an agent should mute a conversation room based on the recent messages and specific criteria.
+ * 
+ * Criteria for responding with YES include:
+ * - The user is being aggressive, rude, or inappropriate
+ * - The user has directly asked the agent to stop responding or be quiet
+ * - The agent's responses are not well-received or are annoying the user(s)
+ * 
+ * Otherwise, respond with NO.
+ */
 export const shouldMuteTemplate =
     `Based on the conversation so far:
 
@@ -25,6 +35,12 @@ Respond with YES if:
 Otherwise, respond with NO.
 ` + booleanFooter;
 
+/**
+ * Action to mute a room, ignoring all messages unless explicitly mentioned.
+ * Only mutes the room if explicitly asked to or if the user is annoying people.
+ * 
+ * @type {Action}
+ */
 export const muteRoomAction: Action = {
     name: "MUTE_ROOM",
     similes: [
