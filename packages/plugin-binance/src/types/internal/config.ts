@@ -1,6 +1,13 @@
 /**
  * Binance service configuration
  */
+/**
+ * Interface representing configuration options for the Binance API.
+ * @param { string } [apiKey] - The API key for authenticating requests.
+ * @param { string } [secretKey] - The secret key for signing requests.
+ * @param { string } [baseURL] - The base URL for the Binance API.
+ * @param { number } [timeout] - The timeout duration for requests.
+ */
 export interface BinanceConfig {
     apiKey?: string;
     secretKey?: string;
