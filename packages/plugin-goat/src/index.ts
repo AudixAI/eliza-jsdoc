@@ -2,6 +2,12 @@ import type { Plugin } from "@elizaos/core";
 import { getOnChainActions } from "./actions";
 import { getWalletClient, getWalletProvider } from "./wallet";
 
+/**
+ * Asynchronously creates a new Goat plugin with the provided GetSetting function.
+ *
+ * @param {function} getSetting - The function used to retrieve a setting with a given key.
+ * @returns {Promise<Plugin>} - A Promise that resolves to a new Plugin instance with a name, description, providers, evaluators, services, and actions.
+ */
 async function createGoatPlugin(
     getSetting: (key: string) => string | undefined
 ): Promise<Plugin> {
