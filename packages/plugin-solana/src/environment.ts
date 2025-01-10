@@ -1,6 +1,18 @@
 import { IAgentRuntime } from "@elizaos/core";
 import { z } from "zod";
 
+/**
+ * Defines a schema for the Solana environment variables.
+ * The schema includes validation rules for the following variables:
+ * - WALLET_SECRET_SALT: optional string
+ * - WALLET_SECRET_KEY: required string with minimum length of 1
+ * - WALLET_PUBLIC_KEY: required string with minimum length of 1
+ * - SOL_ADDRESS: required string with minimum length of 1
+ * - SLIPPAGE: required string with minimum length of 1
+ * - SOLANA_RPC_URL: required string with minimum length of 1
+ * - HELIUS_API_KEY: required string with minimum length of 1
+ * - BIRDEYE_API_KEY: required string with minimum length of 1
+ */
 export const solanaEnvSchema = z
     .object({
         WALLET_SECRET_SALT: z.string().optional(),
@@ -32,8 +44,17 @@ export const solanaEnvSchema = z
         })
     );
 
+/**
+ * Type definition for Solana configuration based on schema `solanaEnvSchema`.
+ */
 export type SolanaConfig = z.infer<typeof solanaEnvSchema>;
 
+/**
+ * Validates the Solana configuration based on the provided runtime settings.
+ * Retrieves the required configuration values from runtime settings or environment variables.
+ * @param {IAgentRuntime} runtime - The agent runtime containing the settings needed for validation.
+ * @returns {Promise<SolanaConfig>} A Promise that resolves to the validated Solana config.
+ */
 export async function validateSolanaConfig(
     runtime: IAgentRuntime
 ): Promise<SolanaConfig> {
