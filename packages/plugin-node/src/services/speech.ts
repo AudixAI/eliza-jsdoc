@@ -8,6 +8,15 @@ import { validateNodeConfig } from "../environment.ts";
 import * as Echogarden from "echogarden";
 import { elizaLogger } from "@elizaos/core";
 
+/**
+ * Prepends a WAV header to the incoming readable stream and returns a new readable stream with the header added.
+ * @param {Readable} readable - The input readable stream containing audio data.
+ * @param {number} audioLength - The total length of the audio in seconds.
+ * @param {number} sampleRate - The sample rate of the audio in Hz.
+ * @param {number} [channelCount=1] - The number of channels in the audio (default is 1).
+ * @param {number} [bitsPerSample=16] - The number of bits per sample (default is 16).
+ * @returns {Readable} - A new readable stream with the WAV header prepended.
+ */
 function prependWavHeader(
     readable: Readable,
     audioLength: number,
@@ -36,6 +45,11 @@ function prependWavHeader(
     return passThrough;
 }
 
+/**
+ * Retrieves voice settings based on the runtime configuration.
+ * @param {IAgentRuntime} runtime - The Agent Runtime object.
+ * @returns {Object} An object containing the retrieved voice settings.
+ */
 async function getVoiceSettings(runtime: IAgentRuntime) {
     const hasElevenLabs = !!runtime.getSetting("ELEVENLABS_XI_API_KEY");
     const useVits = !hasElevenLabs;
@@ -73,6 +87,13 @@ async function getVoiceSettings(runtime: IAgentRuntime) {
     };
 }
 
+/**
+ * Converts text to speech using ElevenLabs API.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment to run the function.
+ * @param {string} text - The text to be converted to speech.
+ * @returns {Promise<Readable>} - A readable stream containing the generated speech audio.
+ */
 async function textToSpeech(runtime: IAgentRuntime, text: string) {
     await validateNodeConfig(runtime);
     const { elevenlabsVoiceId } = await getVoiceSettings(runtime);
@@ -220,6 +241,11 @@ async function textToSpeech(runtime: IAgentRuntime, text: string) {
     }
 }
 
+/**
+ * Process Vits audio data and convert it to a Readable stream.
+ * @param {any} audio - The input audio data to process.
+ * @returns {Promise<Readable>} A Promise that resolves to a Readable stream containing the processed audio data.
+ */
 async function processVitsAudio(audio: any): Promise<Readable> {
     let wavStream: Readable;
     if (audio instanceof Buffer) {
@@ -255,6 +281,12 @@ async function processVitsAudio(audio: any): Promise<Readable> {
     return wavStream;
 }
 
+/**
+ * Asynchronously generates audio using VITS engine for the given text.
+ * @param {IAgentRuntime} runtime The agent runtime.
+ * @param {string} text The text to synthesize into audio.
+ * @returns {Promise<Readable>} A promise that resolves with a Readable stream containing the generated audio.
+ */
 async function generateVitsAudio(
     runtime: IAgentRuntime,
     text: string
@@ -267,15 +299,37 @@ async function generateVitsAudio(
     return processVitsAudio(audio);
 }
 
+/**
+ * A class representing a speech generation service.
+ * @extends Service
+ * @implements ISpeechService
+ */
 export class SpeechService extends Service implements ISpeechService {
     static serviceType: ServiceType = ServiceType.SPEECH_GENERATION;
 
+/**
+ * Asynchronously initializes the agent with the provided runtime.
+ * 
+ * @param _runtime The runtime object to be initialized with
+ * @returns A promise that resolves once initialization is complete
+ */
     async initialize(_runtime: IAgentRuntime): Promise<void> {}
 
+/**
+ * Returns an instance of the ISpeechService interface.
+ * @returns {ISpeechService} An instance of ISpeechService.
+ */
     getInstance(): ISpeechService {
         return SpeechService.getInstance();
     }
 
+/**
+ * Generates audio based on the given text using either VITS or text to speech.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object used to interact with the platform API.
+ * @param {string} text - The text to convert into audio.
+ * @returns {Promise<Readable>} A Promise that resolves to a Readable stream containing the generated audio.
+ */
     async generate(runtime: IAgentRuntime, text: string): Promise<Readable> {
         try {
             const { useVits } = await getVoiceSettings(runtime);
