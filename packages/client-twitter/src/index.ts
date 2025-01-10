@@ -14,6 +14,12 @@ import { TwitterSpaceClient } from "./spaces.ts";
  * - interaction: handling mentions, replies
  * - space: launching and managing Twitter Spaces (optional)
  */
+/**
+ * Class representing a Twitter Manager.
+ * @constructor
+ * @param {IAgentRuntime} runtime - The runtime for the agent.
+ * @param {TwitterConfig} twitterConfig - The configuration for Twitter.
+ */
 class TwitterManager {
     client: ClientBase;
     post: TwitterPostClient;
