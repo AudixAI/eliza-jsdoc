@@ -7,6 +7,13 @@ import { IAgentRuntime, State, type Memory } from "./types.ts";
  * @param state The current state object.
  * @returns A string that concatenates the outputs of each provider.
  */
+/**
+ * Retrieves data from all providers associated with the specified runtime, message, and optional state.
+ * @param {IAgentRuntime} runtime - The agent runtime object containing providers to retrieve data from.
+ * @param {Memory} message - The memory object containing message data.
+ * @param {State} [state] - Optional state object containing additional context.
+ * @returns {Promise<string>} A promise that resolves with the result of combining data from all providers, separated by new lines.
+ */
 export async function getProviders(
     runtime: IAgentRuntime,
     message: Memory,
