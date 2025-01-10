@@ -17,6 +17,14 @@ import { testnet } from "cive/chains";
 import { confluxTransferTemplate } from "../templates/transfer";
 import { TransferSchema, isTransferContent } from "../types";
 
+/**
+ * Sends CFX from one account to another on the Conflux network.
+ * @param {string} secretKey - The secret key of the sender account.
+ * @param {string} rpcUrl - The RPC URL of the Conflux network.
+ * @param {string} to - The address of the recipient account.
+ * @param {string} amount - The amount of CFX to be sent.
+ * @returns {Promise<string>} - The transaction hash of the sent transaction.
+ */
 const sendCFX = async (
     secretKey: `0x${string}`,
     rpcUrl: string,
@@ -47,6 +55,11 @@ const sendCFX = async (
     return hash;
 };
 
+/**
+ * Transfer action to send CFX to another address in Conflux Core Space.
+ * The address starts with `cfx:` or `cfxtest:`
+ * @type {Action}
+ */
 export const transfer: Action = {
     name: "SEND_CFX",
     description:
