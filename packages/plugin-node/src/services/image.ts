@@ -27,6 +27,11 @@ import path from "path";
 const IMAGE_DESCRIPTION_PROMPT =
     "Describe this image and give it a title. The first line should be the title, and then a line break, then a detailed description of the image. Respond with the format 'title\\ndescription'";
 
+/**
+ * Interface representing an image provider that can interact with images.
+ * @interface
+ */
+ 
 interface ImageProvider {
     initialize(): Promise<void>;
     describeImage(
@@ -44,6 +49,12 @@ const convertToBase64DataUrl = (
     return `data:${mimeType};base64,${base64Data}`;
 };
 
+/**
+ * Handles errors from API responses.
+ * @param {Response} response - The response object from the API call.
+ * @param {string} provider - The name of the API provider.
+ * @returns {Promise<never>} - A promise that never resolves, throwing an Error with the HTTP status.
+ */
 const handleApiError = async (
     response: Response,
     provider: string
@@ -65,12 +76,21 @@ const parseImageResponse = (
     return { title, description: descriptionParts.join("\n") };
 };
 
+/**
+ * Class representing a local image provider that implements the Image Provider interface.
+ * @implements { ImageProvider }
+ */
 class LocalImageProvider implements ImageProvider {
     private model: PreTrainedModel | null = null;
     private processor: Florence2Processor | null = null;
     private tokenizer: PreTrainedTokenizer | null = null;
     private modelId: string = "onnx-community/Florence-2-base-ft";
 
+/**
+ * Asynchronously initializes the image service by setting environment variables and downloading required models, processor, and tokenizer.
+ * 
+ * @returns A Promise that resolves once the initialization is complete
+ */
     async initialize(): Promise<void> {
         env.allowLocalModels = false;
         env.allowRemoteModels = true;
@@ -110,6 +130,13 @@ class LocalImageProvider implements ImageProvider {
         elizaLogger.success("Image service initialization complete");
     }
 
+/**
+ * Asynchronously describes an image based on the provided image data.
+ * 
+ * @param {Buffer} imageData - The image data in Buffer format.
+ * @returns {Promise<{ title: string; description: string }>} An object containing the title and description of the image.
+ * @throws {Error} If model components are not initialized.
+ */
     async describeImage(
         imageData: Buffer
     ): Promise<{ title: string; description: string }> {
@@ -146,11 +173,30 @@ class LocalImageProvider implements ImageProvider {
     }
 }
 
+/**
+ * Class representing an image provider that uses OpenAI API to describe images.
+ * @implements { ImageProvider }
+ */
 class OpenAIImageProvider implements ImageProvider {
+/**
+ * Constructor for creating an instance of the class.
+ * * @param runtime - The runtime object that implements the IAgentRuntime interface.
+ */
     constructor(private runtime: IAgentRuntime) {}
 
+/**
+ * Asynchronously initializes something.
+ * @returns A Promise that resolves to void when initialization is complete.
+ */
     async initialize(): Promise<void> {}
 
+/**
+ * Asynchronously describes an image using the OpenAI API.
+ * 
+ * @param {Buffer} imageData - The image data to be described.
+ * @param {string} mimeType - The MIME type of the image.
+ * @returns {Promise<{ title: string; description: string }>} The title and description of the image.
+ */
     async describeImage(
         imageData: Buffer,
         mimeType: string
@@ -189,11 +235,34 @@ class OpenAIImageProvider implements ImageProvider {
     }
 }
 
+/**
+ * Class representing a Google Image Provider that implements the ImageProvider interface.
+ */
+
 class GoogleImageProvider implements ImageProvider {
+/**
+ * Constructor for creating an instance of a class with the specified runtime.
+ * * @param { IAgentRuntime } runtime - The runtime to be injected into the class instance.
+ */
     constructor(private runtime: IAgentRuntime) {}
 
+/**
+ * Asynchronously initializes the object.
+ * * @returns A Promise that resolves when the initialization is complete.
+ */
     async initialize(): Promise<void> {}
 
+/**
+ * Describe an image using the Google Generative AI API.
+ *
+ * This method takes image data and its MIME type, sends a request to the Google Generative AI API,
+ * and returns a promise that resolves to an object with the title and description of the generated content.
+ *
+ * @param {Buffer} imageData The image data to describe.
+ * @param {string} mimeType The MIME type of the image.
+ * @returns {Promise<{title: string, description: string}>} A promise that resolves to an object
+ * with the title and description of the generated content.
+ */
     async describeImage(
         imageData: Buffer,
         mimeType: string
@@ -235,6 +304,14 @@ class GoogleImageProvider implements ImageProvider {
     }
 }
 
+/**
+ * Represents a service for describing images.
+ */
+  * Provides methods for initializing the service, loading image data, extracting the first frame from a GIF image,
+  * and describing an image by providing a title and description.
+  *
+  * @implements {IImageDescriptionService}
+ */
 export class ImageDescriptionService
     extends Service
     implements IImageDescriptionService
@@ -245,15 +322,32 @@ export class ImageDescriptionService
     private runtime: IAgentRuntime | null = null;
     private provider: ImageProvider | null = null;
 
+/**
+ * Get an instance of the ImageDescriptionService.
+ * @returns {IImageDescriptionService} An instance of the ImageDescriptionService.
+ */
     getInstance(): IImageDescriptionService {
         return ImageDescriptionService.getInstance();
     }
 
+/**
+ * Initialize the ImageDescriptionService with the provided runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object for the agent.
+ * @returns {Promise<void>} A promise that resolves once the initialization is complete.
+ */
     async initialize(runtime: IAgentRuntime): Promise<void> {
         elizaLogger.log("Initializing ImageDescriptionService");
         this.runtime = runtime;
     }
 
+/**
+ * Initializes the image provider based on the runtime configuration.
+ * Throws an error if runtime is not provided.
+ * Supported image vision model providers include LLAMALOCAL, GOOGLE, and OPENAI.
+ * Initializes the provider and sets the 'initialized' flag to true.
+ * @returns A Promise that resolves once the provider is initialized.
+ */
     private async initializeProvider(): Promise<void> {
         if (!this.runtime) {
             throw new Error("Runtime is required for image recognition");
@@ -300,6 +394,19 @@ export class ImageDescriptionService
         this.initialized = true;
     }
 
+/**
+ * Asynchronously loads image data from the given imageUrl.
+ * If the imageUrl ends with '.gif', the function extracts the first frame from the gif, reads the image data,
+ * sets mimeType to 'image/png', and cleans up the temp file.
+ * If the imageUrl does not end with '.gif':
+ *  - If the file exists locally, reads the file data, determines mimeType based on the extension (if available) or sets it to 'image/jpeg'.
+ *  - If the file does not exist locally, fetches the data, validates the response, reads the data, sets mimeType based on the content-type header or defaults to 'image/jpeg'.
+ * Upon successful loading of the image data, returns an object containing the image data as a Buffer and the mimeType.
+ * Throws an error if the imageURL is invalid or if failed to load the image data.
+ *
+ * @param imageUrl - The URL or local path of the image to load
+ * @returns A Promise that resolves to an object containing the image data as a Buffer and the mimeType
+ */
     private async loadImageData(
         imageUrl: string
     ): Promise<{ data: Buffer; mimeType: string }> {
@@ -336,6 +443,11 @@ export class ImageDescriptionService
         return { data: imageData, mimeType };
     }
 
+/**
+ * Extracts the first frame from a GIF at the specified URL and saves it as a PNG file.
+ * @param {string} gifUrl - The URL of the GIF to extract the first frame from.
+ * @returns {Promise<{ filePath: string }>} A Promise that resolves with the file path of the saved PNG file containing the first frame.
+ */
     private async extractFirstFrameFromGif(
         gifUrl: string
     ): Promise<{ filePath: string }> {
@@ -358,6 +470,12 @@ export class ImageDescriptionService
         });
     }
 
+/**
+ * Asynchronously describes an image by taking its URL, fetching and analyzing the image data, and returning a title and description.
+ * 
+ * @param {string} imageUrl - The URL of the image to describe.
+ * @returns {Promise<{ title: string; description: string }>} - A promise that resolves to an object containing the title and description of the image.
+ */
     async describeImage(
         imageUrl: string
     ): Promise<{ title: string; description: string }> {
