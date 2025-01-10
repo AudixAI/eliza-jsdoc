@@ -12,7 +12,6 @@ import {
  *
  * @class
  */
- *
 export class ObsidianProvider {
     private connected: boolean = false;
     private runtime: AgentRuntime;

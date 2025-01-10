@@ -59,7 +59,7 @@ export enum PortfolioType {
  * @enum {string}
  * @property {string} CROSS - Cross margin type.
  * @property {string} ISOLATED - Isolated margin type.
- */ 
+ */
 
 export enum MarginType {
     CROSS = 'CROSS',
@@ -81,7 +81,7 @@ export enum OrderPlacementSource {
 
 /**
  * Enum representing different options for sorting.
- * 
+ *
  * @readonly
  * @enum {string}
  * @property {string} UNKNOWN - Sort by unknown criteria.
@@ -142,7 +142,7 @@ export enum Granularity {
 
 /**
  * Enum representing different product venues.
- * 
+ *
  * @readonly
  * @enum {string}
  * @property {string} UNKNOWN - Unknown venue type
@@ -162,7 +162,7 @@ export enum ProductVenue {
  * @enum {string}
  * @readonly
  */
-      
+
 export enum IntradayMarginSetting {
     UNSPECIFIED = 'INTRADAY_MARGIN_SETTING_UNSPECIFIED',
     STANDARD = 'INTRADAY_MARGIN_SETTING_STANDARD',
@@ -216,7 +216,7 @@ export type TradeIncentiveMetadata = {
 
 /**
  * Represents different types of order configurations.
- * 
+ *
  * @typedef {Object} OrderConfiguration
  * @property {MarketMarketIoc} market_market_ioc - Market IOC order configuration
  * @property {SorLimitIoc} sor_limit_ioc - Sor Limit IOC order configuration
@@ -486,7 +486,7 @@ export type FCMSweep = {
 
 /**
  * Type representing a Cancel Order Object.
- * 
+ *
  * @typedef {Object} CancelOrderObject
  * @property {boolean} success - Indicates if the order was successfully cancelled.
  * @property {Record<string, any>} failure_reason - Information about why the order cancellation failed.
@@ -847,7 +847,7 @@ export type Products = {
  * @property {string} [approximate_quote_24h_volume] - An approximate trading volume over the last 24 hours.
  * @property {Record<string, any>} [future_product_details] - Details for future products.
  */
-``` 
+
 export type Product = {
     product_id: string;
     price: string;

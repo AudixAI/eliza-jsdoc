@@ -31,7 +31,7 @@ const IMAGE_DESCRIPTION_PROMPT =
  * Interface representing an image provider that can interact with images.
  * @interface
  */
- 
+
 interface ImageProvider {
     initialize(): Promise<void>;
     describeImage(
@@ -88,7 +88,7 @@ class LocalImageProvider implements ImageProvider {
 
 /**
  * Asynchronously initializes the image service by setting environment variables and downloading required models, processor, and tokenizer.
- * 
+ *
  * @returns A Promise that resolves once the initialization is complete
  */
     async initialize(): Promise<void> {
@@ -132,7 +132,7 @@ class LocalImageProvider implements ImageProvider {
 
 /**
  * Asynchronously describes an image based on the provided image data.
- * 
+ *
  * @param {Buffer} imageData - The image data in Buffer format.
  * @returns {Promise<{ title: string; description: string }>} An object containing the title and description of the image.
  * @throws {Error} If model components are not initialized.
@@ -192,7 +192,7 @@ class OpenAIImageProvider implements ImageProvider {
 
 /**
  * Asynchronously describes an image using the OpenAI API.
- * 
+ *
  * @param {Buffer} imageData - The image data to be described.
  * @param {string} mimeType - The MIME type of the image.
  * @returns {Promise<{ title: string; description: string }>} The title and description of the image.
@@ -306,7 +306,6 @@ class GoogleImageProvider implements ImageProvider {
 
 /**
  * Represents a service for describing images.
- */
   * Provides methods for initializing the service, loading image data, extracting the first frame from a GIF image,
   * and describing an image by providing a title and description.
   *
@@ -332,7 +331,7 @@ export class ImageDescriptionService
 
 /**
  * Initialize the ImageDescriptionService with the provided runtime.
- * 
+ *
  * @param {IAgentRuntime} runtime - The runtime object for the agent.
  * @returns {Promise<void>} A promise that resolves once the initialization is complete.
  */
@@ -472,7 +471,7 @@ export class ImageDescriptionService
 
 /**
  * Asynchronously describes an image by taking its URL, fetching and analyzing the image data, and returning a title and description.
- * 
+ *
  * @param {string} imageUrl - The URL of the image to describe.
  * @returns {Promise<{ title: string; description: string }>} - A promise that resolves to an object containing the title and description of the image.
  */
