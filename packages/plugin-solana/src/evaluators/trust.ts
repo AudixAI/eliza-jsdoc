@@ -19,6 +19,20 @@ import { TokenProvider } from "../providers/token.ts";
 import { TrustScoreManager } from "../providers/trustScoreProvider.ts";
 import { WalletProvider } from "../providers/wallet.ts";
 
+/**
+ * Task: Decide if the recent messages should be processed for token recommendations.
+ *
+ * Look for messages that:
+ * - Mention specific token tickers or contract addresses
+ * - Contain words related to buying, selling, or trading tokens
+ * - Express opinions or convictions about tokens
+ *
+ * Based on the following conversation, should the messages be processed for recommendations? YES or NO
+ *
+ * {{recentMessages}}
+ *
+ * Should the messages be processed for recommendations? + booleanFooter
+ */
 const shouldProcessTemplate =
     `# Task: Decide if the recent messages should be processed for token recommendations.
 
@@ -41,6 +55,45 @@ export const formatRecommendations = (recommendations: Memory[]) => {
     return finalMessageStrings;
 };
 
+/**
+ * Extract recommendations to buy or sell memecoins from the conversation as an array of objects in JSON format.
+ * Memecoins usually have a ticker and a contract address. Additionally, recommenders may make recommendations with some amount of conviction.
+ * The amount of conviction in their recommendation can be none, low, medium, or high.
+ * Recommenders can make recommendations to buy, not buy, sell, and not sell.
+ * 
+ * START OF EXAMPLES
+ * These are examples of the expected output of this task:
+ * {{evaluationExamples}}
+ * END OF EXAMPLES
+ * 
+ * INSTRUCTIONS
+ * Extract any new recommendations from the conversation that are not already present in the list of known recommendations below:
+ * {{recentRecommendations}}
+ * - Include the recommender's username
+ * - Try not to include already-known recommendations. If you think a recommendation is already known, but you're not sure, respond with alreadyKnown: true.
+ * - Set the conviction to 'none', 'low', 'medium' or 'high'
+ * - Set the recommendation type to 'buy', 'dont_buy', 'sell', or 'dont_sell'
+ * - Include the contract address and/or ticker if available
+ * 
+ * Recent Messages:
+ * {{recentMessages}}
+ * 
+ * Response should be a JSON object array inside a JSON markdown block. 
+ * Correct response format:
+ * ```
+ * [
+ *   {
+ *     "recommender": string,
+ *     "ticker": string | null,
+ *     "contractAddress": string | null,
+ *     "type": enum<buy|dont_buy|sell|dont_sell>,
+ *     "conviction": enum<none|low|medium|high>,
+ *     "alreadyKnown": boolean
+ *   },
+ *   ...
+ * ]
+ * ```
+ */
 const recommendationTemplate = `TASK: Extract recommendations to buy or sell memecoins from the conversation as an array of objects in JSON format.
 
     Memecoins usually have a ticker and a contract address. Additionally, recommenders may make recommendations with some amount of conviction. The amount of conviction in their recommendation can be none, low, medium, or high. Recommenders can make recommendations to buy, not buy, sell and not sell.
@@ -79,6 +132,12 @@ Response should be a JSON object array inside a JSON markdown block. Correct res
 ]
 \`\`\``;
 
+/**
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object
+ * @param {Memory} message - The memory object
+ * @returns {Promise<Array>} - An array of filtered recommendations
+ */
 async function handler(runtime: IAgentRuntime, message: Memory) {
     elizaLogger.log("Evaluating for trust");
     const state = await runtime.composeState(message);
@@ -283,6 +342,15 @@ async function handler(runtime: IAgentRuntime, message: Memory) {
     return filteredRecommendations;
 }
 
+/**
+ * Trust Evaluator for extracting recommendations.
+ * 
+ * @typedef {Evaluator} trustEvaluator
+ * @property {string} name - The name of the evaluator, set to "EXTRACT_RECOMMENDATIONS".
+ * @property {Array<string>} similes - An array of similar evaluators, including "GET_RECOMMENDATIONS", "EXTRACT_TOKEN_RECS", and "EXTRACT_MEMECOIN_RECS".
+ * @property {boolean} alwaysRun - Indicates if the evaluator should always run.
+ * @property {Function} validate - Asynchronous function for validating the evaluator.
+ */
 export const trustEvaluator: Evaluator = {
     name: "EXTRACT_RECOMMENDATIONS",
     similes: [
