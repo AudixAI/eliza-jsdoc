@@ -13,6 +13,12 @@ import { fileSchema, isValidFile } from "../types";
 import { getObsidian }  from "../helper";
 import { fileTemplate } from "../templates/file";
 
+/**
+ * Represents an action for reading a file from an Obsidian vault.
+ * The action includes similes, a description, validation logic,
+ * and a handler to retrieve and display the content of a file.
+ * @type {Action}
+ */
 export const readFileAction: Action = {
     name: "READ_FILE",
     similes: [
