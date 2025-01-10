@@ -19,6 +19,16 @@ import { getWalletDetails } from "../utils";
 import { Coinbase } from "@coinbase/coinbase-sdk";
 
 const url = "https://api.commerce.coinbase.com/charges";
+/**
+ * Interface for representing a charge request.
+ * @typedef {Object} ChargeRequest
+ * @property {string} name - The name of the charge.
+ * @property {string} description - The description of the charge.
+ * @property {string} pricing_type - The type of pricing for the charge.
+ * @property {Object} local_price - The local price object.
+ * @property {string} local_price.amount - The amount of the charge.
+ * @property {string} local_price.currency - The currency of the charge amount.
+ */
 interface ChargeRequest {
     name: string;
     description: string;
@@ -29,6 +39,14 @@ interface ChargeRequest {
     };
 }
 
+/**
+ * Creates a new charge using the provided API key and parameters.
+ * 
+ * @param {string} apiKey - The API key required to authenticate the request.
+ * @param {ChargeRequest} params - The parameters required to create the charge.
+ * @returns {Promise<any>} - A Promise that resolves with the data of the created charge.
+ * @throws {Error} - If the request fails or an error occurs during the process.
+ */
 export async function createCharge(apiKey: string, params: ChargeRequest) {
     elizaLogger.debug("Starting createCharge function");
     try {
@@ -54,6 +72,13 @@ export async function createCharge(apiKey: string, params: ChargeRequest) {
 }
 
 // Function to fetch all charges
+/**
+ * Gets all charges from the API using the provided API key.
+ *
+ * @param {string} apiKey - The API key to authenticate the request.
+ * @returns {Promise<Array>} - A promise that resolves with an array of charges.
+ * @throws {Error} - If the request fails or an error occurs during the process.
+ */
 export async function getAllCharges(apiKey: string) {
     elizaLogger.debug("Starting getAllCharges function");
     try {
@@ -80,6 +105,13 @@ export async function getAllCharges(apiKey: string) {
 }
 
 // Function to fetch details of a specific charge
+/**
+ * Fetches details of a specific charge using the provided API key and charge ID.
+ * 
+ * @param {string} apiKey - The API key used for authentication.
+ * @param {string} chargeId - The ID of the charge to retrieve details for.
+ * @returns {Promise} A promise that resolves to the details of the specified charge.
+ */
 export async function getChargeDetails(apiKey: string, chargeId: string) {
     elizaLogger.debug("Starting getChargeDetails function");
     const getUrl = `${url}${chargeId}`;
@@ -110,6 +142,18 @@ export async function getChargeDetails(apiKey: string, chargeId: string) {
     }
 }
 
+/**
+ * Action to create and manage payment charges using Coinbase Commerce.
+ * Supports fixed and dynamic pricing, multiple currencies (USD, EUR, USDC),
+ * and provides charge status tracking and management features.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - List of similar actions
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Async function to validate the action
+ * @property {Function} handler - Async function to handle the action
+ * @property {Object[]} examples - List of example interactions
+ */
 export const createCoinbaseChargeAction: Action = {
     name: "CREATE_CHARGE",
     similes: [
@@ -316,6 +360,16 @@ export const createCoinbaseChargeAction: Action = {
     ],
 } as Action;
 
+/**
+ * Action to fetch all charges using Coinbase Commerce.
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Array of similar actions.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the action runtime.
+ * @property {Function} handler - Asynchronous function to handle the action.
+ * @property {Object[]} examples - Array of example interactions for this action.
+ */
 export const getAllChargesAction: Action = {
     name: "GET_ALL_CHARGES",
     similes: ["FETCH_ALL_CHARGES", "RETRIEVE_ALL_CHARGES", "LIST_ALL_CHARGES"],
@@ -381,6 +435,17 @@ export const getAllChargesAction: Action = {
     ],
 } as Action;
 
+/**
+ * Action for fetching details of a specific charge using Coinbase Commerce.
+ * 
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {Array<string>} similes - Alternative names for the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the action.
+ * @property {Function} handler - Asynchronous function to handle the action.
+ * @property {Array<Array<{user: string, content: {text: string, action: string}}>} examples - Examples of how the action can be used.
+ */
 export const getChargeDetailsAction: Action = {
     name: "GET_CHARGE_DETAILS",
     similes: ["FETCH_CHARGE_DETAILS", "RETRIEVE_CHARGE_DETAILS", "GET_CHARGE"],
@@ -487,6 +552,13 @@ export const getChargeDetailsAction: Action = {
     ],
 };
 
+/**
+ * Retrieve all charges from the provider and get wallet details if API key is available.
+ * 
+ * @param {IAgentRuntime} runtime The runtime environment for the agent.
+ * @param {Memory} _message Unused message data.
+ * @returns {Promise<{ charges: Charge[], balances: Balance[], transactions: Transaction[] }>} An object containing formatted charges, balances, and transactions.
+ */
 export const chargeProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.debug("Starting chargeProvider.get function");
@@ -522,6 +594,16 @@ export const chargeProvider: Provider = {
     },
 };
 
+/**
+ * Plugin for integrating with Coinbase Commerce to create and manage charges.
+ *
+ * @type {Plugin}
+ * @property {string} name - The name of the plugin
+ * @property {string} description - A brief description of the plugin
+ * @property {Array<Function>} actions - List of actions supported by the plugin
+ * @property {Array<Function>} evaluators - List of evaluators used by the plugin
+ * @property {Array<Function>} providers - List of providers used by the plugin
+ */
 export const coinbaseCommercePlugin: Plugin = {
     name: "coinbaseCommerce",
     description:
