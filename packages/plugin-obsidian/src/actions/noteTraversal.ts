@@ -13,6 +13,9 @@ import { NoteContent, NoteHierarchy, isValidNoteHierarchy, noteHierarchySchema }
 import { getObsidian, extractLinks, storeHierarchyInMemory, retrieveHierarchyFromMemory } from "../helper";
 import { traversalTemplate } from "../templates/traversal";
 
+/**
+ * Action representing a note traversal with associated similes.
+ */
 export const noteTraversalAction: Action = {
     name: "TRAVERSE_NOTE",
     similes: [
