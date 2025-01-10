@@ -20,9 +20,22 @@ import { zeroAddress } from "viem";
 
 export { attachTermsTemplate };
 
+/**
+ * Class representing an action to attach license terms.
+ */
 export class AttachTermsAction {
+/**
+ * Constructor for creating a new instance of a class, with a parameter for the wallet provider.
+ * @param {WalletProvider} walletProvider - The wallet provider to be injected into the instance.
+ */
     constructor(private walletProvider: WalletProvider) {}
 
+/**
+ * Attach license terms to a given IP using the provided parameters.
+ *
+ * @param {AttachTermsParams} params - The parameters for attaching terms, including IP ID, commercial use, minting fee, and commercial rev share.
+ * @returns {Promise<{ attachTermsResponse: AttachLicenseTermsResponse; registerPilTermsResponse: RegisterPILResponse }>} - A promise that resolves to an object containing the responses for attaching terms and registering PIL terms.
+ */
     async attachTerms(params: AttachTermsParams): Promise<{
         attachTermsResponse: AttachLicenseTermsResponse;
         registerPilTermsResponse: RegisterPILResponse;
@@ -74,6 +87,17 @@ export class AttachTermsAction {
     }
 }
 
+/**
+ * Action to attach license terms to an IP Asset on Story.
+ * @typedef {Object} attachTermsAction
+ * @property {string} name - The name of the action ("ATTACH_TERMS").
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Async function to handle the action.
+ * @property {Object} template - Template for the action.
+ * @property {Function} validate - Async function to validate runtime.
+ * @property {Array} examples - Array of examples for the action.
+ * @property {Array} similes - Array of similes for the action.
+ */
 export const attachTermsAction = {
     name: "ATTACH_TERMS",
     description: "Attach license terms to an IP Asset on Story",
