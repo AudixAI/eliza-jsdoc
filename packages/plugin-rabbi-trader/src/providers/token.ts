@@ -3,15 +3,30 @@ import NodeCache from "node-cache";
 import { ProcessedTokenData, TokenSecurityData, TokenTradeData, DexScreenerPair } from "../types/token";
 import { toBN } from "../utils/bignumber";
 
+/**
+ * Class representing a Token Provider.
+ */
+       
 export class TokenProvider {
     private cache: NodeCache;
     private isBase: boolean;
 
+/**
+ * Constructor for a TokenManager instance.
+ * @param {string} tokenAddress - The address of the token.
+ * @param {Object} [options] - Optional parameters.
+ * @param {boolean} [options.isBase=false] - Flag indicating if the token is a base token.
+ */
     constructor(private tokenAddress: string, options?: { isBase?: boolean }) {
         this.cache = new NodeCache({ stdTTL: 300 });
         this.isBase = options?.isBase || false;
     }
 
+/**
+ * Fetches and processes token data including security metrics, trade metrics, holder distribution analysis,
+ * and caching the processed data to improve performance.
+ * @returns {Promise<ProcessedTokenData>} Processed token data with security metrics, trade metrics, dexScreener data, holder distribution trend, high value holders, recent trades, high supply holders count, and token codex information.
+ */
     async getProcessedTokenData(): Promise<ProcessedTokenData> {
         const cacheKey = `processed_${this.tokenAddress}`;
         const cached = this.cache.get<ProcessedTokenData>(cacheKey);
@@ -64,6 +79,11 @@ export class TokenProvider {
         }
     }
 
+/**
+ * Analyzes the distribution of holders based on the given TokenTradeData.
+ * @param {TokenTradeData} tradeData - The token trade data to analyze.
+ * @returns {string} The analysis result: "increasing" if buy ratio > 0.1, "decreasing" if buy ratio < -0.1, "stable" otherwise.
+ */
     private analyzeHolderDistribution(tradeData: TokenTradeData): string {
         const buyRatio = tradeData.uniqueWallets24h > 0 ?
             tradeData.uniqueWallets24hChange / tradeData.uniqueWallets24h : 0;
@@ -73,6 +93,10 @@ export class TokenProvider {
         return "stable";
     }
 
+/**
+ * Checks if the token meets the criteria for trading based on liquidity, volume, price change, and scam status.
+ * @returns {Promise<boolean>} True if the token meets the trading criteria, false otherwise.
+ */
     async shouldTradeToken(): Promise<boolean> {
         const data = await this.getProcessedTokenData();
         const pair = data.dexScreenerData.pairs[0];
@@ -85,6 +109,10 @@ export class TokenProvider {
         );
     }
 
+/**
+ * Fetches data from the DexScreener API based on the tokenAddress and chain type.
+ * @returns A Promise that resolves to an object with pairs of DexScreenerPair objects.
+ */
     private async fetchDexScreenerData(): Promise<{ pairs: DexScreenerPair[] }> {
         const chainParam = this.isBase ? 'base' : 'solana';
         const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${this.tokenAddress}?chainId=${chainParam}`);
