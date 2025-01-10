@@ -28,6 +28,15 @@ import * as queries from "../queries";
 /**
  * The generated content for the transfer action
  */
+/**
+ * Interface for transferring content with specific properties.
+ * @interface TransferContent
+ * @extends Content
+ * @property {string | null} token - The token for the transfer.
+ * @property {string} amount - The amount being transferred.
+ * @property {string} to - The recipient of the transfer.
+ * @property {boolean} matched - Flag indicating if the transfer has been successfully matched.
+ */
 export interface TransferContent extends Content {
     token: string | null;
     amount: string;
