@@ -1,5 +1,14 @@
 import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
 
+/**
+ * Interface for Slack events.
+ * @interface
+ * @property {string} channel - The channel the event occurred in.
+ * @property {string} channel_type - The type of channel the event occurred in.
+ * @property {string} [thread_ts] - The timestamp of the thread the event occurred in (optional).
+ * @property {string} [user] - The user associated with the event (optional).
+ * @property {string} [team] - The team associated with the event (optional).
+ */
 interface SlackEvent {
     channel: string;
     channel_type: string;
@@ -8,6 +17,14 @@ interface SlackEvent {
     team?: string;
 }
 
+/**
+ * A provider for generating messages based on the state of a Slack channel.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {Memory} message - The message memory.
+ * @param {State} state - The current state of the channel.
+ * @returns {string} A message describing the current state of the Slack channel.
+ */
 export const channelStateProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
         const slackEvent = state?.slackEvent as SlackEvent | undefined;
