@@ -25,19 +25,40 @@ const PROVIDER_CONFIG = {
     RETRY_DELAY: 2000,
 };
 
+/**
+ * Interface representing a user's wallet portfolio.
+ * @property {string} totalUsd - The total amount of USD in the wallet.
+ * @property {string} totalApt - The total amount of a specific cryptocurrency in the wallet (e.g. APT).
+ */
 interface WalletPortfolio {
     totalUsd: string;
     totalApt: string;
 }
 
+/**
+ * Interface representing the prices for an apartment.
+ * @typedef {Object} Prices
+ * @property {Object} apt - The price information for an apartment.
+ * @property {string} apt.usd - The price in USD for the apartment.
+ */
 interface Prices {
     apt: { usd: string };
 }
 
+/**
+ * A class representing a Wallet Provider.
+ */
 export class WalletProvider {
     private cache: NodeCache;
     private cacheKey: string = "aptos/wallet";
 
+/**
+ * Constructor for creating a new instance of the class.
+ * 
+ * @param {Aptos} aptosClient - The Aptos client used for making API requests.
+ * @param {string} address - The address associated with the instance.
+ * @param {ICacheManager} cacheManager - The cache manager used for caching data.
+ */
     constructor(
         private aptosClient: Aptos,
         private address: string,
@@ -46,6 +67,13 @@ export class WalletProvider {
         this.cache = new NodeCache({ stdTTL: 300 }); // Cache TTL set to 5 minutes
     }
 
+/**
+* Reads data from the cache for a specified key.
+* 
+* @template T - The type of data to be retrieved from the cache
+* @param {string} key - The key used to retrieve data from the cache
+* @returns {Promise<T | null>} - A promise that resolves with the cached data, or null if not found
+*/
     private async readFromCache<T>(key: string): Promise<T | null> {
         const cached = await this.cacheManager.get<T>(
             path.join(this.cacheKey, key)
@@ -53,12 +81,25 @@ export class WalletProvider {
         return cached;
     }
 
+/**
+* Writes data to the cache with the specified key.
+* @template T
+* @param {string} key - The key to store the data under in the cache.
+* @param {T} data - The data to be stored in the cache.
+* @returns {Promise<void>} A Promise that resolves once the data is successfully written to the cache.
+*/
     private async writeToCache<T>(key: string, data: T): Promise<void> {
         await this.cacheManager.set(path.join(this.cacheKey, key), data, {
             expires: Date.now() + 5 * 60 * 1000,
         });
     }
 
+/**
+ * Retrieves data from cache using the given key.
+ * 
+ * @param {string} key - The key to use for retrieving the data from cache.
+ * @returns {Promise<T | null>} The cached data if found, otherwise null.
+ */
     private async getCachedData<T>(key: string): Promise<T | null> {
         // Check in-memory cache first
         const cachedData = this.cache.get<T>(key);
@@ -77,6 +118,13 @@ export class WalletProvider {
         return null;
     }
 
+/**
+ * Saves the provided data to both in-memory cache and file-based cache.
+ * 
+ * @param {string} cacheKey - The key under which the data will be stored in the cache.
+ * @param {T} data - The data to be stored in the cache.
+ * @returns {Promise<void>} A Promise that resolves when the data has been successfully stored in both caches.
+ */
     private async setCachedData<T>(cacheKey: string, data: T): Promise<void> {
         // Set in-memory cache
         this.cache.set(cacheKey, data);
@@ -85,6 +133,13 @@ export class WalletProvider {
         await this.writeToCache(cacheKey, data);
     }
 
+/**
+ * Fetches the prices with retry mechanism.
+ *
+ * @private
+ * @async
+ * @returns {Promise<any>} The response data from the API.
+ */
     private async fetchPricesWithRetry() {
         let lastError: Error;
 
@@ -123,6 +178,11 @@ export class WalletProvider {
         throw lastError;
     }
 
+/**
+ * Asynchronously fetches the value of the wallet portfolio.
+ * 
+ * @returns {Promise<WalletPortfolio>} A promise that resolves to the wallet portfolio.
+ */
     async fetchPortfolioValue(): Promise<WalletPortfolio> {
         try {
             const cacheKey = `portfolio-${this.address}`;
@@ -166,6 +226,11 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Asynchronously fetches prices and returns a Promise that resolves to Prices object.
+ * 
+ * @returns {Promise<Prices>} A Promise that resolves to Prices object containing APT price in USD.
+ */
     async fetchPrices(): Promise<Prices> {
         try {
             const cacheKey = "prices";
@@ -194,6 +259,14 @@ export class WalletProvider {
         }
     }
 
+/**
+ * Format the wallet portfolio information into a string with the character name,
+ * wallet address, total value in USD and APT units.
+ *
+ * @param {Runtime} runtime - The runtime object containing character information.
+ * @param {WalletPortfolio} portfolio - The portfolio containing total USD and APT values.
+ * @returns {string} The formatted string with portfolio information.
+ */
     formatPortfolio(runtime, portfolio: WalletPortfolio): string {
         let output = `${runtime.character.name}\n`;
         output += `Wallet Address: ${this.address}\n`;
@@ -206,6 +279,12 @@ export class WalletProvider {
         return output;
     }
 
+/**
+ * Asynchronously retrieves the portfolio value, formats it, and returns it as a promise.
+ * 
+ * @param {any} runtime - The runtime environment.
+ * @returns {Promise<string>} A promise that resolves to the formatted portfolio value.
+ */
     async getFormattedPortfolio(runtime): Promise<string> {
         try {
             const portfolio = await this.fetchPortfolioValue();
@@ -217,6 +296,14 @@ export class WalletProvider {
     }
 }
 
+/**
+ * Retrieves the wallet information from the runtime settings and returns the formatted portfolio.
+ *
+ * @param {IAgentRuntime} runtime - The runtime context for the agent
+ * @param {Memory} _message - The message passed to the provider (unused)
+ * @param {State} [_state] - Optional state information (unused)
+ * @returns {Promise<string | null>} The formatted portfolio information or null if there is an error
+ */
 const walletProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,
