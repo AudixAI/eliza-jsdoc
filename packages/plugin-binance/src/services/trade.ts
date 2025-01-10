@@ -16,6 +16,9 @@ import { BaseService } from "./base";
 /**
  * Service for handling trading operations
  */
+/**
+ * Class representing a Trade Service that extends BaseService.
+ */
 export class TradeService extends BaseService {
     /**
      * Execute a spot trade
