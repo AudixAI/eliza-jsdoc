@@ -10,6 +10,11 @@ import {
 const BASE_URL = "https://nebula-api.thirdweb.com";
 
 // If chat is a stream, wait for stream to complete before returning response
+/**
+ * Handles the response from a fetch request that contains a ReadableStream.
+ * @param {Response} response - The response object from the fetch request.
+ * @returns {Promise<ReadableStream>} A Promise that resolves to a ReadableStream.
+ */
 async function handleStreamResponse(
     response: Response
 ): Promise<ReadableStream> {
@@ -51,6 +56,18 @@ async function handleStreamResponse(
 }
 
 // Process & return a response to the current message with thirdweb Nebula
+/**
+ * Action for blockchain chat functionality.
+ * Allows querying blockchain data and executing transactions through natural language interaction with the Nebula API.
+ *
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {Array.<string>} similes - Array of related similes.
+ * @property {Function} validate - Asynchronous function to validate the message.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Asynchronous function to handle the blockchain chat.
+ * @property {Array.<Array.<Object>>} examples - Array of examples demonstrating the usage of this action.
+ */
 export const blockchainChatAction: Action = {
     name: "BLOCKCHAIN_CHAT",
     similes: [
