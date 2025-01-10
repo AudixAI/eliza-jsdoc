@@ -17,6 +17,19 @@ import {
  * @property {Function} handler - A function that handles the action when executed.
  * @property {ActionExample[][]} examples - Examples demonstrating the usage of the IGNORE action.
  */
+/**
+ * Represents an action named "IGNORE" that can be used to ignore the user in a conversation.
+ * This action can be used when the conversation has naturally ended or when the user should be ignored.
+ * Use this action if the user is being aggressive, creepy, or if both parties have already said goodbye.
+ * Do not use this action if the user has engaged directly or if there is an issue that needs to be addressed.
+ * 
+ * @property {string} name - The name of the action ("IGNORE").
+ * @property {string[]} similes - Similar actions that can be associated with "IGNORE".
+ * @property {Function} validate - Asynchronous function to validate the action using the runtime and memory.
+ * @property {string} description - A detailed description of when and how to use the "IGNORE" action.
+ * @property {Function} handler - Asynchronous function to handle the execution of the "IGNORE" action.
+ * @property {ActionExample[][]} examples - Examples demonstrating the usage of the "IGNORE" action.
+ */
 export const ignoreAction: Action = {
     name: "IGNORE",
     similes: ["STOP_TALKING", "STOP_CHATTING", "STOP_CONVERSATION"],
