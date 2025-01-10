@@ -8,8 +8,18 @@ export const multiversxEnvSchema = z.object({
     MVX_NETWORK: z.enum(["mainnet", "devnet", "testnet"]),
 });
 
+/**
+ * Type definition for MultiversxConfig, inferred from multiversxEnvSchema.
+ */
 export type MultiversxConfig = z.infer<typeof multiversxEnvSchema>;
 
+/**
+ * Validates the MultiversX configuration by retrieving settings from the runtime and environment variables,
+ * then parses the configuration using the multiversxEnvSchema.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object used to retrieve settings
+ * @returns {Promise<MultiversxConfig>} The validated MultiversX configuration
+ */
 export async function validateMultiversxConfig(
     runtime: IAgentRuntime
 ): Promise<MultiversxConfig> {
