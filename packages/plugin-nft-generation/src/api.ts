@@ -5,6 +5,12 @@ import { createSolanaCollection } from "./handlers/createSolanaCollection.ts";
 import { createNFT, createNFTMetadata } from "./handlers/createNFT.ts";
 import { verifyNFT } from "./handlers/verifyNFT.ts";
 
+/**
+ * Creates an Express router with routes for interacting with NFT generation API.
+ * 
+ * @param agents - A map containing agent IDs mapped to AgentRuntime instances.
+ * @returns An Express router with NFT generation API routes.
+ */
 export function createNFTApiRouter(
     agents: Map<string, AgentRuntime>
 ): express.Router {
