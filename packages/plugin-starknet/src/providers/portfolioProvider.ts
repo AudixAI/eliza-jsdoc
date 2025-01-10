@@ -10,21 +10,47 @@ import { fetchWithRetry, getStarknetAccount } from "../utils";
 import { ERC20Token } from "../utils/ERC20Token";
 import { PORTFOLIO_TOKENS } from "./token.ts";
 
+/**
+ * Represents a collection of cryptocurrency prices in USD from Coingecko.
+ * @typedef CoingeckoPrices
+ * @type {object}
+ * @property {number} usd - The price in USD for a specific cryptocurrency.
+ */
 type CoingeckoPrices = {
     [cryptoName: string]: { usd: number };
 };
 
+/**
+ * Represents the balances of tokens with their respective token addresses as keys.
+ * @typedef {Object} TokenBalances
+ * @property {bigint} - The balance of a token represented as a bigint value.
+ */
 type TokenBalances = {
     [tokenAddress: string]: bigint;
 };
 
+/**
+ * Class representing a Wallet Provider that interacts with a runtime to retrieve wallet portfolio information and token USD values.
+ */
 export class WalletProvider {
     private runtime: IAgentRuntime;
 
+/**
+ * Constructor for creating a new instance of a class.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object to be assigned to the class property.
+ */
     constructor(runtime: IAgentRuntime) {
         this.runtime = runtime;
     }
 
+/**
+* Retrieves the wallet portfolio by fetching the token balances from the cache or Starknet
+* account. If the cached data is available, it returns the cached values. Otherwise, it queries
+* Starknet for the token balances and stores them in the cache for future use.
+*
+* @returns {Promise<TokenBalances>} The token balances in the wallet portfolio.
+*/
     async getWalletPortfolio(): Promise<TokenBalances> {
         const cacheKey = `walletPortfolio-${this.runtime.agentId}`;
         const cachedValues =
@@ -51,6 +77,11 @@ export class WalletProvider {
         return balances;
     }
 
+/**
+ * Retrieves the USD values for tokens from Coingecko API.
+ * 
+ * @returns {Promise<CoingeckoPrices>} An object containing the USD values for tokens
+ */
     async getTokenUsdValues(): Promise<CoingeckoPrices> {
         const cacheKey = "tokenUsdValues";
         const cachedValues =
@@ -76,6 +107,13 @@ export class WalletProvider {
     }
 }
 
+/**
+ * Get the wallet portfolio details including token balances and USD values.
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {Memory} _message - The message object (not used in this method).
+ * @param {State} [_state] - The optional state object (not used in this method).
+ * @returns {Promise<string>} A formatted string representing the wallet portfolio with symbol, balance, and USD value.
+ */
 const walletProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,
