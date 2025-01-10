@@ -58,6 +58,11 @@ import { join } from 'path';
  * Represents the runtime environment for an agent, handling message processing,
  * action registration, and interaction with external services like OpenAI and Supabase.
  */
+/**
+ * Class representing the Agent Runtime.
+ * @implements {IAgentRuntime}
+ */
+
 export class AgentRuntime implements IAgentRuntime {
     /**
      * Default count for recent messages to be kept in memory.
