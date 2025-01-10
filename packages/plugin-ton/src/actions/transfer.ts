@@ -18,11 +18,22 @@ import {
 } from "../providers/wallet";
 import { internal } from "@ton/ton";
 
+/**
+ * Interface representing content to be transferred, extending from Content.
+ * @interface
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string|number} amount - The amount to be transferred, can be a string or a number.
+ */
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Check if the given content is of type TransferContent.
+ * @param {Content} content - The content to be checked.
+ * @returns {boolean} - Returns true if the content is of type TransferContent, false otherwise.
+ */
 function isTransferContent(content: Content): content is TransferContent {
     console.log("Content for transfer", content);
     return (
@@ -32,6 +43,26 @@ function isTransferContent(content: Content): content is TransferContent {
     );
 }
 
+/**
+ * Transfer template for extracting recipient wallet address and amount to transfer from recent messages.
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "recipient": "EQCGScrZe1xbyWqWDvdI6mzP-GAcAWFv6ZXuaJOuSqemxku4",
+ *     "amount": "1"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Recipient wallet address
+ * - Amount to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
@@ -50,9 +81,28 @@ Given the recent messages, extract the following information about the requested
 
 Respond with a JSON markdown block containing only the extracted values.`;
 
+/**
+ * Class representing a transfer action.
+ */
+/**
+ * Transfer tokens to a specified recipient.
+ * @param { TransferContent } params - The content of the transfer.
+ * @returns {Promise<string>} - The hash of the transfer.
+ */
 export class TransferAction {
+/**
+ * Constructor for creating an instance of the class with a wallet provider.
+ * 
+ * @param {WalletProvider} walletProvider - The wallet provider to be used by the class.
+ */ 
+      
     constructor(private walletProvider: WalletProvider) {}
 
+/**
+ * Transfer tokens to a recipient.
+ * @param {TransferContent} params - The parameters for the transfer.
+ * @returns {Promise<string>} - The hash of the transfer.
+ */
     async transfer(params: TransferContent): Promise<string> {
         console.log(
             `Transferring: ${params.amount} tokens to (${params.recipient})`
@@ -87,6 +137,14 @@ export class TransferAction {
     }
 }
 
+/**
+ * Builds transfer details using the provided runtime, message, and state.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object.
+ * @param {Memory} message - The message object.
+ * @param {State} state - The state object.
+ * @returns {Promise<TransferContent>} - The transfer content object.
+ */
 const buildTransferDetails = async (
     runtime: IAgentRuntime,
     message: Memory,
