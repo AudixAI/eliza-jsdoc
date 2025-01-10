@@ -18,9 +18,17 @@ import { parseEther } from "viem";
 
 export { swapTemplate };
 
+/**
+ * Represents a Swap Action for interacting with multiple chains for token swapping.
+ * @class
+ */
 export class SwapAction {
     private config;
 
+/**
+ * Constructor for initializing the configuration object based on the wallet provider information.
+ * @param {WalletProvider} walletProvider - The wallet provider to retrieve chain information from
+ */
     constructor(private walletProvider: WalletProvider) {
         this.config = createConfig({
             integrator: "eliza",
@@ -58,6 +66,12 @@ export class SwapAction {
         });
     }
 
+/**
+ * Function to swap tokens from one chain to another.
+ *
+ * @param {SwapParams} params - The parameters for the swap transaction.
+ * @returns {Promise<Transaction>} - A promise that resolves with the transaction details.
+ */
     async swap(params: SwapParams): Promise<Transaction> {
         const walletClient = this.walletProvider.getWalletClient(params.chain);
         const [fromAddress] = await walletClient.getAddresses();
@@ -96,6 +110,20 @@ export class SwapAction {
     }
 }
 
+/**
+ * Object representing a swap action.
+ *
+ * This action allows users to swap tokens on the same chain.
+ *
+ * @typedef {Object} swapAction
+ * @property {string} name - The name of the action ("swap").
+ * @property {string} description - A brief description of the action.
+ * @property {Function} handler - The function that handles the swap action.
+ * @property {Function} validate - The function that validates the swap action.
+ * @property {Array<Object>} examples - Examples of how to use the swap action.
+ *
+ * @type {Object}
+ */
 export const swapAction = {
     name: "swap",
     description: "Swap tokens on the same chain",
