@@ -9,6 +9,14 @@ import { formatUnits } from "viem";
 import { getAccount, getDecimals, getTokenBalance } from "../utils";
 import { STRATEGY_ADDRESSES, TOKEN_ADDRESSES } from "../utils/constants";
 
+/**
+ * Function to retrieve wallet balances including wallet address, token balances, and balances in yield strategies.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Memory} _message - Optional message parameter.
+ * @param {State} _state - Optional state parameter.
+ * @returns {string} - A formatted string containing the wallet balances.
+ */
 const walletProvider: Provider = {
     get: async (runtime: IAgentRuntime, _message: Memory, _state?: State) => {
         elizaLogger.debug("walletProvider::get");
