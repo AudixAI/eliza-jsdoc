@@ -15,10 +15,23 @@ import axios from "axios";
 import { validateStargazeConfig } from "../environment";
 import { debugLog } from "../utils/debug";
 
+/**
+ * Interface for getting collection statistics content.
+ * Extends Content interface.
+ * @property {string} collectionAddr - The address of the collection.
+ */ 
+
 export interface GetCollectionStatsContent extends Content {
     collectionAddr: string;
 }
 
+/**
+ * GraphQL query to fetch stats for a specific collection.
+ * @param {String} $collectionAddr - The address of the collection to retrieve stats for.
+ * @returns {Object} The stats for the specified collection including various metrics such as number of owners,
+ * best offer, total volume, 24-hour volume, total sales count, tokens minted percentage, unique owner percentage,
+ * 24-hour change percentage, market cap, 24-hour mint count, 24-hour mint volume, total volume in USD, and 24-hour volume in USD.
+ */
 const COLLECTION_STATS_QUERY = `
 query CollectionStats($collectionAddr: String!) {
     collection(address: $collectionAddr) {
@@ -43,6 +56,26 @@ query CollectionStats($collectionAddr: String!) {
 }`;
 
 // Add template for content generation
+/**
+ * Given the message, extract the collection address for fetching Stargaze stats.
+ * 
+ * Format the response as a JSON object with this field:
+ * - collectionAddr: the collection address or name (required)
+ * 
+ * Example response for "Show me stats for ammelia collection":
+ * {
+ *     "collectionAddr": "ammelia"
+ * }
+ * 
+ * Example response for "Show me stats for stars10n0m58ztlr9wvwkgjuek2m2k0dn5pgrhfw9eahg9p8e5qtvn964suc995j collection":
+ * {
+ *     "collectionAddr": "stars10n0m58ztlr9wvwkgjuek2m2k0dn5pgrhfw9eahg9p8e5qtvn964suc995j"
+ * }
+ * 
+ * {{recentMessages}}
+ * 
+ * Extract the collection address from the above messages and respond with the appropriate JSON.
+ */
 const getCollectionStatsTemplate = `Given the message, extract the collection address for fetching Stargaze stats.
 
 Format the response as a JSON object with this field:
