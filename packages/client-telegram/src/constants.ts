@@ -20,6 +20,12 @@ export const RESPONSE_CHANCES = {
     AFTER_LEADER: 0.5, // 50% chance to respond after leader
 } as const;
 
+/**
+ * Object representing keywords related to team coordination.
+ * @readonly
+ * @type {Object}
+ * @property {string[]} KEYWORDS - List of keywords related to team coordination.
+ */
 export const TEAM_COORDINATION = {
     KEYWORDS: [
         "team",
