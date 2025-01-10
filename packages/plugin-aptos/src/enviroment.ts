@@ -6,8 +6,17 @@ export const aptosEnvSchema = z.object({
     APTOS_NETWORK: z.enum(["mainnet", "testnet"]),
 });
 
+/**
+ * Type definition for the configuration object of Aptos, inferred from the aptosEnvSchema.
+ */
 export type AptosConfig = z.infer<typeof aptosEnvSchema>;
 
+/**
+ * Validates the configuration for Aptos by checking if the required settings are provided and in the correct format.
+ *
+ * @param {IAgentRuntime} runtime - The current Agent runtime.
+ * @returns {Promise<AptosConfig>} - A Promise that resolves to the validated Aptos configuration.
+ */
 export async function validateAptosConfig(
     runtime: IAgentRuntime
 ): Promise<AptosConfig> {
