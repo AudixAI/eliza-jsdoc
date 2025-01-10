@@ -21,6 +21,26 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
+/**
+ * Given the message, determine if a gif should be sent based on the content.
+ * If yes, extract relevant keywords or phrases to use as search terms for the gif.
+ * 
+ * Format the response as a JSON object with these fields:
+ * - trigger: boolean (whether to send a gif)
+ * - searchTerm: string (keywords to search for the gif, required if trigger is true)
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "trigger": true,
+ *     "searchTerm": "pudgy penguins beach"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Analyze the above messages and decide whether to respond with a gif. If so, specify the search term.
+ */
 const sendGifTemplate = `Given the message, determine if a gif should be sent based on the content.
 If yes, extract relevant keywords or phrases to use as search terms for the gif.
 
@@ -43,6 +63,12 @@ Analyze the above messages and decide whether to respond with a gif. If so, spec
 
 const GIPHY_SEARCH_ENDPOINT = "https://api.giphy.com/v1/gifs/search";
 
+/**
+ * Interface representing content for sending a GIF.
+ * Extends Content interface.
+ * @property {boolean} trigger - Indicates if the GIF is triggered.
+ * @property {string} [searchTerm] - Optional search term for the GIF.
+ */
 export interface SendGifContent extends Content {
     trigger: boolean;
     searchTerm?: string;
