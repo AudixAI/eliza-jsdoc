@@ -6,6 +6,17 @@ import {
     elizaLogger,
 } from "@elizaos/core";
 
+/**
+ * Sample evaluator for checking important content in memory
+ * @typedef {Object} Evaluator
+ * @property {boolean} alwaysRun - Indicates if the evaluator should always run
+ * @property {string} description - Description of the evaluator
+ * @property {Array<string>} similes - Similes related to the evaluator
+ * @property {Array<Object>} examples - Examples of the evaluator in action
+ * @property {Function} handler - Asynchronous function for evaluating data in memory
+ * @property {Function} validate - Asynchronous function for validating the evaluator
+ * @property {string} name - Name of the evaluator
+ */
 export const sampleEvaluator: Evaluator = {
     alwaysRun: false,
     description: "Sample evaluator for checking important content in memory",
