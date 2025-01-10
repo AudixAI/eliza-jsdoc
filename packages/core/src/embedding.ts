@@ -4,6 +4,17 @@ import settings from "./settings.ts";
 import elizaLogger from "./logger.ts";
 import LocalEmbeddingModelManager from "./localembeddingManager.ts";
 
+/**
+ * Interface for embedding options.
+ * @typedef {Object} EmbeddingOptions
+ * @property {string} model - The model to be used for embedding.
+ * @property {string} endpoint - The endpoint for retrieving embeddings.
+ * @property {string} [apiKey] - The API key for accessing the endpoint (optional).
+ * @property {number} [length] - The length of the embedding.
+ * @property {boolean} [isOllama] - Indicates if Ollama embedding is used.
+ * @property {number} [dimensions] - The number of dimensions in the embedding.
+ * @property {string} [provider] - The provider of the embedding.
+ */
 interface EmbeddingOptions {
     model: string;
     endpoint: string;
@@ -22,14 +33,36 @@ export const EmbeddingProvider = {
     BGE: "BGE",
 } as const;
 
+/**
+* Type definition for EmbeddingProviderType which represents the keys of the EmbeddingProvider class.
+*/
 export type EmbeddingProviderType =
     (typeof EmbeddingProvider)[keyof typeof EmbeddingProvider];
 
+/**
+ * Type representing the configuration for embedding.
+ * @typedef {Object} EmbeddingConfig
+ * @property {number} dimensions - The number of dimensions for the embedding.
+ * @property {string} model - The model used for embedding.
+ * @property {EmbeddingProviderType} provider - The provider type for the embedding.
+ */
 export type EmbeddingConfig = {
     readonly dimensions: number;
     readonly model: string;
     readonly provider: EmbeddingProviderType;
 };
+
+/**
+ * Returns the embedding configuration based on the settings provided.
+ * The embedding configuration includes dimensions, model name, and provider name.
+ * If USE_OPENAI_EMBEDDING is set to true, retrieves settings for OpenAI embedding.
+ * If USE_OLLAMA_EMBEDDING is set to true, retrieves settings for Ollama embedding.
+ * If USE_GAIANET_EMBEDDING is set to true, retrieves settings for GaiaNet embedding.
+ * If USE_HEURIST_EMBEDDING is set to true, retrieves settings for Heurist embedding.
+ * If none of the above conditions are met, default settings for BGE embedding are returned.
+ * 
+ * @returns {EmbeddingConfig} The embedding configuration object with dimensions, model, and provider.
+ */
 
 export const getEmbeddingConfig = (): EmbeddingConfig => ({
     dimensions:
@@ -66,6 +99,21 @@ export const getEmbeddingConfig = (): EmbeddingConfig => ({
                   : "BGE",
 });
 
+/**
+ * Asynchronously retrieves remote embeddings for the given input using the specified options.
+ * 
+ * @param {string} input - The input text to get embeddings for.
+ * @param {EmbeddingOptions} options - The options for fetching embeddings:
+ * @param {string} options.endpoint - The base endpoint for the embedding API.
+ * @param {string} options.model - The model to use for embedding.
+ * @param {number} [options.dimensions] - The number of dimensions for the embeddings.
+ * @param {number} [options.length] - The length of the embeddings.
+ * @param {string} [options.apiKey] - The API key for authorization.
+ * @param {boolean} [options.isOllama] - Indicates if the endpoint should include '/v1' for Ollama.
+ * 
+ * @returns {Promise<number[]>} The embeddings as an array of numbers.
+ * @throws {Error} If there is an error fetching the embeddings.
+ */
 async function getRemoteEmbedding(
     input: string,
     options: EmbeddingOptions
@@ -120,6 +168,12 @@ async function getRemoteEmbedding(
     }
 }
 
+/**
+ * Determines the type of embedding based on the runtime environment and settings.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime context of the agent.
+ * @returns {"local" | "remote"} - The type of embedding to use.
+ */
 export function getEmbeddingType(runtime: IAgentRuntime): "local" | "remote" {
     const isNode =
         typeof process !== "undefined" &&
@@ -140,6 +194,11 @@ export function getEmbeddingType(runtime: IAgentRuntime): "local" | "remote" {
     return isLocal ? "local" : "remote";
 }
 
+/**
+ * Function to get a zero vector based on the selected embedding model.
+ * Default embedding dimension is 384. Can be overridden based on the selected provider.
+ * @returns {number[]} Array representing the zero vector with the appropriate dimensions based on the selected embedding model.
+ */
 export function getEmbeddingZeroVector(): number[] {
     let embeddingDimension = 384; // Default BGE dimension
 
@@ -179,6 +238,13 @@ export function getEmbeddingZeroVector(): number[] {
  * @throws {Error} If the API request fails
  */
 
+/**
+ * Function to embed the input text using various providers.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object
+ * @param {string} input - The input text to be embedded
+ * @returns {Promise<number[]>} - The array of embedded values
+ */
 export async function embed(runtime: IAgentRuntime, input: string) {
     elizaLogger.debug("Embedding request:", {
         modelProvider: runtime.character.modelProvider,
