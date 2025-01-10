@@ -14,6 +14,16 @@ import {
 
 import { SolanaAgentKit } from "solana-agent-kit";
 
+/**
+ * Interface representing the content required to create a token.
+ * @interface CreateTokenContent
+ * @extends Content
+ * @property {string} name - The name of the token.
+ * @property {string} uri - The URI of the token.
+ * @property {string} symbol - The symbol of the token.
+ * @property {number} decimals - The number of decimals of the token.
+ * @property {number} initialSupply - The initial supply of the token.
+ */
 export interface CreateTokenContent extends Content {
     name: string;
     uri: string;
@@ -22,6 +32,11 @@ export interface CreateTokenContent extends Content {
     initialSupply: number;
 }
 
+/**
+ * Check if the provided content is of type CreateTokenContent.
+ * @param {any} content - The content to be checked.
+ * @returns {boolean} - True if the content is of type CreateTokenContent, false otherwise.
+ */
 function isCreateTokenContent(content: any): content is CreateTokenContent {
     elizaLogger.log("Content for createToken", content);
     return (
@@ -33,6 +48,31 @@ function isCreateTokenContent(content: any): content is CreateTokenContent {
     );
 }
 
+/**
+ * Create a template to respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *     "name": "Example Token",
+ *     "symbol": "EXMPL",
+ *     "uri": "https://raw.githubusercontent.com/solana-developers/opos-asset/main/assets/CompressedCoil/image.png",
+ *     "decimals": 18,
+ *     "initialSupply": 1000000,
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested token transfer:
+ * - Token name
+ * - Token symbol
+ * - Token uri
+ * - Token decimals
+ * - Token initialSupply
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const createTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
