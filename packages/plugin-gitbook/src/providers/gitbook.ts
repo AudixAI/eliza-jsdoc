@@ -7,6 +7,13 @@ import {
 } from "@elizaos/core";
 import { GitBookResponse, GitBookClientConfig } from "../types";
 
+/**
+ * Cleans the given text by removing certain patterns such as Discord mentions, channels, roles,
+ * platform mentions, and then trims the resulting string.
+ * 
+ * @param {string} text - The text to clean
+ * @returns {string} The cleaned text
+ */
 function cleanText(text: string): string {
     const cleaned = text
         .replace(/<@!?\d+>/g, "") // Discord mentions
@@ -18,6 +25,13 @@ function cleanText(text: string): string {
     return cleaned;
 }
 
+/**
+ * Asynchronously validates a query based on provided keywords and configuration.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {string} text - The query text to validate.
+ * @returns {Promise<boolean>} A boolean indicating whether the query is valid.
+ */
 async function validateQuery(
     runtime: IAgentRuntime,
     text: string
@@ -92,6 +106,13 @@ async function validateQuery(
     }
 }
 
+/**
+ * Function to fetch data from GitBook API based on a query.
+ * @param {IAgentRuntime} runtime - The runtime object for the agent
+ * @param {Memory} message - The message object containing content
+ * @param {State} [_state] - Optional state object
+ * @returns {Promise<string>} The response from the GitBook API as a string
+ */
 export const gitbookProvider: Provider = {
     get: async (
         runtime: IAgentRuntime,
