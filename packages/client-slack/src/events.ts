@@ -4,10 +4,20 @@ import { SlackConfig } from "./types/slack-types";
 import { MessageManager } from "./messages";
 import { elizaLogger } from "@elizaos/core";
 
+/**
+ * Class representing a Slack event handler.
+ */
 export class EventHandler {
     private events: ReturnType<typeof createEventAdapter>;
     private messageManager: MessageManager;
 
+/**
+ * Constructor for initializing the Slack event handler.
+ * 
+ * @param {SlackConfig} config - The configuration object for Slack.
+ * @param {WebClient} client - The WebClient instance for interacting with the Slack API.
+ * @param {MessageManager} messageManager - The message manager for handling Slack messages.
+ */
     constructor(
         config: SlackConfig,
         client: WebClient,
@@ -25,6 +35,16 @@ export class EventHandler {
         elizaLogger.log("✅ Event handler initialization complete");
     }
 
+/**
+ * Sets up event listeners for handling various Slack events.
+ * 
+ * - Handles URL verification events
+ * - Handles message events
+ * - Handles app mention events
+ * - Handles reaction added and removed events
+ * - Logs errors for all events and raw events
+ * 
+ */
     private setupEventListeners() {
         elizaLogger.log("📡 Setting up event listeners...");
 
@@ -137,6 +157,10 @@ export class EventHandler {
         elizaLogger.log("✅ Event listeners setup complete");
     }
 
+/**
+ * Returns the event adapter for express middleware.
+ * @returns {any} The event adapter
+ */
     public getEventAdapter() {
         elizaLogger.debug(
             "🔌 [ADAPTER] Returning event adapter for express middleware"
