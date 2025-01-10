@@ -13,6 +13,10 @@ import {
 } from "../src/types";
 
 // Mock data for evaluators
+/**
+ * Array of mock evaluators.
+ * @type {Evaluator[]}
+ */
 const mockEvaluators: Evaluator[] = [
     {
         name: "Evaluator1",
