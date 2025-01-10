@@ -15,11 +15,42 @@ import axios from "axios";
 import { validateStargazeConfig } from "../environment";
 import { debugLog } from "../utils/debug";
 
+/**
+ * Interface representing the parameters for retrieving the latest NFT content.
+ * @interface GetLatestNFTContent
+ * @extends Content
+ * @property {string} collectionAddr - The address of the NFT collection.
+ * @property {number} limit - The limit on the number of results to retrieve.
+ */
 export interface GetLatestNFTContent extends Content {
     collectionAddr: string;
     limit: number;
 }
 
+/**
+ * Given the message, extract information about the NFT collection request.
+ * 
+ * Format the response as a JSON object with these fields:
+ * - collectionAddr: the collection address or name
+ * - limit: number of NFTs to fetch (default to 1 for latest)
+ * 
+ * Example response:
+ * For "Show me the latest NFT from ammelia":
+ * {
+ *     "collectionAddr": "ammelia",
+ *     "limit": 1
+ * }
+ * 
+ * For "Show me the latest NFT from Badkids":
+ * {
+ *     "collectionAddr": "badkids",
+ *     "limit": 1
+ * }
+ * 
+ * {{recentMessages}}
+ * 
+ * Extract the collection information from the above messages and respond with the appropriate JSON.
+ */
 const getLatestNFTTemplate = `Given the message, extract information about the NFT collection request.
 
 Format the response as a JSON object with these fields:
@@ -48,6 +79,10 @@ For "Show me the latest NFT from Badkids":
 Extract the collection information from the above messages and respond with the appropriate JSON.`;
 
 
+/**
+ * GraphQL query to fetch tokens from a marketplace based on collection address and limit.
+ * @type {string}
+ */
 const GRAPHQL_QUERY = `
 query MarketplaceTokens($collectionAddr: String!, $limit: Int) {
     tokens(
