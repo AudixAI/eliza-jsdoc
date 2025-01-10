@@ -5,6 +5,13 @@ import {
 } from "discord.js";
 import { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
 
+/**
+ * Retrieves information about the current conversation channel for the agent.
+ * @param {IAgentRuntime} runtime - The agent runtime.
+ * @param {Memory} message - The message from the conversation.
+ * @param {State} state - The state of the agent.
+ * @returns {string} Information about the current conversation channel.
+ */
 const channelStateProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
         const discordMessage =
