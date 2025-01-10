@@ -12,6 +12,9 @@ import { stringToUuid } from "./uuid.ts";
 /**
  * Manage knowledge in the database.
  */
+/**
+ * The AgentRuntime instance associated with this manager.
+ */
 export class RAGKnowledgeManager implements IRAGKnowledgeManager {
     /**
      * The AgentRuntime instance associated with this manager.
