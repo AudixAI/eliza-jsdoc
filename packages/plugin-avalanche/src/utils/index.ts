@@ -42,6 +42,15 @@ export const getTxReceipt = async (runtime: IAgentRuntime, tx: Hash) => {
     return receipt;
 };
 
+/**
+ * Asynchronous function to retrieve the decimal value of a token.
+ * If the token address is the zero address, it returns the decimal value of the native currency.
+ * Otherwise, it reads the token's contract using the public client and returns the decimal value.
+ * 
+ * @param {IAgentRuntime} runtime - The Agent runtime interface.
+ * @param {Address} tokenAddress - The address of the token contract.
+ * @returns {Promise<number>} The decimal value of the token.
+ */
 export const getDecimals = async (
     runtime: IAgentRuntime,
     tokenAddress: Address
@@ -77,6 +86,14 @@ export const getNativeBalance = async (
     return balance;
 };
 
+/**
+ * Function to get the balance of a specific token for a given owner.
+ * If the token address is the native token address, it gets the native balance.
+ * @param {IAgentRuntime} runtime - The runtime object to interact with the agent.
+ * @param {Address} tokenAddress - The address of the token to get the balance for.
+ * @param {Address} owner - The address of the owner to get the balance for.
+ * @returns {Promise<number>} The balance of the token for the specified owner.
+ */
 export const getTokenBalance = async (
     runtime: IAgentRuntime,
     tokenAddress: Address,
@@ -111,6 +128,14 @@ export const getTokenBalance = async (
     return balance;
 };
 
+/**
+ * Async function to get a quote for swapping tokens using YakSwap router.
+ * @param { IAgentRuntime } runtime - The runtime object.
+ * @param { Address } fromTokenAddress - The address of the token to swap from.
+ * @param { Address } toTokenAddress - The address of the token to swap to.
+ * @param { number } amount - The amount of tokens to swap.
+ * @returns {Promise<YakSwapQuote>} The quote for the token swap.
+ */
 export const getQuote = async (
     runtime: IAgentRuntime,
     fromTokenAddress: Address,
@@ -199,6 +224,14 @@ export const getQuote = async (
     return quote as YakSwapQuote;
 };
 
+/**
+ * Sends a native asset to a recipient.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Address} recipient - The recipient address.
+ * @param {number} amount - The amount of the asset to send.
+ * @returns {Promise<Hash>} The transaction hash of the sent native asset.
+ */
 export const sendNativeAsset = async (
     runtime: IAgentRuntime,
     recipient: Address,
@@ -216,6 +249,15 @@ export const sendNativeAsset = async (
     return tx as Hash;
 };
 
+/**
+ * Sends tokens from the current account to a recipient's address.
+ * 
+ * @param {IAgentRuntime} runtime - The agent runtime object.
+ * @param {Address} tokenAddress - The address of the token contract.
+ * @param {Address} recipient - The address of the recipient.
+ * @param {number} amount - The amount of tokens to send.
+ * @returns {Hash | undefined} The hash of the transaction if successful, otherwise undefined.
+ */
 export const sendToken = async (
     runtime: IAgentRuntime,
     tokenAddress: Address,
@@ -275,6 +317,16 @@ export const sendToken = async (
     }
 };
 
+/**
+ * Approves a certain spender to spend a specified amount of tokens on behalf of the user.
+ *
+ * @param {IAgentRuntime} runtime - The runtime object.
+ * @param {Address} tokenAddress - The address of the token contract.
+ * @param {Address} spender - The address of the spender.
+ * @param {number} amount - The amount of tokens to approve.
+ *
+ * @returns {Promise<string | undefined>} A promise that resolves with the transaction hash if successful, otherwise undefined.
+ */
 export const approve = async (
     runtime: IAgentRuntime,
     tokenAddress: Address,
@@ -333,6 +385,14 @@ export const approve = async (
     }
 };
 
+/**
+ * Function to swap tokens using the YakSwap protocol.
+ * 
+ * @param {IAgentRuntime} runtime - The Agent runtime environment.
+ * @param {YakSwapQuote} quote - The quote object containing necessary information for the swap.
+ * @param {Address} [recipient] - Optional recipient address for the swap.
+ * @returns {Promise<string | undefined>} The transaction hash if successful, undefined if an error occurs.
+ */
 export const swap = async (
     runtime: IAgentRuntime,
     quote: YakSwapQuote,
@@ -416,6 +476,15 @@ export const swap = async (
     }
 };
 
+/**
+ * Makes a deposit to a strategy contract using the given deposit token address and amount.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime context to interact with the agent environment.
+ * @param {Address} depositTokenAddress - The address of the token to deposit.
+ * @param {Address} strategyAddress - The address of the strategy contract to deposit to.
+ * @param {number} amount - The amount of tokens to deposit.
+ * @returns {Promise<Address | undefined>} - A promise that resolves to the transaction hash if successful, undefined otherwise.
+ */
 export const deposit = async (
     runtime: IAgentRuntime,
     depositTokenAddress: Address,
