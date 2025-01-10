@@ -9,6 +9,16 @@ import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { getQuote } from "./swapUtils.ts";
 import { getWalletKey } from "../keypairUtils.ts";
 
+/**
+ * Invoke the Swap DAO program by creating and sending a transaction with the provided instruction data.
+ *
+ * @param {Connection} connection - The connection to the Solana cluster.
+ * @param {Keypair} authority - The authority keypair used to sign the transaction.
+ * @param {PublicKey} statePDA - The public key of the state account in the Swap DAO program.
+ * @param {PublicKey} walletPDA - The public key of the wallet account in the Swap DAO program.
+ * @param {Buffer} instructionData - The data to be included in the instruction.
+ * @returns {Promise<string>} - A promise that resolves to the signature of the transaction.
+ */
 async function invokeSwapDao(
     connection: Connection,
     authority: Keypair,
@@ -44,12 +54,26 @@ async function invokeSwapDao(
     return signature;
 }
 
+/**
+ * Asynchronous function that prompts the user for confirmation on a token swap.
+ * @returns {Promise<boolean>} A Promise that resolves with a boolean value indicating the user's confirmation choice.
+ */
 async function promptConfirmation(): Promise<boolean> {
     // confirmation logic here
     const confirmSwap = window.confirm("Confirm the token swap?");
     return confirmSwap;
 }
 
+/**
+ * Action for executing a DAO token swap.
+ * @type {Action}
+ * @property {string} name - The name of the action ("EXECUTE_SWAP_DAO").
+ * @property {string[]} similes - Similar actions related to swapping tokens in DAO.
+ * @property {Function} validate - Function to validate the message.
+ * @property {string} description - Description of the action.
+ * @property {Function} handler - Function to handle the execution of the DAO token swap.
+ * @property {Array<Array<ActionExample>>} examples - Examples of executing the DAO token swap.
+ */
 export const executeSwapForDAO: Action = {
     name: "EXECUTE_SWAP_DAO",
     similes: ["SWAP_TOKENS_DAO", "TOKEN_SWAP_DAO"],
