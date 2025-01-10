@@ -43,11 +43,28 @@ import {
     cosineSimilarity,
 } from "./utils.ts";
 
+/**
+ * Interface representing a message context.
+ * @typedef {Object} MessageContext
+ * @property {string} content - The content of the message.
+ * @property {number} timestamp - The timestamp of the message.
+ */
 interface MessageContext {
     content: string;
     timestamp: number;
 }
 
+/**
+ * Type definition for Interest Channels.
+ * 
+ * @typedef {Object} InterestChannels
+ * @property {Object} - Key-value pairs where the key is a string and the value is an object.
+ * @property {string | undefined} currentHandler - The current handler for the channel.
+ * @property {number} lastMessageSent - The timestamp of the last message sent in the channel.
+ * @property {Array<{ userId: UUID; userName: string; content: Content }>} messages - Array of messages in the channel.
+ * @property {MessageContext} [previousContext] - Optional previous message context.
+ * @property {number} [contextSimilarityThreshold] - Optional threshold for context similarity.
+ */
 export type InterestChannels = {
     [key: string]: {
         currentHandler: string | undefined;
@@ -58,6 +75,9 @@ export type InterestChannels = {
     };
 };
 
+/**
+ * Class representing a Message Manager.
+ */
 export class MessageManager {
     private client: Client;
     private runtime: IAgentRuntime;
@@ -66,6 +86,11 @@ export class MessageManager {
     private discordClient: any;
     private voiceManager: VoiceManager;
 
+/**
+ * Initializes a new instance of the class.
+ * @param {any} discordClient - The Discord client.
+ * @param {VoiceManager} voiceManager - The voice manager.
+ */
     constructor(discordClient: any, voiceManager: VoiceManager) {
         this.client = discordClient.client;
         this.voiceManager = voiceManager;
@@ -74,6 +99,12 @@ export class MessageManager {
         this.attachmentManager = new AttachmentManager(this.runtime);
     }
 
+/**
+* Handles incoming messages from Discord.
+* 
+* @param {DiscordMessage} message - The message object received from Discord.
+* @returns {void} - Returns nothing.
+*/
     async handleMessage(message: DiscordMessage) {
         if (
             message.interaction ||
@@ -503,6 +534,13 @@ export class MessageManager {
         }
     }
 
+/**
+ * Asynchronously caches the specified number of messages from the given TextChannel.
+ * 
+ * @param {TextChannel} channel - The TextChannel from which to fetch messages.
+ * @param {number} count - The number of messages to fetch (default is 20).
+ * @returns {Promise<void>} - A Promise that resolves once all messages are cached.
+ */
     async cacheMessages(channel: TextChannel, count: number = 20) {
         const messages = await channel.messages.fetch({ limit: count });
 
@@ -512,6 +550,14 @@ export class MessageManager {
         }
     }
 
+/**
+ * Checks if the message is intended for the bot by checking if the bot is mentioned, or if the message
+ * contains the bot's username, tag, or nickname. Furthermore, it takes into account whether role mentions
+ * should be considered direct mentions based on the team mode configuration.
+ * 
+ * @param message The Discord message to check
+ * @returns True if the message is intended for the bot, False otherwise
+ */
     private _isMessageForMe(message: DiscordMessage): boolean {
         const isMentioned = message.mentions.users?.has(
             this.client.user?.id as string
@@ -553,6 +599,11 @@ export class MessageManager {
         );
     }
 
+/**
+ * Processes the message content and attachments to generate processed content and media attachments.
+ * @param {DiscordMessage} message - The Discord message object containing the content and attachments.
+ * @returns {Promise<{ processedContent: string; attachments: Media[] }>} An object containing the processed content and media attachments.
+ */
     async processMessageMedia(
         message: DiscordMessage
     ): Promise<{ processedContent: string; attachments: Media[] }> {
@@ -647,10 +698,21 @@ export class MessageManager {
         return { processedContent, attachments };
     }
 
+/**
+ * Returns a normalized version of the user ID by removing any non-numeric characters.
+ * 
+ * @param {string} id - The user ID to normalize.
+ * @returns {string} The normalized user ID.
+ */
     private _getNormalizedUserId(id: string): string {
         return id.toString().replace(/[^0-9]/g, "");
     }
 
+/**
+ * Check if a user is a member of the team based on their userId.
+ * @param {string} userId - The userId of the user to check.
+ * @returns {boolean} Returns true if the user is a team member, false otherwise.
+ */
     private _isTeamMember(userId: string): boolean {
         const teamConfig = this.runtime.character.clientConfig?.discord;
         if (!teamConfig?.isPartOfTeam || !teamConfig.teamAgentIds) return false;
@@ -664,6 +726,10 @@ export class MessageManager {
         return isTeamMember;
     }
 
+/**
+ * Checks if the current client user is the team leader based on the configured team leader ID.
+ * @returns {boolean} True if the current client user is the team leader, false otherwise.
+ */
     private _isTeamLeader(): boolean {
         return (
             this.client.user?.id ===
@@ -671,6 +737,11 @@ export class MessageManager {
         );
     }
 
+/**
+ * Check if the given content is a team coordination request based on predefined keywords.
+ * @param {string} content - The content to check.
+ * @returns {boolean} Returns true if the content is a team coordination request, false otherwise.
+ */
     private _isTeamCoordinationRequest(content: string): boolean {
         const contentLower = content.toLowerCase();
         return TEAM_COORDINATION.KEYWORDS?.some((keyword) =>
@@ -678,6 +749,14 @@ export class MessageManager {
         );
     }
 
+/**
+ * Checks if the content is relevant to a team member based on various conditions.
+ * 
+ * @param {string} content - The content to check relevance for.
+ * @param {string} channelId - The ID of the channel where the content is posted.
+ * @param {Memory} [lastAgentMemory=null] - The last memory of the agent, if any.
+ * @returns {boolean} - True if the content is relevant, otherwise false.
+ */
     private _isRelevantToTeamMember(
         content: string,
         channelId: string,
@@ -712,6 +791,14 @@ export class MessageManager {
         );
     }
 
+/**
+ * Analyzes the similarity between the current message and the previous context in the conversation.
+ * 
+ * @param {string} currentMessage - The current message to analyze.
+ * @param {MessageContext} [previousContext] - The previous context to compare against. Defaults to undefined if no previous context.
+ * @param {string} [agentLastMessage] - The last message sent by the agent. Defaults to undefined.
+ * @returns {Promise<number>} A promise that resolves to the weighted similarity between the current message and the previous context.
+ */
     private async _analyzeContextSimilarity(
         currentMessage: string,
         previousContext?: MessageContext,
@@ -736,6 +823,12 @@ export class MessageManager {
         return weightedSimilarity;
     }
 
+/**
+ * Determines if the bot should respond based on the context of the message in the channel.
+ * @param {DiscordMessage} message - The Discord message object.
+ * @param {InterestChannels[string]} channelState - The state of the channel's interest.
+ * @returns {Promise<boolean>} A boolean indicating whether the bot should respond or not.
+ */
     private async _shouldRespondBasedOnContext(
         message: DiscordMessage,
         channelState: InterestChannels[string]
@@ -789,6 +882,11 @@ export class MessageManager {
         return contextSimilarity >= similarityThreshold;
     }
 
+/**
+ * Check the interest level in a particular channel based on various factors
+ * @param {string} channelId - The ID of the channel to check interest for
+ * @returns {boolean} - True if the interest should be maintained, false if it should be reduced or removed
+ */
     private _checkInterest(channelId: string): boolean {
         const channelState = this.interestChannels[channelId];
         if (!channelState) return false;
@@ -856,6 +954,19 @@ export class MessageManager {
         return true;
     }
 
+/**
+ * Check if the message should be ignored based on various conditions including:
+ * - Ignoring messages from the bot itself
+ * - Ignoring messages not directed to the bot if in mentions-only mode
+ * - Team-based ignore logic for team members and leader
+ * - Context-based checking for active conversations
+ * - Replacing bot mentions with character name
+ * - Processing short responses and targeted phrases to stop responding
+ * - Ignoring short messages if not interested in the channel
+ * - Ignoring messages with certain keywords
+ * @param {DiscordMessage} message - The Discord message to check
+ * @returns {Promise<boolean>} Whether the message should be ignored
+ */
     private async _shouldIgnore(message: DiscordMessage): Promise<boolean> {
         // if the message is from us, ignore
         if (message.author.id === this.client.user?.id) return true;
@@ -1032,6 +1143,13 @@ export class MessageManager {
         return false;
     }
 
+/**
+ * Determine whether the bot should respond to a message based on certain conditions.
+ * 
+ * @param {DiscordMessage} message - The message to check for response eligibility.
+ * @param {State} state - The current state of the bot.
+ * @returns {Promise<boolean>} A boolean value indicating whether the bot should respond.
+ */
     private async _shouldRespond(
         message: DiscordMessage,
         state: State
@@ -1265,6 +1383,13 @@ export class MessageManager {
         }
     }
 
+/**
+ * Generates a response based on the given message, state, and context.
+ * @param {Memory} message - The message object containing user and room information.
+ * @param {State} state - The current state of the conversation.
+ * @param {string} context - The context in which the response is generated.
+ * @returns {Promise<Content>} A promise that resolves with the generated response content.
+ */
     private async _generateResponse(
         message: Memory,
         state: State,
@@ -1293,6 +1418,13 @@ export class MessageManager {
         return response;
     }
 
+/**
+ * Fetches the name of the bot using the provided bot token.
+ * 
+ * @param {string} botToken - The token used to authenticate the bot.
+ * @returns {Promise<string>} The name of the bot.
+ * @throws {Error} If there is an error fetching the bot details.
+ */
     async fetchBotName(botToken: string) {
         const url = "https://discord.com/api/v10/users/@me";
 
@@ -1319,6 +1451,12 @@ export class MessageManager {
      *
      * @param message
      */
+/**
+ * Simulates typing in a Discord channel by sending typing indicators at regular intervals.
+ * 
+ * @param {DiscordMessage} message - The Discord message object representing the channel where typing will be simulated.
+ * @returns {Function} A function that stops the typing simulation.
+ */
     private simulateTyping(message: DiscordMessage) {
         let typing = true;
 
