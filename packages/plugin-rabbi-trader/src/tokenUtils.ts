@@ -2,6 +2,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { elizaLogger } from "@elizaos/core";
 
+/**
+ * Function to load token addresses from a JSON file.
+ * @returns {string[]} - Array of token addresses
+ */
 export function loadTokenAddresses(): string[] {
     try {
         const filePath = path.resolve(
