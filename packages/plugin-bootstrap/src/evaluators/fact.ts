@@ -17,6 +17,12 @@ export const formatFacts = (facts: Memory[]) => {
     return finalMessageStrings;
 };
 
+/**
+ * Template for extracting Claims from a conversation as an array of claims in JSON format.
+ * 
+ * @type {string}
+ * @constant
+ */
 const factsTemplate =
     // {{actors}}
     `TASK: Extract Claims from the conversation as an array of claims in JSON format.
@@ -51,6 +57,14 @@ Response should be a JSON object array inside a JSON markdown block. Correct res
 ]
 \`\`\``;
 
+/**
+ * Handles the incoming message and processes the facts to be added to the memory.
+ *
+ * @async
+ * @param {IAgentRuntime} runtime - The runtime environment for the agent.
+ * @param {Memory} message - The message received for processing.
+ * @returns {string[]} - An array of filtered facts that were added to memory.
+ */
 async function handler(runtime: IAgentRuntime, message: Memory) {
     const state = await runtime.composeState(message);
 
@@ -105,6 +119,16 @@ async function handler(runtime: IAgentRuntime, message: Memory) {
     return filteredFacts;
 }
 
+/**
+ * Evaluator for extracting factual information about the people in the conversation, current events, and other important details.
+ * @typedef {Object} Evaluator
+ * @property {string} name - The name of the evaluator
+ * @property {string[]} similes - Array of related evalutors
+ * @property {function} validate - Asynchronous function to validate message based on runtime and message inputs
+ * @property {string} description - Description of the evaluator
+ * @property {function} handler - Handler function for the evaluator
+ * @property {Object[]} examples - Array of examples with context, messages, and outcomes
+*/
 export const factEvaluator: Evaluator = {
     name: "GET_FACTS",
     similes: [
