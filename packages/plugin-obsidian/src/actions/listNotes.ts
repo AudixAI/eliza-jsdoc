@@ -8,6 +8,17 @@ import {
 } from "@elizaos/core";
 import { getObsidian }  from "../helper";
 
+/**
+ * Represents an action to list all markdown notes in the Obsidian vault.
+ * 
+ * @type {Action}
+ * @property {string} name - The name of the action ("LIST_NOTES").
+ * @property {string[]} similes - Alternative phrases that trigger the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the Obsidian connection.
+ * @property {Function} handler - Asynchronous function to handle listing notes from the vault.
+ * @property {Object[]} examples - Examples of user input and expected agent response for this action.
+ */
 export const listNotesAction: Action = {
     name: "LIST_NOTES",
     similes: [
