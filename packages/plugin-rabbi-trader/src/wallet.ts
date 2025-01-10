@@ -9,6 +9,13 @@ import { SAFETY_LIMITS } from "./constants";
  * @returns Solana keypair for transactions
  * @throws Error if private key is missing or invalid
  */
+/**
+ * Retrieve the wallet keypair for the current user from the runtime settings.
+ * 
+ * @param {IAgentRuntime} [runtime] - Optional runtime object which provides access to settings
+ * @returns {Keypair} - The generated keypair for the wallet
+ * @throws {Error} - If no wallet private key is configured or if there is an error creating the keypair
+ */
 export function getWalletKeypair(runtime?: IAgentRuntime): Keypair {
     // Check chain type from token address or configuration
 
