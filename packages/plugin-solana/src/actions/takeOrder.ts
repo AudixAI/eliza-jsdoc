@@ -8,6 +8,16 @@ import {
     generateText,
 } from "@elizaos/core";
 
+/**
+ * Interface representing an order.
+ * @typedef {Object} Order
+ * @property {string} userId - The ID of the user placing the order.
+ * @property {string} ticker - The ticker symbol of the asset being traded.
+ * @property {string} contractAddress - The contract address of the asset being traded.
+ * @property {string} timestamp - The timestamp of when the order was placed.
+ * @property {number} buyAmount - The amount of the asset being bought.
+ * @property {number} price - The price at which the asset is being bought/sold.
+ */
 interface Order {
     userId: string;
     ticker: string;
@@ -17,6 +27,16 @@ interface Order {
     price: number;
 }
 
+/**
+ * Action to record a buy order based on the user's conviction level.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action ("TAKE_ORDER").
+ * @property {string[]} similes - Similar actions ("BUY_ORDER", "PLACE_ORDER").
+ * @property {string} description - Description of the action.
+ * @property {Array} examples - Examples of the action.
+ * @property {Function} validate - Validation function taking runtime and message as parameters.
+ * @property {Function} handler - Handling function taking runtime and message as parameters.
+ */
 const take_order: Action = {
     name: "TAKE_ORDER",
     similes: ["BUY_ORDER", "PLACE_ORDER"],
