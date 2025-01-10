@@ -10,6 +10,11 @@ import { WriteContractParams } from "../types";
 import { ClientProvider } from "../providers/client";
 import { getParamsWithLLM } from "../utils/llm";
 
+/**
+ * Template for writing a contract in the GenLayer protocol.
+ * 
+ * @type {string}
+ */
 const writeContractTemplate = `
 # Task: Determine the contract address, function name, function arguments, and value for writing to the contract.
 
@@ -30,6 +35,16 @@ Here is the user's request:
 \`\`\`
 `;
 
+/**
+ * Represents an action to write to a contract in the GenLayer protocol.
+ * @type {Action}
+ * @property {string} name - The name of the action ("WRITE_CONTRACT").
+ * @property {string[]} similes - Array of similes related to the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the action.
+ * @property {Function} handler - Asynchronous function to handle the action.
+ * @property {object[]} examples - Array of example objects showcasing the action.
+ */
 export const writeContractAction: Action = {
     name: "WRITE_CONTRACT",
     similes: ["WRITE_CONTRACT"],
