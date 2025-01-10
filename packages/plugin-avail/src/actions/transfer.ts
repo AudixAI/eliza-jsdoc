@@ -23,11 +23,23 @@ import {
 import { ISubmittableResult } from "@polkadot/types/types/extrinsic";
 import { H256 } from "@polkadot/types/interfaces/runtime";
 
+/**
+ * Interface representing the transfer content.
+ * @interface
+ * @extends Content
+ * @property {string} recipient - The recipient of the transfer.
+ * @property {string | number} amount - The amount being transferred.
+ */
 export interface TransferContent extends Content {
     recipient: string;
     amount: string | number;
 }
 
+/**
+ * Checks whether the provided content object is of type TransferContent.
+ * @param {TransferContent} content - The content object to be checked.
+ * @returns {boolean} Returns true if the content is of type TransferContent, false otherwise.
+ */
 export function isTransferContent(
     content: TransferContent
 ): content is TransferContent {
@@ -45,6 +57,25 @@ export function isTransferContent(
     return validAddresses;
 }
 
+/**
+ * Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *    "recipient": "5GWbvXjefEvXXETtKQH7YBsUaPc379KAQATW1eqeJT26cbsK",
+ *    "amount": "1000"
+ * }
+ * ```
+ * 
+ * {{recentMessages}}
+ * 
+ * Given the recent messages, extract the following information about the requested AVAIL token transfer:
+ * - Recipient wallet address
+ * - Amount of AVAIL to transfer
+ * 
+ * Respond with a JSON markdown block containing only the extracted values.
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 
