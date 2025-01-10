@@ -1,6 +1,18 @@
 // I left this file here, because I was using it to test multiple callbacks in one file.
 // If anybody knows how to achieve that, please lmk
 
+/**
+ * Object representing the action of generating an image via LetzAI API with polling.
+ * @type {Object}
+ * @property {string} name - The name of the action.
+ * @property {Array<string>} similes - An array of similar words or phrases for the action.
+ * @property {string} description - A brief description of the action.
+ * @property {boolean} suppressInitialMessage - Whether to suppress the initial message.
+ * @property {function} validate - Asynchronous function to validate the action.
+ * @property {function} handler - Function to handle the action and provide a response.
+ * @property {Array<Array<Object>>} examples - Array of examples showing how the action might be used in conversation.
+ */ 
+     
 export const letzAiImageGeneration = {
     name: "GENERATE_IMAGE",
     similes: ["IMAGE_GENERATION", "IMAGE_GEN"],
