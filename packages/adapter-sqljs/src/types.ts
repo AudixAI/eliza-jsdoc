@@ -1,19 +1,59 @@
+/**
+ * Represents a value that can be used in an SQL query, allowed types are number, string, Uint8Array, and null.
+ */
 type SqlValue = number | string | Uint8Array | null;
+/**
+ * Represents an object where keys are strings and values are SqlValues.
+ */
 type ParamsObject = Record<string, SqlValue>;
+/**
+ * Specifies a callback function that takes a ParamsObject as a parameter.
+ */
 type ParamsCallback = (obj: ParamsObject) => void;
+/**
+ * Represents the possible types that can be used as parameters for a SQL query binding.
+ * @typedef {SqlValue[] | ParamsObject | null} BindParams
+ */
 type BindParams = SqlValue[] | ParamsObject | null;
+/**
+ * Interface representing the result of a SQL query execution.
+ * @typedef {Object} QueryExecResult
+ * @property {string[]} columns - An array of column names returned by the query.
+ * @property {SqlValue[][]} values - A two-dimensional array of SQL values returned by the query.
+ */
 interface QueryExecResult {
     columns: string[];
     values: SqlValue[][];
 }
 
+/**
+ * Represents an iterator over a list of Statement objects.
+ * @implements Iterator<Statement>
+ * @implements Iterable<Statement>
+ */
+ 
 declare class StatementIterator
     implements Iterator<Statement>, Iterable<Statement>
 {
+/**
+ * Returns an iterator of Statement objects.
+ */
     [Symbol.iterator](): Iterator<Statement>;
+/**
+ * Get the remaining SQL query as a string.
+ */
     getRemainingSQL(): string;
+/**
+ * Returns the next StatementIteratorResult.
+ */
     next(): StatementIteratorResult;
 }
+/**
+ * Interface representing the result of iterating over statements.
+ * @typedef {Object} StatementIteratorResult
+ * @property {boolean} done - `true` if there are no more available statements
+ * @property {Statement} value - the next available Statement (as returned by `Database.prepare`)
+ */
 interface StatementIteratorResult {
     /** `true` if there are no more available statements */
     done: boolean;
