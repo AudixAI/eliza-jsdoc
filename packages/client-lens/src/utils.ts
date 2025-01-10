@@ -1,6 +1,13 @@
 import { stringToUuid } from "@elizaos/core";
 import { BroadcastResult } from "./types";
 
+/**
+ * Generates a unique publication ID by combining the provided publication ID and agent ID.
+ * @param {object} params - The parameters object.
+ * @param {string} params.pubId - The publication ID.
+ * @param {string} params.agentId - The agent ID.
+ * @returns {string} The unique publication ID.
+ */
 export function publicationId({
     pubId,
     agentId,
@@ -11,10 +18,26 @@ export function publicationId({
     return `${pubId}-${agentId}`;
 }
 
+/**
+ * Generates a UUID based on the provided publication ID and agent ID.
+ * @param {Object} props - The properties object.
+ * @param {string} props.pubId - The publication ID.
+ * @param {string} props.agentId - The agent ID.
+ * @returns {string} The generated UUID.
+ */
 export function publicationUuid(props: { pubId: string; agentId: string }) {
     return stringToUuid(publicationId(props));
 }
 
+/**
+ * Populates mentions in the given text based on the provided user IDs, positions, and user map.
+ * 
+ * @param {string} text - The text to populate mentions in
+ * @param {number[]} userIds - Array of user IDs to mention
+ * @param {number[]} positions - Array of positions where mentions should be inserted
+ * @param {Record<number, string>} userMap - Object mapping user IDs to display names
+ * @returns {string} The text with mentions populated
+ */
 export function populateMentions(
     text: string,
     userIds: number[],
@@ -70,6 +93,15 @@ export const getProfilePictureUri = (picture: any): string | undefined => {
     }
 };
 
+/**
+ * Returns a new object that omits a specified key from the input object.
+ * 
+ * @template T - The type of the input object.
+ * @template K - The type of the key to omit.
+ * @param {T} obj - The input object to omit key from.
+ * @param {K} key - The key to omit from the object.
+ * @returns {Omit<T, K>} - A new object that omits the specified key.
+ */
 export function omit<T extends object, K extends string>(
     obj: T,
     key: K
