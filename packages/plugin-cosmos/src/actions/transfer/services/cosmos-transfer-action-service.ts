@@ -15,11 +15,27 @@ import { CosmosTransactionFeeEstimator } from "../../../shared/services/cosmos-t
 import type { CosmosTransferParams } from "../types.ts";
 import { getAvailableAssets } from "../../../shared/helpers/cosmos-assets.ts";
 
+/**
+ * Service class for handling Cosmos transfer actions.
+ * * @implements ICosmosActionService
+ */
 export class CosmosTransferActionService implements ICosmosActionService {
+/**
+ * Constructor for creating a new instance of the class.
+ * 
+ * @param {ICosmosWalletChains} cosmosWalletChains - The instance of ICosmosWalletChains to be used in the class
+ */
     constructor(private cosmosWalletChains: ICosmosWalletChains) {
         this.cosmosWalletChains = cosmosWalletChains;
     }
 
+/**
+ * Executes a Cosmos transfer transaction.
+ * 
+ * @param {CosmosTransferParams} params - The parameters for the transfer transaction.
+ * @param {ICosmosPluginCustomChainData["assets"][]} [customChainAssets] - Optional custom chain assets data.
+ * @returns {Promise<ICosmosTransaction>} The transaction details after execution.
+ */
     async execute(
         params: CosmosTransferParams,
         customChainAssets?: ICosmosPluginCustomChainData["assets"][]
