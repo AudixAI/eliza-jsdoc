@@ -11,6 +11,21 @@ import { DeployContractParams } from "../types";
 import { ClientProvider } from "../providers/client";
 import { getParamsWithLLM } from "../utils/llm";
 
+/**
+ * Template for deploying a contract to the GenLayer protocol.
+ * 
+ * The user is requesting to deploy a contract to the GenLayer protocol.
+ * 
+ * @param {string} userMessage - The latest user message.
+ * @param {object} recentMessagesData - Data from recent messages.
+ * 
+ * @returns {object} JSON block with the following structure:
+ * {
+ *   "code_file": "<Contract Code File Path>",
+ *   "args": [<Constructor Args>],
+ *   "leaderOnly": <true/false>
+ * }
+ */
 const deployContractTemplate = `
 # Task: Determine the contract code file path and constructor arguments for deploying a contract.
 
@@ -34,6 +49,23 @@ const deployContractTemplate = `
 \`\`\`
 `;
 
+/**
+ * Action object representing the deploy contract action.
+ * @typedef {Object} Action
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - Array of similes associated with the action.
+ * @property {string} description - Description of the action.
+ * @property {Function} validate - Asynchronous function to validate the action.
+ * @param {IAgentRuntime} runtime - The runtime information.
+ * @returns {boolean} - Returns true if validation passes, false otherwise.
+ * @property {Function} handler - Asynchronous function to handle the action.
+ * @param {IAgentRuntime} runtime - The runtime information.
+ * @param {Memory} message - The message object.
+ * @param {State} state - The state object.
+ * @param {any} _options - Additional options.
+ * @param {HandlerCallback} callback - The callback function.
+ * @property {Object[][]} examples - Array of example interactions for the action.
+ */
 export const deployContractAction: Action = {
     name: "DEPLOY_CONTRACT",
     similes: ["DEPLOY_CONTRACT"],
