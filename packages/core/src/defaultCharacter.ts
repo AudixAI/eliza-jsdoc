@@ -1,5 +1,10 @@
 import { Character, ModelProviderName } from "./types.ts";
 
+/**
+ * Default character object with pre-defined values for name, username, plugins, clients, modelProvider,
+ * and settings.
+ * @type {Character}
+ */
 export const defaultCharacter: Character = {
     name: "Eliza",
     username: "eliza",
