@@ -1,3 +1,20 @@
+/**
+ * Constants for safety limits in trading strategies.
+ * - MINIMUM_TRADE: Minimum 0.01 SOL per trade
+ * - MAX_POSITION_SIZE: Maximum 10% of token liquidity
+ * - MAX_SLIPPAGE: Maximum 5% slippage allowed
+ * - MIN_LIQUIDITY: Minimum $1000 liquidity required
+ * - MIN_VOLUME: Minimum $2000 24h volume required
+ * - MIN_TRUST_SCORE: Minimum trust score to trade
+ * - STOP_LOSS: 20% stop loss trigger
+ * - CHECK_INTERVAL: Check every 5 minutes
+ * - TAKE_PROFIT: Take profit at 12% gain
+ * - TRAILING_STOP: 20% trailing stop from highest
+ * - PARTIAL_TAKE: Take 50% profit at 6% gain
+ * - REENTRY_DELAY: Wait 1 hour before re-entering
+ * - MAX_ACTIVE_POSITIONS: Maximum concurrent positions
+ * - MIN_WALLET_BALANCE: Keep minimum 0.05 SOL in wallet
+ */
 export const SAFETY_LIMITS = {
   MINIMUM_TRADE: 0.01, // Minimum 0.01 SOL per trade
   MAX_POSITION_SIZE: 0.1, // Maximum 10% of token liquidity
