@@ -1,5 +1,9 @@
 import { ActionExample } from "@elizaos/core";
 
+/**
+ * Array of examples for getting the current weather in different cities.
+ * Each example consists of a conversation exchange between a user and an agent.
+ */
 export const getCurrentWeatherExamples: ActionExample[][] = [
     [
         {
