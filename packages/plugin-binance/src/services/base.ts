@@ -14,6 +14,9 @@ import {
 /**
  * Base service class with common functionality
  */
+/**
+ * Base class for Binance API services
+ */
 export abstract class BaseService {
     protected client: Spot;
     protected config: BinanceConfig;
