@@ -31,6 +31,16 @@ import MEMEABI from "../abi/meme";
 import ERC20ABI from "../abi/erc20";
 
 // Helper function to check and approve token allowance if needed
+/**
+ * Ensure that the specified account has enough allowance for a given amount of tokens to be spent on a meme token.
+ * 
+ * @param {WalletClient} walletClient - The wallet client instance.
+ * @param {string} rpcUrl - The RPC URL for the blockchain network.
+ * @param {Account} account - The account for which allowance needs to be checked and ensured.
+ * @param {`0x${string}`} tokenAddress - The address of the token for which allowance is being checked.
+ * @param {`0x${string}`} memeAddress - The address of the meme token for which allowance is being checked.
+ * @param {bigint} amount - The amount of tokens for which allowance is being checked.
+ */
 async function ensureAllowance(
     walletClient: WalletClient,
     rpcUrl: string,
@@ -83,6 +93,11 @@ async function ensureAllowance(
 }
 
 // Main ConfiPump action definition
+/**
+ * Action representing actions on ConfiPump.
+ * This action allows users to perform various actions on ConfiPump, such as creating a new token, buying a token, or selling a token.
+ * Similes include SELL_TOKEN, BUY_TOKEN, and CREATE_TOKEN.
+ */
 export const confiPump: Action = {
     name: "CONFI_PUMP",
     description:
