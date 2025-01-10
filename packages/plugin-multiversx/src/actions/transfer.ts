@@ -14,12 +14,27 @@ import {
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../enviroment";
 import { transferSchema } from "../utils/schemas";
+/**
+ * Interface representing transfer content, which extends Content.
+ * @interface
+ * @extends Content
+ * @property {string} tokenAddress - The address of the token.
+ * @property {string} amount - The amount of tokens being transferred.
+ * @property {string} [tokenIdentifier] - An optional identifier for the token.
+ */
 export interface TransferContent extends Content {
     tokenAddress: string;
     amount: string;
     tokenIdentifier?: string;
 }
 
+/**
+ * Checks if the provided content is valid for a transfer.
+ * 
+ * @param {_runtime: IAgentRuntime} _runtime - The runtime of the agent.
+ * @param {TransferContent} content - The content to be checked for transfer.
+ * @returns {boolean} Returns true if the content is valid for transfer, otherwise false.
+ */
 function isTransferContent(_runtime: IAgentRuntime, content: TransferContent) {
     console.log("Content for transfer", content);
     return (
@@ -28,6 +43,23 @@ function isTransferContent(_runtime: IAgentRuntime, content: TransferContent) {
     );
 }
 
+/**
+ * Transfer template function that extracts token transfer information from recent messages.
+ * Responds with a JSON markdown block containing the extracted values.
+ * Use null for any values that cannot be determined.
+ * 
+ * Example response:
+ * ```json
+ * {
+ *    "tokenAddress": "erd12r22hx2q4jjt8e0gukxt5shxqjp9ys5nwdtz0gpds25zf8qwtjdqyzfgzm",
+ *    "amount": "1",
+ *    "tokenIdentifier": "PEPE-3eca7c"
+ * }
+ * ```
+ * 
+ * @param {string} recentMessages - The recent messages to extract information from.
+ * @returns {string} - JSON markdown block containing extracted values (tokenAddress, amount, tokenIdentifier).
+ */
 const transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
 Example response:
