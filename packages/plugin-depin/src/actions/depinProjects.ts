@@ -11,6 +11,16 @@ import {
 
 import { projectsTemplate } from "../template";
 
+/**
+ * Represents an action to analyze DePINScan projects.
+ * @type {Action}
+ * @property {string} name - The name of the action.
+ * @property {string[]} similes - The similes associated with the action.
+ * @property {string} description - The description of the action.
+ * @property {Function} validate - The validation function for the action.
+ * @property {Object[]} examples - Array of example user interactions and assistant responses.
+ * @property {Function} handler - The function to handle the action.
+ */
 export const depinProjects: Action = {
     name: "DEPIN_PROJECTS",
     similes: [
