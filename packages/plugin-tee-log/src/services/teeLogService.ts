@@ -5,6 +5,10 @@ import { TeeType, TeeLogDAO, TeeAgent, TeeLog, TeeLogQuery, PageQuery } from "..
 import { TeeLogManager } from "./teeLogManager";
 import Database from "better-sqlite3";
 
+/**
+ * A service class for logging Tee data with various methods to interact with the TeeLogManager.
+ * @implements { ITeeLogService }
+ */
 export class TeeLogService extends Service implements ITeeLogService {
     private readonly dbPath = "./data/tee_log.sqlite";
 
@@ -17,14 +21,27 @@ export class TeeLogService extends Service implements ITeeLogService {
     private teeLogManager: TeeLogManager;
 
 
+/**
+ * Get the instance of TeeLogService.
+ * @returns {TeeLogService} The instance of TeeLogService
+ */
     getInstance(): TeeLogService {
         return this;
     }
 
+/**
+ * Returns the ServiceType of the TEE_LOG service.
+ */
     static get serviceType(): ServiceType {
         return ServiceType.TEE_LOG;
     }
 
+/**
+ * Initializes the agent with the given runtime.
+ * 
+ * @param {IAgentRuntime} runtime - The runtime object for the agent.
+ * @returns {Promise<void>} A Promise that resolves when the initialization is complete.
+ */
     async initialize(runtime: IAgentRuntime): Promise<void> {
         if (this.initialized) {
             return;
@@ -75,6 +92,16 @@ export class TeeLogService extends Service implements ITeeLogService {
         this.initialized = true;
     }
 
+/**
+ * Logs a message for a given agent, room, user, type, and content.
+ * 
+ * @param {string} agentId - The ID of the agent.
+ * @param {string} roomId - The ID of the room.
+ * @param {string} userId - The ID of the user.
+ * @param {string} type - The type of the log message.
+ * @param {string} content - The content of the log message.
+ * @returns {Promise<boolean>} Returns a boolean indicating if the log was successful.
+ */
     async log(agentId: string, roomId: string, userId: string, type: string, content: string): Promise<boolean> {
         if (!this.enableTeeLog) {
             return false;
@@ -83,6 +110,11 @@ export class TeeLogService extends Service implements ITeeLogService {
         return this.teeLogManager.log(agentId, roomId, userId, type, content);
     }
 
+/**
+ * Asynchronously retrieves all TeeAgents.
+ * 
+ * @returns {Promise<TeeAgent[]>} A Promise that resolves to an array of TeeAgents. If TeeLog is not enabled, an empty array is returned.
+ */
     async getAllAgents(): Promise<TeeAgent[]> {
         if (!this.enableTeeLog) {
             return [];
@@ -91,6 +123,12 @@ export class TeeLogService extends Service implements ITeeLogService {
         return this.teeLogManager.getAllAgents();
     }
 
+/**
+ * Get agent information based on the agent ID.
+ * 
+ * @param {string} agentId - The ID of the agent to retrieve information for.
+ * @returns {Promise<TeeAgent | undefined>} The agent information, or undefined if the TEE log is disabled.
+ */
     async getAgent(agentId: string): Promise<TeeAgent | undefined> {
         if (!this.enableTeeLog) {
             return undefined;
@@ -99,6 +137,15 @@ export class TeeLogService extends Service implements ITeeLogService {
         return this.teeLogManager.getAgent(agentId);
     }
 
+/**
+ * Asynchronously retrieves Tee logs based on the provided query and pagination parameters.
+ * 
+ * @param {TeeLogQuery} query The query parameters to filter the Tee logs.
+ * @param {number} page The page number for pagination.
+ * @param {number} pageSize The number of items per page for pagination.
+ * @returns {Promise<PageQuery<TeeLog[]>>} A promise that resolves with a PageQuery object containing an array of Tee logs,
+ * the total count of Tee logs, the current page number, and the page size. If Tee logging is disabled, an empty PageQuery object is returned.
+ */
     async getLogs(query: TeeLogQuery, page: number, pageSize: number): Promise<PageQuery<TeeLog[]>> {
         if (!this.enableTeeLog) {
             return {
@@ -112,6 +159,12 @@ export class TeeLogService extends Service implements ITeeLogService {
         return this.teeLogManager.getLogs(query, page, pageSize);
     }
 
+/**
+ * Asynchronously generates an attestation for the given user report.
+ * 
+ * @param {string} userReport The user report for which to generate the attestation.
+ * @returns {Promise<string>} A promise that resolves with the generated attestation string.
+ */
     async generateAttestation(userReport: string): Promise<string> {
         return this.teeLogManager.generateAttestation(userReport);
     }
