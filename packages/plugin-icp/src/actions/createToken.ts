@@ -23,6 +23,14 @@ import { uploadFileToWeb3Storage } from "../apis/uploadFile";
 import { createTokenTemplate, logoPromptTemplate } from "./prompts/token";
 import { CANISTER_IDS } from "../constants/canisters";
 
+/**
+ * Asynchronously creates a token transaction using the provided ActorCreator and token information.
+ * 
+ * @param {ActorCreator} creator The ActorCreator used to create the actor.
+ * @param {CreateMemeTokenArg} tokenInfo The token information needed to create the token.
+ * @returns {Promise<Object>} A promise that resolves to the created token transaction.
+ * @throws {Error} If the token creation fails.
+ */
 async function createTokenTransaction(
     creator: ActorCreator,
     tokenInfo: CreateMemeTokenArg
@@ -59,6 +67,14 @@ async function createTokenTransaction(
     );
 }
 
+/**
+ * Generates a fun and memorable logo for a cryptocurrency token based on the provided description.
+ * The logo should be simple, iconic, and suitable for a meme token with a minimal, bold color, and crypto-themed style.
+ * 
+ * @param {string} description - The characteristics of the cryptocurrency token for which the logo is being generated.
+ * @param {IAgentRuntime} runtime - The runtime environment for generating the image.
+ * @returns {Promise<string | null>} A Promise that resolves to the URL of the generated logo image, or null if no image is generated.
+ */
 async function generateTokenLogo(
     description: string,
     runtime: IAgentRuntime
@@ -82,6 +98,17 @@ async function generateTokenLogo(
     return null;
 }
 
+/**
+ * Action to create a new meme token on PickPump platform (Internet Computer).
+ * This action helps users create and launch tokens specifically on the PickPump platform.
+ * @typedef {Action} executeCreateToken
+ * @property {string} name - The name of the action
+ * @property {string[]} similes - Array of related similes
+ * @property {string} description - Description of the action
+ * @property {Function} validate - Validation function that checks if the message contains specific keywords
+ * @property {Function} handler - Handler function to create and launch a token, including logo generation and upload
+ * @property {ActionExample[][]} examples - Array of example interactions demonstrating the action
+ */
 export const executeCreateToken: Action = {
     name: "CREATE_TOKEN",
     similes: [
