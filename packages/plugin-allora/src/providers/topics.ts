@@ -9,24 +9,25 @@ import NodeCache from "node-cache";
 import { AlloraAPIClient, AlloraTopic, ChainSlug } from "@alloralabs/allora-sdk";
 
 /**
- * Class representing a provider for fetching topics from the Allora API.
+ * Class representing a Topics Provider that implements the Provider interface.
  */
+ 
 export class TopicsProvider implements Provider {
     private cache: NodeCache;
 
 /**
- * Constructor function that initializes a new NodeCache with a standard time-to-live (TTL) of 30 minutes.
+ * Constructor for initializing the cache with a standard TTL of 30 minutes.
  */
     constructor() {
         this.cache = new NodeCache({ stdTTL: 30 * 60 }); // Cache TTL set to 30 minutes
     }
 
 /**
- * Retrieve all topics from Allora Network and format them into a string for prompt context.
- * @param {IAgentRuntime} runtime - The runtime instance for executing operations.
- * @param {Memory} _message - The memory object containing the message data.
- * @param {State} [_state] - Optional state parameter.
- * @returns {Promise<string | null>} The formatted string containing all topics information, or null if no topics found.
+ * Retrieves all Allora Network topics and formats them into a string.
+ * @param {IAgentRuntime} runtime - The runtime information for the agent.
+ * @param {Memory} _message - The message object.
+ * @param {State} [_state] - Optional state object.
+ * @returns {Promise<string | null>} - A string containing formatted information about all Allora Network topics.
  */
     async get(
         runtime: IAgentRuntime,
@@ -50,10 +51,9 @@ export class TopicsProvider implements Provider {
     }
 
 /**
- * Retrieves all Allora topics either from cache or from the Allora API.
- * 
- * @param {IAgentRuntime} runtime - The Agent Runtime instance.
- * @returns {Promise<AlloraTopic[]>} The array of Allora topics.
+ * Retrieves Allora topics either from cache or from the Allora API.
+ * @param {IAgentRuntime} runtime - The runtime object used to access settings and services.
+ * @returns {Promise<AlloraTopic[]>} - A promise that resolves to an array of Allora topics.
  */
     private async getAlloraTopics(
         runtime: IAgentRuntime
