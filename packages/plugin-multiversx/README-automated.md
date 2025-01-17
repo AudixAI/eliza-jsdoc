@@ -41,7 +41,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification Steps:
-- Ensure you see ["✓ Registering action: <plugin actions>"] in the console to verify successful integration.
+- Ensure you see ["✓ Registering action: SEND_TOKEN"] in the console to verify successful integration.
 
 ## Configuration
 # Configuration Documentation
