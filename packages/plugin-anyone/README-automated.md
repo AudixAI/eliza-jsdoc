@@ -45,7 +45,7 @@ return new AgentRuntime({
 
 ## 4. Verification Steps
 
-Ensure successful integration by checking for ["✓ Registering action: <plugin actions>"] in the console.
+Ensure successful integration by checking for ["✓ Registering action: START_ANYONE"] in the console.
 
 Ensure that the dependencies and peer dependencies are correctly installed and updated in your project to avoid any potential issues during the installation and integration process.
 
@@ -53,29 +53,7 @@ Ensure that the dependencies and peer dependencies are correctly installed and u
 # Configuration Documentation
 
 ### Environment Variables
-
-Below is a list of all required environment variables and their purpose:
-
-1. `DATABASE_URL`: 
-    - Purpose: Specifies the URL for the database connection.
-
-2. `API_KEY`: 
-    - Purpose: Used for authenticating access to the API.
-
-3. `PORT`: 
-    - Purpose: Specifies the port on which the application will run.
-
-### Example .env File
-
-```plaintext
-DATABASE_URL=your_database_url_here
-API_KEY=your_api_key_here
-PORT=3000
-```
-
-### Note:
-- Configuration settings are managed in the .env file.
-- Remember to add the .env file to the .gitignore to prevent it from being committed to the repository.
+No Environment Variables Found
 
 ## Features
 
