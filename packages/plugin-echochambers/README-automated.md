@@ -72,10 +72,6 @@ ECHOCHAMBERS_POLL_INTERVAL=120
 - Configure the application using the above environment variables in the .env file.
 - Make sure to add the .env file to the .gitignore to prevent sensitive information from being committed to the repository. 
 
----
-If there are no environment variables found, please find below:
-# No Environment Variables Found
-
 ## Features
 
 ### Actions
