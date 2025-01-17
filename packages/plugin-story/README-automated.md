@@ -43,7 +43,7 @@ return new AgentRuntime({
 ### 4. Verification Steps
 Ensure successful integration by checking for the following console message:
 ```plaintext
-✓ Registering action: <plugin actions>
+✓ Registering action: GET_IP_DETAILS
 ```
 
 Make sure to follow these installation and integration instructions to effectively utilize the @elizaos/plugin-story plugin in your ElizaOS project.
@@ -70,7 +70,118 @@ Please ensure that the .env file is used for configuration, and remember to add 
 ## Features
 
 ### Actions
-No actions documentation available.
+
+### ATTACH_TERMS
+Attach license terms to an IP Asset on Story Protocol.
+
+#### Properties
+- Name: ATTACH_TERMS
+- Similes: ATTACH_TERMS_TO_IP
+- Description: Attach license terms to an IP Asset on Story Protocol blockchain
+
+#### Handler
+The handler function manages the process of attaching license terms to IP assets. It first validates or updates the conversation state, then generates the necessary parameters using a template context. It uses a WalletProvider to interact with the blockchain and an AttachTermsAction instance to execute the transaction. The handler supports both initial license term attachment and handles cases where terms are already attached. It provides transaction confirmation with explorer links for successful operations.
+
+#### Validation
+- Requires a valid Story Protocol private key starting with "0x"
+- Validates wallet connection and transaction parameters before execution
+
+#### Examples
+- User 1: "I would like to attach license terms to my IP."
+- Agent: "Sure! What is the ipId? You should also tell me if you want to add a minting fee, or if you want to enable commercial use of your IP. If so, you can add a revenue share as well."
+- User 1: "Attach commercial, 10% rev share license terms to IP Asset 0x2265F2b8e47F98b3Bdf7a1937EAc27282954A4Db"
+- Agent: "Successfully attached license terms: [licenseTermsId]. Transaction Hash: [txHash]. View it on the block explorer: [explorer_link]"
+
+### GET_AVAILABLE_LICENSES
+Retrieve available licenses for an IP Asset on Story Protocol.
+
+#### Properties
+- Name: GET_AVAILABLE_LICENSES
+- Similes: AVAILABLE_LICENSES, AVAILABLE_LICENSES_FOR_IP, AVAILABLE_LICENSES_FOR_ASSET
+- Description: Get available licenses for an IP Asset on Story Protocol
+
+#### Handler
+The handler function retrieves and formats available license information for specified IP assets. It generates parameters from the conversation context, queries the Story Protocol API through a GetAvailableLicensesAction instance, and formats the response for user readability. The handler includes error handling and provides structured feedback about available licenses.
+
+#### Examples
+- User 1: "Get available licenses for an IP Asset 0x2265F2b8e47F98b3Bdf7a1937EAc27282954A4Db"
+- Agent: [Returns formatted list of available licenses with their terms and conditions]
+
+#### Response Format
+The response includes:
+- License terms ID
+- Commercial use status
+- Revenue share percentages
+- Minting fees
+- Additional terms and conditions
+- Source attribution to Story Protocol API
+
+### GET_IP_DETAILS
+Retrieve detailed information about an IP Asset on Story Protocol.
+
+#### Properties
+- Name: GET_IP_DETAILS 
+- Similes: IP_DETAILS, IP_DETAILS_FOR_ASSET, IP_DETAILS_FOR_IP
+- Description: Get comprehensive details for an IP Asset registered on Story Protocol
+
+#### Handler
+The handler retrieves detailed information about specified IP assets from Story Protocol. It processes the conversation state, queries the Story Protocol API through a GetIPDetailsAction instance, and returns formatted IP details including metadata, ownership information, and registration status. Includes error handling and structured response formatting.
+
+#### Examples
+- User 1: "Get details for an IP Asset 0x2265F2b8e47F98b3Bdf7a1937EAc27282954A4Db"
+- Agent: [Returns formatted IP details including metadata, ownership, and registration information]
+
+### LICENSE_IP
+License an existing IP Asset on Story Protocol.
+
+#### Properties
+- Name: LICENSE_IP
+- Similes: LICENSE, LICENSE_IP, LICENSE_IP_ASSET
+- Description: Obtain a license for an IP Asset on Story Protocol
+
+#### Handler
+The handler manages the IP licensing process. It uses a WalletProvider to interact with the blockchain and processes license requests through a LicenseIPAction instance. The handler validates wallet connection, processes the license request, and mints license tokens upon successful transaction. Provides transaction confirmation with explorer links.
+
+#### Validation
+- Requires a valid Story Protocol private key starting with "0x"
+- Validates wallet connection and license parameters
+
+#### Examples
+- User 1: "I would like to license an IP."
+- Agent: "Sure! Please provide the ipId of the IP you want to license and the license terms id you want to attach."
+- User 1: "License an IP Asset 0x2265F2b8e47F98b3Bdf7a1937EAc27282954A4Db with license terms 1"
+- Agent: "Successfully minted license tokens: [tokenIds]. Transaction Hash: [txHash]. View it on the block explorer: [explorer_link]"
+
+### REGISTER_IP
+Register an NFT as a new IP Asset on Story Protocol.
+
+#### Properties
+- Name: REGISTER_IP
+- Similes: REGISTER_IP, REGISTER_NFT
+- Description: Register an NFT as an IP Asset on Story Protocol blockchain
+
+#### Handler
+The handler facilitates the registration of new IP assets. It utilizes a WalletProvider for blockchain interaction and processes registrations through a RegisterIPAction instance. Handles the complete registration process including metadata submission and blockchain transaction. Provides registration confirmation with explorer links.
+
+#### Validation
+- Requires a valid Story Protocol private key starting with "0x"
+- Validates wallet connection and registration parameters
+
+#### Examples
+- User 1: "I would like to register my IP."
+- Agent: "Sure! Please provide the title and description of your IP."
+- User 1: "Register my IP titled 'My IP' with the description 'This is my IP'"
+- Agent: "Successfully registered IP ID: [ipId]. Transaction Hash: [txHash]. View it on the explorer: [explorer_link]"
+
+#### Response Format
+All actions provide structured responses including:
+- Success/failure status
+- Transaction hashes where applicable
+- Explorer links for verification
+- Detailed error messages in case of failures
+- Attribution to Story Protocol API when relevant
+
+
 
 ### Providers
 ### WalletProvider
