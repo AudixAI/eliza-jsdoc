@@ -41,7 +41,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification Steps:
-- Ensure you see ["✓ Registering action: <plugin actions>"] in the console
+- Ensure you see ["✓ Registering action: EXECUTE_SWAP_NEAR"] in the console
 
 Make sure to follow these instructions carefully to successfully install and integrate the @elizaos/plugin-near plugin with your ElizaOS project.
 
@@ -78,10 +78,6 @@ SLIPPAGE_TOLERANCE=0.01
 **Note:** Ensure the .env file is set in the .gitignore file to avoid committing sensitive information to the repository.
 
 ---
-
-If there are no environment variables found, display:
-
-## No Environment Variables Found
 
 ## Features
 
