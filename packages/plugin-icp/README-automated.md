@@ -53,7 +53,7 @@ return new AgentRuntime({
 ```
 
 ## 4. Verification steps to ensure successful integration:
-- Ensure you see ["✓ Registering action: <plugin actions>"] in the console
+- Ensure you see ["✓ Registering action: CREATE_TOKEN"] in the console
 
 Remember to follow the steps carefully to successfully integrate the @elizaos/plugin-icp plugin into your ElizaOS project.
 
@@ -74,9 +74,7 @@ Remember to follow the steps carefully to successfully integrate the @elizaos/pl
 ## Example .env File
 
 ```plaintext
-DATABASE_URL=your_database_url_here
-API_KEY=your_api_key_here
-PORT=3000
+INTERNET_COMPUTER_PRIVATE_KEY=<your-ed25519-private-key>
 ```
 
 Please ensure that the configuration is done in the .env file and that the .env file is added to the .gitignore to prevent it from being committed to the repository.
