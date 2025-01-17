@@ -44,7 +44,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification Steps:
-- Ensure you see ["✓ Registering action: <plugin actions>"] in the console
+- Ensure you see ["✓ Registering action: SEND_TOKEN"] in the console
 
 Make sure to follow these steps carefully to successfully integrate the @elizaos/plugin-zksync-era plugin into your ElizaOS project.
 
@@ -69,7 +69,36 @@ ZKSYNC_PRIVATE_KEY=private_key_here
 ## Features
 
 ### Actions
-No actions documentation available.
+
+### SEND_TOKEN
+Transfer tokens from the agent's wallet to another address on zkSync Era network.
+
+#### Properties
+- Name: SEND_TOKEN
+- Similes: TRANSFER_TOKEN_ON_ZKSYNC, TRANSFER_TOKEN_ON_ERA, TRANSFER_TOKENS_ON_ZKSYNC, TRANSFER_TOKENS_ON_ERA, SEND_TOKENS_ON_ZKSYNC, SEND_TOKENS_ON_ERA, SEND_ETH_ON_ZKSYNC, SEND_ETH_ON_ERA, PAY_ON_ZKSYNC, PAY_ON_ERA
+- Description: Transfer tokens from the agent's wallet to another address on zkSync Era network
+
+#### Handler
+The handler manages token transfers on zkSync Era. Key functionality includes:
+- ENS name resolution for recipient addresses
+- Support for both native ETH and ERC20 token transfers
+- Automatic decimal handling for different tokens
+- Transaction validation and error handling
+
+#### Validation
+- Validates zkSync configuration settings
+- Verifies recipient address format (ETH address or ENS)
+- Validates token contract addresses
+- Checks token balance and allowance
+
+#### Token Support
+- Native ETH transfers
+- ERC20 token transfers with configurable decimals
+- Special handling for common tokens like USDC
+- ENS domain resolution support
+
+#### Examples
+- Native ETH Transfer:
 
 ### Providers
 No providers documentation available.
