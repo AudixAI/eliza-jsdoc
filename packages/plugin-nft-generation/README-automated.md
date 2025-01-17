@@ -114,15 +114,99 @@ SOLANA_VERIFY_TOKEN=your_solana_verify_token
 
 **Note:** Ensure that the `.env` file is set in the `.gitignore` file to prevent it from being committed to the repository.
 
-# No Environment Variables Found
-
 ## Features
 
 ### Actions
-No actions documentation available.
+
+### MINT_NFT
+Mint NFTs for a specified collection on Solana or other supported chains.
+
+#### Properties
+- Name: MINT_NFT
+- Similes: NFT_MINTING, NFT_CREATION, CREATE_NFT, GENERATE_NFT, MINT_TOKEN, CREATE_TOKEN, MAKE_NFT, TOKEN_GENERATION
+
+#### Handler
+The handler function validates AWS and blockchain credentials before minting NFTs. For Solana chains, it uses the Solana wallet to fetch collection info and create NFTs with metadata. For other supported chains, it uses Viem to interact with EVM-compatible chains to mint NFTs through smart contracts. The function verifies collection validity, handles minting process, and provides transaction feedback including NFT addresses and links.
+
+#### Examples
+- User 1: "mint nft for collection: D8j4ubQ3MKwmAqiJw83qT7KQNKjhsuoC7zJJdJa5BkvS on Solana"
+- Agent: "I've minted a new NFT in your specified collection on Solana."
+- Agent: "Congratulations! Collection Address: D8j4...BkvS, NFT Address: [address], NFT Link: [link]"
+
+### GENERATE_COLLECTION
+Generate an NFT collection on Solana or other supported chains.
+
+#### Properties
+- Name: GENERATE_COLLECTION
+- Similes: COLLECTION_GENERATION, COLLECTION_GEN, CREATE_COLLECTION, MAKE_COLLECTION, GENERATE_COLLECTION
+
+#### Handler
+The handler function creates NFT collections across different blockchain networks. For Solana, it creates collection metadata and uses a Solana wallet to establish the collection. For EVM chains, it deploys an ERC721 contract with specified parameters like name, symbol, max supply, and royalty settings. The function handles contract deployment, verification, and provides collection addresses and explorer links.
+
+#### Examples
+- User 1: "Generate a collection on Solana"
+- Agent: "Here's the collection you requested."
+- Agent: "Congratulations! Collection Link: [explorer_link], Address: [contract_address]"
+- User 1: "Create a collection using [agentName] on Solana"
+- Agent: "We've successfully created a collection on Solana."
 
 ### Providers
-No providers documentation available.
+### Solana Wallet Provider
+The Solana Wallet Provider is a class that facilitates interaction with the Solana blockchain network, specifically for NFT-related operations and wallet functionality.
+
+#### Constructor
+Creates a new WalletSolana instance with:
+- Wallet public key
+- Wallet private key
+- Optional connection parameter
+- Initializes a 5-minute TTL cache
+- Sets up Umi instance with token metadata program
+
+#### Methods
+`fetchDigitalAsset(address: string)`
+- Fetches digital asset information for a given address using Umi
+
+`getBalance()`
+- Retrieves the wallet's SOL balance
+- Returns both raw value and formatted string (e.g., "1.5 SOL")
+
+`createCollection(params)`
+- Creates a new NFT collection on Solana
+- Parameters:
+  - name: Collection name
+  - symbol: Collection symbol
+  - adminPublicKey: Admin's public key
+  - uri: Metadata URI
+  - fee: Seller fee basis points
+- Returns:
+  - success: Boolean indicating success
+  - link: Explorer link
+  - address: Collection address
+  - error: Error message if failed
+
+`mintNFT(params)`
+- Mints a new NFT in a specified collection
+- Parameters:
+  - collectionAddress: Address of parent collection
+  - adminPublicKey: Admin's public key
+  - name: NFT name
+  - symbol: NFT symbol
+  - uri: Metadata URI
+  - fee: Seller fee basis points
+- Returns:
+  - success: Boolean indicating success
+  - link: Explorer link
+  - address: NFT address
+  - error: Error message if failed
+
+`verifyNft(params)`
+- Verifies an NFT as part of a collection
+- Parameters:
+  - collectionAddress: Collection address
+  - nftAddress: NFT address to verify
+- Returns:
+  - isVerified: Boolean indicating verification status
+  - error: Error message if verification failed
 
 ### Evaluators
 No evaluators documentation available.
