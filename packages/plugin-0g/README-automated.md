@@ -41,7 +41,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification steps:
-Ensure you see ["✓ Registering action: <plugin actions>"] in the console to verify successful integration.
+Ensure you see ["✓ Registering action: ZG_UPLOAD"] in the console to verify successful integration.
   
 
 ## Configuration
