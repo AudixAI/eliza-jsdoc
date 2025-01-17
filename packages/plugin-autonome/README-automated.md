@@ -45,7 +45,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification Steps:
-- Ensure you see ["✓ Registering action: <plugin actions>"] in the console after integration.
+- Ensure you see ["✓ Registering action: LAUNCH_AGENT"] in the console after integration.
 
 Make sure to follow these steps carefully for successful installation and integration of the @elizaos/plugin-autonome plugin.
 
