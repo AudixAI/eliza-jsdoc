@@ -41,7 +41,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification Steps:
-- Ensure you see `["✓ Registering action: <plugin actions>"]` in the console after integration
+- Ensure you see `["✓ Registering action: SEND_COIN"]` in the console after integration
 
 Make sure to follow these steps for successful installation and integration of the @elizaos/plugin-flow plugin for ElizaOS.
 
