@@ -41,7 +41,7 @@ return new AgentRuntime({
 ```
 
 ### 4. Verification Steps:
-Make sure to see ["✓ Registering action: <plugin actions>"] in the console to ensure successful integration.
+Make sure to see ["✓ Registering action: SEND_TOKEN"] in the console to ensure successful integration.
 
 Please follow these steps carefully to successfully install, integrate, and verify the @elizaos/plugin-sui plugin in your ElizaOS project. Thank you! 
 
