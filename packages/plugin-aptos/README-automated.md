@@ -52,7 +52,7 @@ return new AgentRuntime({
 ### 4. Verification Steps
 
 After integration, ensure you see the following message in the console:
-["✓ Registering action: <plugin actions>"]
+["✓ Registering action: SEND_TOKEN"]
 
 Make sure to follow these steps carefully to successfully install and integrate the @elizaos/plugin-aptos plugin into your ElizaOS project.
 
